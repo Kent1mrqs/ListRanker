@@ -1,25 +1,7 @@
 [package]
-name = "hello-world"
+name = "rankinglist"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 actix-web = "4"
-actix-files = "0.1.6"
-futures = "0.1.29"
-bytes = "0.4.12"
-env_logger = "0.7.1"
-serde = "1.0.101"
-serde_json = "1.0.41"
-serde_derive = "1.0.101"
-json = "0.12.0"
-console = "0.9.0"
-actix-rt = "1.0"
-chrono = { version = "0.4", features = ["serde"] }
-dotenv = "0.11"
-diesel = { version = "1.4", features = ["postgres", "r2d2", "uuid", "chrono"] }
-diesel_migrations = "1.4"
-lazy_static = "1.4"
-listenfd = "0.3"
-r2d2 = "0.8"
-uuid = { version = "0.6", features = ["serde", "v4"] }
