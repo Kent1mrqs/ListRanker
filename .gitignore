@@ -1,2 +1,4 @@
-/hello-world/target/
-/.idea/.gitignore
+/backend/target/
+/.idea
+/frontend/node_modules
+/frontend/package-lock.json
