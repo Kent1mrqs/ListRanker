@@ -1,5 +1,5 @@
 import {Button, MenuItem, Select, Stack, TextField, Typography} from "@mui/material";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 
 export default function ListCreation() {
@@ -9,13 +9,25 @@ export default function ListCreation() {
 	}
 	const [nameList, setNameList] = useState('');
 	const [input, setInput] = useState('');
-	const [list, setList] = useState(default_list);
+	const [newList, setNewList] = useState(default_list);
 	const [separator, setSeparator] = useState('\n');
+	const [dbList, setDbList] = useState([])
 
 	function onClick() {
-		setList({name: nameList, elements: input.split(separator)});
+		setNewList({name: nameList, elements: input.split(separator)});
 		setInput('')
 	}
+	function saveList() {
+
+	}
+
+	function getList() {
+
+	}
+
+	useEffect(() => {
+		getList()
+	}, []);
 
 	return (
 		<Stack direction='row' spacing={3}>
@@ -39,10 +51,15 @@ export default function ListCreation() {
 				<Button onClick={onClick}>Validate</Button>
 			</Stack>
 			<Stack spacing={1}>
-				<Typography>Elements de la liste {list.name}: </Typography>
-				{list.elements.map(el => {
+				<Typography>Elements de la liste {newList.name}: </Typography>
+				{newList.elements.map(el => {
 					return (<Typography>{el}</Typography>)
 				})}
+				<Button onClick={saveList}>Save</Button>
+
+			</Stack>
+			<Stack>
+				<Typography>Mes listes</Typography>
 			</Stack>
 		</Stack>
 	)

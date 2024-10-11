@@ -4,3 +4,10 @@ CREATE TABLE users (
                        email VARCHAR(255) NOT NULL,
                        password_hash VARCHAR(255) NOT NULL
 );
+
+CREATE TABLE lists (
+                       list_id INT PRIMARY KEY,
+                       user_id INT,
+                       name VARCHAR(255) NOT NULL,
+                       FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
