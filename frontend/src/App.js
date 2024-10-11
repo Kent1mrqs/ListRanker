@@ -20,6 +20,7 @@ function App() {
         fetchUsers();
         fetchLists();
     }, [fetchLists, fetchUsers]);
+
     if (error) {
         console.error(error)
     }

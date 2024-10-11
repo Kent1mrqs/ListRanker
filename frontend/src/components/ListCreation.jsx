@@ -1,7 +1,6 @@
 import {Button, MenuItem, Select, Stack, TextField, Typography} from "@mui/material";
 import {useEffect, useState} from "react";
 
-
 export default function ListCreation() {
 	const default_list = {
 		name: '',
@@ -20,14 +19,6 @@ export default function ListCreation() {
 	function saveList() {
 
 	}
-
-	function getList() {
-
-	}
-
-	useEffect(() => {
-		getList()
-	}, []);
 
 	return (
 		<Stack direction='row' spacing={3}>
