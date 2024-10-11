@@ -1,7 +1,7 @@
-import './App.css';
-import ListCreation from "./components/ListCreation";
+import '../../src/App.css';
+import ListCreation from "./ListCreation";
 import {useCallback, useEffect, useState} from "react";
-import {fetchData} from "./components/services/api";
+import {fetchData} from "../../src/components/services/api";
 
 function App() {
     const [users, setUsers] = useState([]);

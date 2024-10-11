@@ -1,6 +1,6 @@
 # Ranking App
 
-A web application for creating and managing custom rankings of various items such as TV shows, foods, football players, etc.
+A web application for creating and managing custom rankings of various items 
 
 ## Table of Contents
 
