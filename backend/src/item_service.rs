@@ -2,17 +2,15 @@ use diesel::prelude::*;
 use diesel::QueryResult;
 use crate::schema::items;
 
-// Structure représentant un item (représentant une ligne dans la table items)
-#[derive(Queryable)]
+#[derive(Queryable, serde::Serialize)] // Ajoutez serde::Serialize ici
 pub struct Item {
     pub item_id: i32,
-    pub list_id: Option<i32>, // list_id est nullable
+    pub list_id: Option<i32>, // Changer ici pour être Option<i32>
     pub name: String,
 }
 
-// Structure pour insérer un nouvel item
-#[derive(Insertable)]
-#[diesel(table_name = items)] // Référence correcte à la table
+#[derive(Insertable, serde::Deserialize)] // Ajoutez serde::Deserialize ici
+#[diesel(table_name = items)]
 pub struct NewItem<'a> {
     pub list_id: Option<i32>, // L'ID de la liste à laquelle appartient l'item (nullable)
     pub name: &'a str,        // Le nom de l'item (chaîne de caractères)

@@ -3,9 +3,10 @@ use diesel::QueryResult;
 use diesel::Insertable;
 use diesel::Queryable;
 use crate::schema::users; // Importe le schéma des utilisateurs
+use serde::Serialize;
 
 // Structure représentant les utilisateurs dans la base de données
-#[derive(Queryable)]
+#[derive(Queryable, Serialize)]
 pub struct User {
     pub id: i32,
     pub username: String,

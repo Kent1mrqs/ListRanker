@@ -14,7 +14,34 @@ use user_service::{create_new_user, get_all_users, NewUser};
 use list_service::{create_new_list, get_all_lists, NewList};
 use item_service::{create_new_item, get_all_items, NewItem};
 
-fn main() {
+use actix_web::{web, App, HttpServer, HttpResponse, Responder};
+
+async fn index() -> impl Responder {
+    "Hello world!"
+}
+
+async fn get_users() -> impl Responder {
+    use user_service::get_all_users; // Importez la fonction ici
+
+    // Connexion à la base de données (dans une vraie application, utilisez un pool de connexions)
+    let database_url = "postgres://user:secret@192.168.1.53/db"; // Changez ici avec vos données
+    let mut conn = PgConnection::establish(&database_url)
+        .expect("Erreur lors de la connexion à la base de données");
+
+    match get_all_users(&mut conn) {
+        Ok(users) => {
+            // Retourner les utilisateurs en JSON
+            HttpResponse::Ok().json(users)
+        }
+        Err(err) => {
+            println!("Erreur lors de la récupération des utilisateurs : {}", err);
+            HttpResponse::InternalServerError().finish()
+        }
+    }
+}
+
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
     let database_url = "postgres://user:secret@192.168.1.53/db"; // Changez ici avec vos données
     let mut conn = PgConnection::establish(&database_url)
         .expect("Erreur lors de la connexion à la base de données");
@@ -83,4 +110,20 @@ fn main() {
         Err(err) => println!("Erreur lors de la récupération des items : {}", err),
     }
 
+    HttpServer::new(move || {
+        App::new()
+            .service(
+                // Définir la route pour récupérer les utilisateurs
+                web::resource("/users").route(web::get().to(get_users)),
+            )
+            .service(
+                web::scope("/app")
+                    .route("/index.html", web::get().to(index)),
+            )
+    })
+        .bind(("127.0.0.1", 8080))?
+        .run()
+        .await
 }
+
+
