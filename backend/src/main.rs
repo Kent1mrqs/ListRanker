@@ -8,11 +8,13 @@ pub mod schema {
 mod user_service;
 mod list_service;
 mod item_service;
+mod models;
 
 use diesel::prelude::*;
-use user_service::{create_new_user, get_all_users, get_users, NewUser};
-use list_service::{create_new_list, get_all_lists, get_lists, NewList};
-use item_service::{create_new_item, get_all_items, NewItem};
+use models::{NewUser, NewItem, NewList};
+use user_service::{create_new_user, get_all_users, get_users};
+use list_service::{create_new_list, get_all_lists, get_lists};
+use item_service::{create_new_item, get_all_items};
 
 use actix_cors::Cors;
 use actix_web::{web, App, HttpServer, Responder};

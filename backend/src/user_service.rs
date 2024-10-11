@@ -1,26 +1,9 @@
 use actix_web::{HttpResponse, Responder};
 use diesel::prelude::*;
-use diesel::{QueryResult, Insertable, Queryable};
-use serde::Serialize; // Importez `Serialize` pour sérialiser les utilisateurs en JSON
+use diesel::{QueryResult};
 use crate::schema::users; // Importe le schéma des utilisateurs
 
-// Structure représentant les utilisateurs dans la base de données
-#[derive(Queryable, Serialize)] // Ajoutez `Serialize` ici pour permettre la sérialisation en JSON
-pub struct User {
-    pub id: i32,
-    pub username: String,
-    pub email: String,
-    pub password_hash: String,
-}
-
-// Structure pour insérer un nouvel utilisateur
-#[derive(Insertable)]
-#[diesel(table_name = users)] // Référence correcte à la table
-pub struct NewUser<'a> {
-    pub username: &'a str,
-    pub email: &'a str,
-    pub password_hash: &'a str,
-}
+use crate::models::{NewUser, User};
 
 // Fonction pour créer un nouvel utilisateur
 pub fn create_new_user(conn: &mut PgConnection, new_user: NewUser) -> QueryResult<usize> {
