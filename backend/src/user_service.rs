@@ -1,12 +1,10 @@
 use diesel::prelude::*;
-use diesel::QueryResult;
-use diesel::Insertable;
-use diesel::Queryable;
+use diesel::{QueryResult, Insertable, Queryable};
+use serde::Serialize; // Importez `Serialize` pour sérialiser les utilisateurs en JSON
 use crate::schema::users; // Importe le schéma des utilisateurs
-use serde::Serialize;
 
 // Structure représentant les utilisateurs dans la base de données
-#[derive(Queryable, Serialize)]
+#[derive(Queryable, Serialize)] // Ajoutez `Serialize` ici pour permettre la sérialisation en JSON
 pub struct User {
     pub id: i32,
     pub username: String,
