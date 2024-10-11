@@ -7,10 +7,12 @@ pub mod schema {
 // Import du module user_service
 mod user_service;
 mod list_service;
+mod item_service;
 
 use diesel::prelude::*;
 use user_service::{create_new_user, get_all_users, NewUser};
 use list_service::{create_new_list, get_all_lists, NewList};
+use item_service::{create_new_item, get_all_items, NewItem};
 
 fn main() {
     let database_url = "postgres://user:secret@192.168.1.53/db"; // Changez ici avec vos données
@@ -59,6 +61,26 @@ fn main() {
             }
         }
         Err(err) => println!("Erreur lors de la récupération des listes : {}", err),
+    }
+
+    // Créer une nouvelle liste
+    let new_item = NewItem {
+        list_id: None,
+        name: "Mon premier item",
+    };
+
+    match create_new_item(&mut conn, new_item) {
+        Ok(_) => println!("Nouvelle liste ajoutée avec succès!"),
+        Err(err) => println!("Erreur lors de l'ajout de la liste : {}", err),
+    }
+
+    match get_all_items(&mut conn) {
+        Ok(items) => {
+            for item in items {
+                println!("ID: {}, List ID: {:?}, Name: {}", item.item_id, item.list_id, item.name);
+            }
+        }
+        Err(err) => println!("Erreur lors de la récupération des items : {}", err),
     }
 
 }
