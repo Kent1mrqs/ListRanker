@@ -8,10 +8,8 @@ mod user_service;
 mod list_service;
 mod item_service;
 mod models;
-
-use diesel::prelude::*;
-use user_service::{ get_users};
-use list_service::{ get_lists};
+mod handlers;
+mod db;
 
 use actix_cors::Cors;
 use actix_web::{web, App, HttpServer, Responder};
@@ -32,10 +30,10 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(cors)
             .service(
-                web::resource("/users").route(web::get().to(get_users)),
+                web::resource("/users").route(web::get().to(handlers::get_users)),
             )
             .service(
-                web::resource("/lists").route(web::get().to(get_lists)),
+                web::resource("/lists").route(web::get().to(handlers::get_lists)),
             )
             .service(
                 web::scope("/app")

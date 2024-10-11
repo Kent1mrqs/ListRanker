@@ -1,7 +1,6 @@
 use actix_web::{HttpResponse, Responder};
 use diesel::prelude::*;
 use diesel::{QueryResult};
-use crate::schema::users;
 
 use crate::models::{NewUser, User};
 
