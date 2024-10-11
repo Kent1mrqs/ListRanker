@@ -2,29 +2,33 @@ import './App.css';
 import ListCreation from "./components/ListCreation";
 import {useCallback, useEffect, useState} from "react";
 import {fetchData} from "./components/services/api";
-
 function App() {
     const [users, setUsers] = useState([]);
     const [lists, setLists] = useState([]);
-    console.log(users)
-    console.log(lists)
+    const [error, setError] = useState(null);
 
     const fetchUsers = useCallback(() => {
-        fetchData('users', setUsers);
+        fetchData('users', setUsers).catch(err => setError(err.message));
     }, []);
 
     const fetchLists = useCallback(() => {
-        fetchData('lists', setLists);
+        fetchData('lists', setLists).catch(err => setError(err.message));
     }, []);
 
     useEffect(() => {
-        fetchUsers()
-        fetchLists()
-    }, [fetchLists, fetchUsers ]);
+        fetchUsers();
+        //fetchLists();
+    }, [fetchLists, fetchUsers]);
+    if (error) {
+        console.error(error)
+    }
+
+    console.log("users :", users)
+    console.log("lists :", lists)
 
     return (
         <div className="App">
-            <ListCreation/>
+            <ListCreation />
         </div>
     );
 }

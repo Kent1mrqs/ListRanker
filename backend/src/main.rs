@@ -14,6 +14,7 @@ use user_service::{create_new_user, get_all_users, NewUser};
 use list_service::{create_new_list, get_all_lists, NewList};
 use item_service::{create_new_item, get_all_items, NewItem};
 
+use actix_cors::Cors;
 use actix_web::{web, App, HttpServer, HttpResponse, Responder};
 
 async fn index() -> impl Responder {
@@ -111,7 +112,13 @@ async fn main() -> std::io::Result<()> {
     }
 
     HttpServer::new(move || {
+        let cors = Cors::default()
+            .allow_any_origin()
+            .allow_any_method()
+            .allow_any_header()
+            .max_age(3600);
         App::new()
+            .wrap(cors)
             .service(
                 // Définir la route pour récupérer les utilisateurs
                 web::resource("/users").route(web::get().to(get_users)),
