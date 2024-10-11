@@ -1,9 +1,11 @@
+use actix_web::{HttpResponse, Responder};
 use diesel::prelude::*;
 use diesel::QueryResult;
+use serde::Serialize; // Importez `Serialize` pour sérialiser les utilisateurs en JSON
 use crate::schema::lists;
 
 // Structure List (représentant une ligne dans la table lists)
-#[derive(Queryable)]
+#[derive(Queryable, Serialize)]
 pub struct List {
     pub list_id: i32,          // Correspond à list_id INT dans la table
     pub user_id: Option<i32>,  // Correspond à user_id INT NULLABLE dans la table
@@ -31,4 +33,23 @@ pub fn get_all_lists(conn: &mut PgConnection) -> QueryResult<Vec<List>> {
     use crate::schema::lists::dsl::*;
 
     lists.load::<List>(conn) // Charge directement les données
+}
+
+pub async fn get_lists() -> impl Responder {
+
+    // Connexion à la base de données (dans une vraie application, utilisez un pool de connexions)
+    let database_url = "postgres://user:secret@192.168.1.53/db"; // Changez ici avec vos données
+    let mut conn = PgConnection::establish(&database_url)
+        .expect("Erreur lors de la connexion à la base de données");
+
+    match get_all_lists(&mut conn) {
+        Ok(lists) => {
+            // Retourner les utilisateurs en JSON
+            HttpResponse::Ok().json(lists)
+        }
+        Err(err) => {
+            println!("Erreur lors de la récupération des lists : {}", err);
+            HttpResponse::InternalServerError().finish()
+        }
+    }
 }

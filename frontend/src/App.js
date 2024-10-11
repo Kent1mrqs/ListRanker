@@ -2,6 +2,7 @@ import './App.css';
 import ListCreation from "./components/ListCreation";
 import {useCallback, useEffect, useState} from "react";
 import {fetchData} from "./components/services/api";
+
 function App() {
     const [users, setUsers] = useState([]);
     const [lists, setLists] = useState([]);
@@ -17,7 +18,7 @@ function App() {
 
     useEffect(() => {
         fetchUsers();
-        //fetchLists();
+        fetchLists();
     }, [fetchLists, fetchUsers]);
     if (error) {
         console.error(error)
