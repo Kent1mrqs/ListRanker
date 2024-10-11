@@ -5,15 +5,12 @@ use crate::schema::lists;
 
 use crate::models::{NewList, List};
 
-
-// Fonction pour insérer une nouvelle liste
 pub fn create_new_list(conn: &mut PgConnection, new_list: NewList) -> QueryResult<usize> {
     diesel::insert_into(lists::table)
         .values(new_list)
         .execute(conn)
 }
 
-// Fonction pour récupérer toutes les listes
 pub fn get_all_lists(conn: &mut PgConnection) -> QueryResult<Vec<List>> {
     use crate::schema::lists::dsl::*;
 

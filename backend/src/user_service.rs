@@ -1,11 +1,10 @@
 use actix_web::{HttpResponse, Responder};
 use diesel::prelude::*;
 use diesel::{QueryResult};
-use crate::schema::users; // Importe le schéma des utilisateurs
+use crate::schema::users;
 
 use crate::models::{NewUser, User};
 
-// Fonction pour créer un nouvel utilisateur
 pub fn create_new_user(conn: &mut PgConnection, new_user: NewUser) -> QueryResult<usize> {
     use crate::schema::users;
 
@@ -14,7 +13,6 @@ pub fn create_new_user(conn: &mut PgConnection, new_user: NewUser) -> QueryResul
         .execute(conn)
 }
 
-// Fonction pour récupérer tous les utilisateurs
 pub fn get_all_users(conn: &mut PgConnection) -> QueryResult<Vec<User>> {
     use crate::schema::users::dsl::*; // Utiliser le module DSL pour faciliter l'écriture des requêtes
 
