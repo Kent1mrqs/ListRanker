@@ -1,14 +1,16 @@
 extern crate diesel;
 
 pub mod schema {
-    include!("schema.rs"); // Incluez ici votre schéma
+    include!("schema.rs");
 }
 
 // Import du module user_service
 mod user_service;
+mod list_service;
 
 use diesel::prelude::*;
-use user_service::{create_new_user, get_all_users, NewUser}; // Importer les fonctions et structures nécessaires
+use user_service::{create_new_user, get_all_users, NewUser};
+use list_service::{create_new_list, get_all_lists, NewList};
 
 fn main() {
     let database_url = "postgres://user:secret@192.168.1.53/db"; // Changez ici avec vos données
@@ -36,4 +38,27 @@ fn main() {
         }
         Err(err) => println!("Erreur lors de la récupération des utilisateurs : {}", err),
     }
+
+    // Créer une nouvelle liste
+    let new_list = NewList {
+        user_id: None,
+        list_id: 1,
+        name: "Ma première liste",
+    };
+
+    match create_new_list(&mut conn, new_list) {
+        Ok(_) => println!("Nouvelle liste ajoutée avec succès!"),
+        Err(err) => println!("Erreur lors de l'ajout de la liste : {}", err),
+    }
+
+    // Récupérer toutes les listes
+    match get_all_lists(&mut conn) {
+        Ok(lists) => {
+            for list in lists {
+                println!("ID: {}, User ID: {:?}, Name: {}", list.list_id, list.user_id, list.name); // Affiche `user_id` comme Option
+            }
+        }
+        Err(err) => println!("Erreur lors de la récupération des listes : {}", err),
+    }
+
 }
