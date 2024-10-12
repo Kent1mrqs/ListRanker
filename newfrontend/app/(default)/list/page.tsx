@@ -1,26 +1,12 @@
-import Spotlight from "@/components/spotlight";
+import ListCreation from "@/app/(default)/list/ListCreation";
 
 export const metadata = {
     title: "Home - Open PRO",
     description: "Page description",
 };
 
-import Card from "@/components/Card";
-import WorflowImg01 from "@/public/images/workflow-01.png";
-import WorflowImg02 from "@/public/images/workflow-02.png";
-import WorflowImg03 from "@/public/images/workflow-03.png";
-
 
 export default function List() {
-
-    const description1 = "Streamline the product development flow with a content\n" +
-        "            platform that's aligned across specs and insights."
-
-    const description2 = "Streamline the product development flow with a content\n" +
-        "                    platform that's aligned across specs and insights."
-
-    const description3 = "Streamline the product development flow with a content\n" +
-        "                    platform that's aligned across specs and insights."
 
     return (
         <section>
@@ -41,12 +27,7 @@ export default function List() {
                         </p>
                     </div>
                     {/* Spotlight items */}
-                    <Spotlight className="group mx-auto grid max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-4">
-                        <Card title='Built-in Tools' image={WorflowImg01} description={description1}/>
-                        <Card title='Scale Instantly' image={WorflowImg02} description={description2}/>
-                        <Card title='Tailored Flows' image={WorflowImg03} description={description3}/>
-                        <Card title='Tailored Flows' image={WorflowImg03} description={description3}/>
-                    </Spotlight>
+                    <ListCreation/>
                 </div>
             </div>
         </section>
