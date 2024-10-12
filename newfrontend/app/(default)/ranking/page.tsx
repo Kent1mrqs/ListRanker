@@ -1,14 +1,13 @@
 import Spotlight from "@/components/spotlight";
+import Card from "@/components/Card";
+import WorflowImg01 from "@/public/images/workflow-01.png";
+import WorflowImg02 from "@/public/images/workflow-02.png";
+import WorflowImg03 from "@/public/images/workflow-03.png";
 
 export const metadata = {
     title: "Home - Open PRO",
     description: "Page description",
 };
-
-import Card from "@/components/Card";
-import WorflowImg01 from "@/public/images/workflow-01.png";
-import WorflowImg02 from "@/public/images/workflow-02.png";
-import WorflowImg03 from "@/public/images/workflow-03.png";
 
 
 export default function Ranking() {
@@ -32,7 +31,7 @@ export default function Ranking() {
                             className="inline-flex items-center gap-3 pb-3 before:h-px before:w-8 before:bg-gradient-to-r before:from-transparent before:to-indigo-200/50 after:h-px after:w-8 after:bg-gradient-to-l after:from-transparent after:to-indigo-200/50">
                         </div>
                         <h2 className="animate-[gradient_6s_linear_infinite] bg-[linear-gradient(to_right,theme(colors.gray.200),theme(colors.indigo.200),theme(colors.gray.50),theme(colors.indigo.300),theme(colors.gray.200))] bg-[length:200%_auto] bg-clip-text pb-4 font-nacelle text-3xl font-semibold text-transparent md:text-4xl">
-                            Map your product journey
+                            Ranking
                         </h2>
                         <p className="text-lg text-indigo-200/65">
                             Simple and elegant interface to start collaborating with your team
