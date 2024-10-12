@@ -18,12 +18,12 @@ pub struct User {
 }
 
 // Structure pour insérer un nouvel utilisateur
-#[derive(Insertable)]
+#[derive(Insertable, Deserialize, Serialize, Debug)]
 #[diesel(table_name = users)] // Référence correcte à la table
-pub struct NewUser<'a> {
-    pub username: &'a str,
-    pub email: &'a str,
-    pub password_hash: &'a str,
+pub struct NewUser {
+    pub username: String,
+    pub email: String,
+    pub password_hash: String,
 }
 
 
@@ -38,7 +38,6 @@ pub struct List {
 #[derive(Insertable, Deserialize, Serialize, Debug)]
 #[diesel(table_name = lists)]
 pub struct NewList {
-    pub list_id: i32,
     pub user_id: Option<i32>,
     pub name: String,
 }

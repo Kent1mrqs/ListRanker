@@ -1,4 +1,3 @@
-use crate::schema::lists;
 use diesel::prelude::*;
 use diesel::QueryResult;
 

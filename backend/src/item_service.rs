@@ -1,5 +1,4 @@
-use diesel::prelude::*;
-use diesel::QueryResult;
+/*use diesel::QueryResult;
 use crate::schema::items;
 
 use crate::models::{NewItem, Item};
@@ -15,3 +14,4 @@ pub fn get_all_items(conn: &mut PgConnection) -> QueryResult<Vec<Item>> {
 
     items.load::<Item>(conn) // Charge directement les données
 }
+*/

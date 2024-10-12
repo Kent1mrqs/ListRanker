@@ -1,6 +1,6 @@
 use crate::db;
 use crate::list_service;
-use crate::models::NewList;
+use crate::models::{NewList, NewUser};
 use crate::user_service;
 
 use actix_web::{web, HttpResponse};
@@ -32,6 +32,21 @@ pub async fn create_list(new_list: web::Json<NewList>) -> HttpResponse {
         Err(e) => {
             println!("Erreur lors de la création de la liste : {:?}", e);
             HttpResponse::InternalServerError().body("Error creating list")
+        }
+    }
+}
+pub async fn create_user(new_user: NewUser) -> HttpResponse {
+    println!("Requête reçue : {:?}", new_user); // Log pour voir les données de la requête
+
+    let mut conn = db::establish_connection();
+    match user_service::create_new_user(&mut conn, new_user) {
+        Ok(user) => {
+            println!("Utilisateur créé avec succès : {:?}", user);
+            HttpResponse::Ok().json(user)
+        }
+        Err(e) => {
+            println!("Erreur lors de la création de l'utilisateur : {:?}", e);
+            HttpResponse::InternalServerError().body("Erreur lors de la création de l'utilisateur")
         }
     }
 }
