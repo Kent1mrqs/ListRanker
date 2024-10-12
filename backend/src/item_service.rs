@@ -12,6 +12,6 @@ pub fn create_new_item(conn: &mut PgConnection, new_item: NewItem) -> QueryResul
 pub fn get_all_items(conn: &mut PgConnection) -> QueryResult<Vec<Item>> {
     use crate::schema::items::dsl::*;
 
-    items.load::<Item>(conn) // Charge directement les données
+    items.load::<Item>(conn)
 }
 */

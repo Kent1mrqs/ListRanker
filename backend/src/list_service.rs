@@ -15,6 +15,6 @@ pub fn create_new_list(conn: &mut PgConnection, new_list: NewList) -> QueryResul
 pub fn get_all_lists(conn: &mut PgConnection) -> QueryResult<Vec<List>> {
     use crate::schema::lists::dsl::*;
 
-    lists.load::<List>(conn) // Charge directement les données
+    lists.load::<List>(conn)
 }
 

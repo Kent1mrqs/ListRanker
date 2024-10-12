@@ -21,7 +21,7 @@ pub async fn get_lists() -> HttpResponse {
     }
 }
 pub async fn create_list(new_list: web::Json<NewList>) -> HttpResponse {
-    println!("Requête reçue : {:?}", new_list); // Log pour voir les données de la requête
+    println!("Requête reçue : {:?}", new_list);
 
     let mut conn = db::establish_connection();
     match list_service::create_new_list(&mut conn, new_list.into_inner()) {
@@ -36,7 +36,7 @@ pub async fn create_list(new_list: web::Json<NewList>) -> HttpResponse {
     }
 }
 pub async fn create_user(new_user: NewUser) -> HttpResponse {
-    println!("Requête reçue : {:?}", new_user); // Log pour voir les données de la requête
+    println!("Requête reçue : {:?}", new_user);
 
     let mut conn = db::establish_connection();
     match user_service::create_new_user(&mut conn, new_user) {

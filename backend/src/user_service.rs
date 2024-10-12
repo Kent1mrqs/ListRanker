@@ -12,7 +12,7 @@ pub fn create_new_user(conn: &mut PgConnection, new_user: NewUser) -> QueryResul
 }
 
 pub fn get_all_users(conn: &mut PgConnection) -> QueryResult<Vec<User>> {
-    use crate::schema::users::dsl::*; // Utiliser le module DSL pour faciliter l'écriture des requêtes
+    use crate::schema::users::dsl::*;
 
     users.load::<User>(conn)
 }

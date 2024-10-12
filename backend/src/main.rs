@@ -27,7 +27,6 @@ async fn init_users() {
         password_hash: "hashed_password".to_string(),
     };
 
-    // Ajouter l'utilisateur lors du démarrage du backend
     create_user(new_user).await;
 }
 
