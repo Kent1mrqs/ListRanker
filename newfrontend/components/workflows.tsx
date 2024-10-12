@@ -10,7 +10,8 @@ export default function Workflows() {
   const description1 = "Streamline the product development flow with a content\n" +
     "            platform that's aligned across specs and insights."
 
-  const description2 = ""
+  const description2 = "Streamline the product development flow with a content\n" +
+      "                    platform that's aligned across specs and insights."
 
   const description3 = "Streamline the product development flow with a content\n" +
       "                    platform that's aligned across specs and insights."
@@ -38,11 +39,12 @@ export default function Workflows() {
               </p>
             </div>
             {/* Spotlight items */}
-            <Spotlight className="group mx-auto grid max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-3">
+            <Spotlight className="group mx-auto grid max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-4">
               <Card title='Built-in Tools' image={WorflowImg01} description={description1}/>
               <Card title='Scale Instantly' image={WorflowImg02} description={description2}/>
               <Card title='Tailored Flows' image={WorflowImg03} description={description3}/>
-          </Spotlight>
+              <Card title='Tailored Flows' image={WorflowImg03} description={description3}/>
+            </Spotlight>
         </div>
       </div>
     </section>
