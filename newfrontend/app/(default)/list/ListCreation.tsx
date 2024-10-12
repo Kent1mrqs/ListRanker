@@ -1,7 +1,7 @@
 "use client";
 import {Button, MenuItem, Select, Stack, TextField, Typography} from "@mui/material";
 import {useCallback, useEffect, useState} from "react";
-import {fetchData} from "@/app/api";
+import {fetchData, postData} from "@/app/api";
 
 interface List {
     name: string;
@@ -37,8 +37,16 @@ export default function ListCreation() {
         setInput('');
     }
 
-    function saveList() {
-        // Logique pour sauvegarder la liste
+    async function saveList() {
+        try {
+            await postData<List>('lists', newList);
+        } catch (error) {
+            if (error instanceof Error) {
+                setError(error.message);
+            } else {
+                setError('An unknown error occurred');
+            }
+        }
     }
 
     return (

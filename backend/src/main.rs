@@ -20,7 +20,6 @@ async fn index() -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-
     HttpServer::new(move || {
         let cors = Cors::default()
             .allow_any_origin()
@@ -34,8 +33,11 @@ async fn main() -> std::io::Result<()> {
                 web::resource("/users").route(web::get().to(handlers::get_users)),
             )
             .service(
-                web::resource("/lists").route(web::get().to(handlers::get_lists)),
+                web::resource("/lists")
+                    .route(web::get().to(handlers::get_lists))
+                    .route(web::post().to(handlers::create_list))
             )
+
             .service(
                 web::scope("/app")
                     .route("/index.html", web::get().to(index)),
