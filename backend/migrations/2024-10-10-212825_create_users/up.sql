@@ -16,7 +16,7 @@ CREATE TABLE lists
 
 CREATE TABLE items
 (
-    item_id INT PRIMARY KEY,
+    item_id SERIAL PRIMARY KEY,
     list_id INT,
     name    VARCHAR(255) NOT NULL,
     FOREIGN KEY (list_id) REFERENCES lists (list_id)

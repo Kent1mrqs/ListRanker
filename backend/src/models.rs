@@ -24,6 +24,24 @@ pub struct NewUser {
     pub password_hash: String,
 }
 
+#[derive(Queryable, Deserialize, Serialize)]
+pub struct Item {
+    pub item_id: i32,
+    pub list_id: Option<i32>,
+    pub name: String,
+}
+
+#[derive(Insertable, Serialize, Deserialize, Debug)]
+#[diesel(table_name = items)]
+pub struct NewItem {
+    pub list_id: Option<i32>,
+    pub name: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct NewItemApi {
+    pub name: String,
+}
 
 #[derive(Queryable, Deserialize, Serialize)]
 pub struct List {
@@ -32,24 +50,18 @@ pub struct List {
     pub name: String,
 }
 
+#[derive(Deserialize, Serialize, Debug)]
+pub struct NewListApi {
+    pub user_id: Option<i32>,
+    pub name: String,
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    pub elements: Vec<NewItemApi>,
+}
+
 #[derive(Insertable, Deserialize, Serialize, Debug)]
 #[diesel(table_name = lists)]
-pub struct NewList {
+pub struct NewListDb {
     pub user_id: Option<i32>,
     pub name: String,
 }
 
-
-#[derive(Queryable, serde::Serialize)]
-pub struct Item {
-    pub item_id: i32,
-    pub list_id: Option<i32>,
-    pub name: String,
-}
-
-#[derive(Insertable, serde::Deserialize)]
-#[diesel(table_name = items)]
-pub struct NewItem<'a> {
-    pub list_id: Option<i32>,
-    pub name: &'a str,
-}

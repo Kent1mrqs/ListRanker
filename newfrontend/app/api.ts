@@ -2,7 +2,6 @@ export const fetchData = async <T>(route: string, setData: (data: T) => void): P
     const url = "http://127.0.0.1:8080/" + route;
     try {
         const response = await fetch(url);
-        console.log(response);
         if (!response.ok) {
             throw new Error('Error when fetching ' + route);
         }
@@ -19,6 +18,7 @@ export const fetchData = async <T>(route: string, setData: (data: T) => void): P
 
 export const postData = async <T>(route: string, data: T): Promise<void> => {
     const url = "http://127.0.0.1:8080/" + route;
+    console.info(JSON.stringify(data))
     try {
         const response = await fetch(url, {
             method: 'POST',

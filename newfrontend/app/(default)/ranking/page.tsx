@@ -2,12 +2,26 @@ import Spotlight from "@/components/spotlight";
 import Card from "@/components/Card";
 import WorflowImg01 from "@/public/images/workflow-01.png";
 import WorflowImg02 from "@/public/images/workflow-02.png";
-import WorflowImg03 from "@/public/images/workflow-03.png";
+import TournoiImg from "@/public/images/tournoi.png";
+import TierList from "@/public/images/tier_list.png";
 
 export const metadata = {
     title: "Home - Open PRO",
     description: "Page description",
 };
+
+const rankingCard = [
+    {
+        title: 'tournoi',
+        image: TournoiImg,
+        description: ''
+    },
+    {
+        title: 'tierlist',
+        image: TierList,
+        description: ''
+    }
+]
 
 
 export default function Ranking() {
@@ -40,11 +54,12 @@ export default function Ranking() {
                         </p>
                     </div>
                     {/* Spotlight items */}
-                    <Spotlight className="group mx-auto grid max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-4">
+                    <Spotlight className="group mx-auto grid max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-3">
+                        {rankingCard.map((card, i) => (
+                            <Card key={i} title={card.title} image={card.image} description={card.description}/>
+                        ))}
                         <Card title='Built-in Tools' image={WorflowImg01} description={description1}/>
                         <Card title='Scale Instantly' image={WorflowImg02} description={description2}/>
-                        <Card title='Tailored Flows' image={WorflowImg03} description={description3}/>
-                        <Card title='Tailored Flows' image={WorflowImg03} description={description3}/>
                     </Spotlight>
                 </div>
             </div>

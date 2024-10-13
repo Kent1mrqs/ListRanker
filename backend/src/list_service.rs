@@ -1,14 +1,31 @@
+use crate::item_service::insert_items_in_bulk;
+use crate::models::{List, NewItem, NewItemApi, NewListDb};
 use diesel::prelude::*;
 use diesel::QueryResult;
 
-use crate::models::{List, NewList};
-
-pub fn create_new_list(conn: &mut PgConnection, new_list: NewList) -> QueryResult<usize> {
+pub fn create_new_list(conn: &mut PgConnection, new_list: NewListDb, elements: Vec<NewItemApi>) -> QueryResult<usize> {
     use crate::schema::lists;
-
+    print!("{:?}", new_list);
+    print!("{:?}", elements);
     diesel::insert_into(lists::table)
         .values(&new_list) // Ajoutez le `&` pour passer une référence
-        .execute(conn)
+        .execute(conn)?;
+
+    let list_id: i32 = lists::table
+        .order(lists::dsl::list_id.desc())
+        .select(lists::dsl::list_id)
+        .first(conn)?;
+
+    // Associer chaque élément avec l'ID de la liste
+    let new_items: Vec<NewItem> = elements.into_iter()
+        .map(|item| NewItem {
+            list_id: Some(list_id), // Associe l'ID de la liste
+            name: item.name.clone(), // Utilise le nom depuis NewItemApi
+        })
+        .collect();
+
+    insert_items_in_bulk(conn, new_items)?;
+    Ok(list_id as usize)
 }
 
 

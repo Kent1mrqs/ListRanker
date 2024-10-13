@@ -1,6 +1,6 @@
 use crate::db;
 use crate::list_service;
-use crate::models::{NewList, NewUser};
+use crate::models::{NewListApi, NewListDb, NewUser};
 use crate::user_service;
 
 use actix_web::{web, HttpResponse};
@@ -20,11 +20,17 @@ pub async fn get_lists() -> HttpResponse {
         Err(_) => HttpResponse::InternalServerError().body("Error fetching lists"),
     }
 }
-pub async fn create_list(new_list: web::Json<NewList>) -> HttpResponse {
-    println!("Requête reçue : {:?}", new_list);
+pub async fn create_list(new_list: web::Json<NewListApi>) -> HttpResponse {
+    println!("Requête reçue pour créer une liste : {:?}", new_list);
 
     let mut conn = db::establish_connection();
-    match list_service::create_new_list(&mut conn, new_list.into_inner()) {
+
+    let list_data = NewListDb {
+        user_id: new_list.user_id,
+        name: new_list.name.clone(),
+    };
+
+    match list_service::create_new_list(&mut conn, list_data, new_list.elements.clone()) {
         Ok(list) => {
             println!("Liste créée avec succès : {:?}", list);
             HttpResponse::Ok().json(list)
