@@ -27,7 +27,7 @@ A web application for creating and managing custom rankings of various items
 
 - **Backend**: Rust with Actix framework.
 - **Database**: PostgreSQL.
-- **Frontend**: HTML/CSS/JavaScript (you can use frameworks like React, Vue.js, or Angular).
+- **Frontend**: React + Typescript + Next.js
 - **Docker**: For containerization.
 
 ## Setup
@@ -40,24 +40,35 @@ A web application for creating and managing custom rankings of various items
 
 ### Installation
 
+#### Github
+
 1. **Clone the repository**:
     ```sh
-    git clone https://github.com/yourusername/ranking_app.git
-    cd ranking_app
+    git clone git@github.com:Kent1mrqs/ListRanker.git
+    cd ListRanker
     ```
 
-2. **Install dependencies**:
+#### Dependencies
+
+1. **Backend**:
     ```sh
-    cargo build
+   cd backend && cargo build
     ```
 
+2. **Frontend**
+    ```sh
+   cd frontend && npm run dev 
+    ```
+   
 3. **Configure the database**:
-    - Create a PostgreSQL database and user.
-    - Update the `DATABASE_URL` environment variable in `.env` file.
-
-4. **Run migrations** (if using a migration tool like `sqlx`):
     ```sh
-    sqlx migrate run
+   cd docker/dev
+   docker-compose up -d
+    ```
+
+4. **Run migrations** :
+    ```sh
+    diesel migration run
     ```
 
 5. **Run the application**:
@@ -70,15 +81,7 @@ A web application for creating and managing custom rankings of various items
 
 ### Docker (Optional)
 
-1. **Build the Docker image**:
-    ```sh
-    docker build -t ranking_app .
-    ```
 
-2. **Run the Docker container**:
-    ```sh
-    docker run -p 8080:8080 ranking_app
-    ```
 
 ## Usage
 

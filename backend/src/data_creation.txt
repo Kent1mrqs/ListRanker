@@ -3,7 +3,7 @@ use user_service::{create_new_user, get_all_users, get_users};
 use list_service::{create_new_list, get_all_lists, get_lists};
 use item_service::{create_new_item, get_all_items};
 
-    let database_url = "postgres://user:secret@192.168.1.53/db";
+    let database_url = "postgres://user:secret@localhost/db";
     let mut conn = PgConnection::establish(&database_url)
         .expect("Erreur lors de la connexion à la base de données");
 
