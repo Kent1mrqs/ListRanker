@@ -34,9 +34,8 @@ A web application for creating and managing custom rankings of various items
 
 ### Prerequisites
 
-- Rust and Cargo installed.
-- PostgreSQL installed and running.
-- Docker installed (optional for containerization).
+- [Rust and Cargo installed](https://doc.rust-lang.org/cargo/getting-started/installation.html)
+- [Docker compose installed ](https://docs.docker.com/compose/install/)
 
 ### Installation
 
@@ -79,24 +78,23 @@ A web application for creating and managing custom rankings of various items
 6. **Access the application**:
     - Open your browser and go to `http://127.0.0.1:8080`.
 
-### Docker (Optional)
-
+### Docker Release
 
 
 ## Usage
 
 ### API Endpoints
 
-- **GET /users**: Get all users.
-- **POST /users**: Create a new user.
-- **GET /lists**: Get all lists.
-- **POST /lists**: Create a new list.
-- **GET /items**: Get all items.
-- **POST /items**: Create a new item.
-- **GET /rankings**: Get all rankings.
+- **POST /users**: Create a new user. 
+- **GET /lists**: Get all lists of a user.
+- **POST /lists**: Create a new list to a user.
+- **GET /items**: Get all items of a list.
+- **POST /items**: Create a new item in a list.
+- **GET /rankings**: Get all rankings for a user.
 - **POST /rankings**: Create a new ranking.
 - **GET /ranking_items**: Get all ranking items.
 - **POST /ranking_items**: Create a new ranking item.
+
 
 ### Database Schema
 
