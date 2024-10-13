@@ -56,13 +56,12 @@ A web application for creating and managing custom rankings of various items
 
 2. **Frontend**
     ```sh
-   cd frontend && npm run dev 
+   cd frontend && npm install
     ```
    
 3. **Configure the database**:
     ```sh
-   cd docker/dev
-   docker-compose up -d
+   cd docker/dev && docker-compose up -d
     ```
 
 4. **Run migrations** :
@@ -72,7 +71,10 @@ A web application for creating and managing custom rankings of various items
 
 5. **Run the application**:
     ```sh
-    cargo run
+    cd backend && cargo run
+    ```
+    ```sh
+    cd frontend && npm run dev
     ```
 
 6. **Access the application**:
