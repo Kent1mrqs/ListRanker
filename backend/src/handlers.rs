@@ -1,9 +1,10 @@
-use crate::db;
+use crate::{db, item_service};
 use crate::list_service;
 use crate::models::{NewListApi, NewListDb, NewUser};
 use crate::user_service;
 
 use actix_web::{web, HttpResponse};
+use crate::db::establish_connection;
 
 pub async fn get_users() -> HttpResponse {
     let mut conn = db::establish_connection();
@@ -23,7 +24,7 @@ pub async fn get_lists() -> HttpResponse {
 pub async fn create_list(new_list: web::Json<NewListApi>) -> HttpResponse {
     println!("Requête reçue pour créer une liste : {:?}", new_list);
 
-    let mut conn = db::establish_connection();
+    let mut conn = establish_connection();
 
     let list_data = NewListDb {
         user_id: new_list.user_id,
@@ -44,7 +45,7 @@ pub async fn create_list(new_list: web::Json<NewListApi>) -> HttpResponse {
 pub async fn create_user(new_user: NewUser) -> HttpResponse {
     println!("Requête reçue : {:?}", new_user);
 
-    let mut conn = db::establish_connection();
+    let mut conn = establish_connection();
     match user_service::create_new_user(&mut conn, new_user) {
         Ok(user) => {
             println!("Utilisateur créé avec succès : {:?}", user);
@@ -54,5 +55,17 @@ pub async fn create_user(new_user: NewUser) -> HttpResponse {
             println!("Erreur lors de la création de l'utilisateur : {:?}", e);
             HttpResponse::InternalServerError().body("Erreur lors de la création de l'utilisateur")
         }
+    }
+}
+
+pub async fn get_items_by_list(
+    path: web::Path<i32>,
+) -> HttpResponse {
+    let list_id_param = path.into_inner();
+    let mut conn = establish_connection();
+
+    match item_service::get_items_by_list_id(&mut conn, list_id_param) {
+        Ok(items) => HttpResponse::Ok().json(items),
+        Err(_) => HttpResponse::InternalServerError().body("Error retrieving items"),
     }
 }

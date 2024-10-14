@@ -44,14 +44,18 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(cors)
             .service(
-                web::resource("/users").route(web::get().to(handlers::get_users)),
+                web::resource("/users")
+                    .route(web::get().to(handlers::get_users)),
             )
             .service(
                 web::resource("/lists")
                     .route(web::get().to(handlers::get_lists))
                     .route(web::post().to(handlers::create_list))
             )
-
+            .service(
+                web::resource("/items/{list_id}")
+                    .route(web::get().to(handlers::get_items_by_list)),
+            )
             .service(
                 web::scope("/app")
                     .route("/index.html", web::get().to(index)),
