@@ -7,27 +7,38 @@ interface Item {
     name: string;
 }
 
-interface List {
+interface NewList {
     user_id: number;
     name: string;
     elements: Item[];
 }
+interface ListDb {
+    user_id: number;
+    name: string;
+    list_id: number;
+}
 
-type Lists = List[];
+type Lists = ListDb[];
 
-const default_list: List = {
+const default_list: NewList = {
     user_id: 1,
     name: '',
-    elements: [],
+    elements: []
 };
 
 export default function ListCreation() {
     const [error, setError] = useState<string | null>(null);
     const [lists, setLists] = useState<Lists>([]);
 
-    const [currentList, setCurrentList] = useState<List>(default_list)
+    const [currentList, setCurrentList] = useState<string>('')
+    const [currentItems, setCurrentItems] = useState<Item[]>([])
+
     const fetchLists = useCallback(() => {
         fetchData<Lists>('lists', setLists).catch(err => setError(err.message));
+    }, []);
+
+    const fetchItems = useCallback((list_id:number) => {
+        fetchData<Lists>('items/' + list_id, setCurrentItems).catch(err => setError(err.message));
     }, []);
 
     useEffect(() => {
@@ -36,7 +47,7 @@ export default function ListCreation() {
 
     const [nameList, setNameList] = useState('');
     const [input, setInput] = useState('');
-    const [newList, setNewList] = useState<List>(default_list);
+    const [newList, setNewList] = useState<NewList>(default_list);
     const [separator, setSeparator] = useState('\n');
 
     function onClick() {
@@ -51,7 +62,7 @@ export default function ListCreation() {
 
     async function saveList() {
         try {
-            await postData<List>('lists', newList).then(() => setNewList(default_list));
+            await postData<NewList>('lists', newList).then(() => setNewList(default_list));
         } catch (error) {
             if (error instanceof Error) {
                 setError(error.message);
@@ -94,12 +105,15 @@ export default function ListCreation() {
             <Stack>
                 <Typography>Mes listes</Typography>
                 {lists.map((li, index) => (
-                    <Button key={index} onClick={() => setCurrentList(li)}>{li.name}</Button>
+                    <Button key={index} onClick={() => {
+                        setCurrentList(li.name)
+                        fetchItems(li.list_id)
+                    }}>{li.name}</Button>
                 ))}
             </Stack>
             <Stack>
-                <Typography>{currentList.name}</Typography>
-                {currentList?.elements && currentList?.elements.map((el, index) => (
+                <Typography>{currentList}</Typography>
+                {currentItems?.map((el, index) => (
                     <Typography key={index}>{el.name}</Typography>
                 ))}
             </Stack>
