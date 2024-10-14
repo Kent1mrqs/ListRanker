@@ -19,3 +19,6 @@ cargo build
 ```shell
 cargo run
 ```
+```shell
+diesel migration generate ranking
+```

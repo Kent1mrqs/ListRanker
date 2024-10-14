@@ -58,8 +58,6 @@ export default function ListCreation() {
         setInput('');
     }
 
-    console.log(lists)
-
     async function saveList() {
         try {
             await postData<NewList>('lists', newList).then(() => setNewList(default_list));

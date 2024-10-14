@@ -9,8 +9,8 @@ pub fn insert_items_in_bulk(
     new_items: Vec<NewItem>,
 ) -> Result<usize, Error> {
     diesel::insert_into(items::table)
-        .values(&new_items) // Insère tous les éléments en une fois
-        .execute(conn) // Retourne le nombre d'éléments insérés
+        .values(&new_items)
+        .execute(conn)
 }
 
 pub fn get_items_by_list_id(conn: &mut PgConnection, list_id_param: i32) -> QueryResult<Vec<Item>> {

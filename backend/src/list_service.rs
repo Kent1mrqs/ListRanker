@@ -16,11 +16,10 @@ pub fn create_new_list(conn: &mut PgConnection, new_list: NewListDb, elements: V
         .select(lists::dsl::list_id)
         .first(conn)?;
 
-    // Associer chaque élément avec l'ID de la liste
     let new_items: Vec<NewItem> = elements.into_iter()
         .map(|item| NewItem {
-            list_id: Some(list_id), // Associe l'ID de la liste
-            name: item.name.clone(), // Utilise le nom depuis NewItemApi
+            list_id: Some(list_id),
+            name: item.name.clone(),
         })
         .collect();
 

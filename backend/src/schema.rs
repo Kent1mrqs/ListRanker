@@ -19,6 +19,17 @@ diesel::table! {
 }
 
 diesel::table! {
+    rankings (ranking_id) {
+        ranking_id -> Int4,
+        user_id -> Nullable<Int4>,
+        #[max_length = 255]
+        name -> Varchar,
+        #[max_length = 255]
+        ranking_type -> Varchar,
+    }
+}
+
+diesel::table! {
     users (user_id) {
         user_id -> Int4,
         #[max_length = 255]
@@ -32,9 +43,11 @@ diesel::table! {
 
 diesel::joinable!(items -> lists (list_id));
 diesel::joinable!(lists -> users (user_id));
+diesel::joinable!(rankings -> users (user_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     items,
     lists,
+    rankings,
     users,
 );
