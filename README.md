@@ -70,7 +70,7 @@ A web application for creating and managing custom rankings of various items
    cd docker/dev && docker-compose up -d
     ```
 
-4. **Install diesel**
+4. **[Install diesel](https://diesel.rs/guides/getting-started)**
     ```sh
    powershell -c "irm https://github.com/diesel-rs/diesel/releases/latest/download/diesel_cli-installer.ps1 | iex"
     ```

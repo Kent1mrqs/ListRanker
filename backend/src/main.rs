@@ -7,6 +7,7 @@ pub mod schema {
 mod user_service;
 mod list_service;
 mod item_service;
+mod ranking_service;
 mod models;
 mod handlers;
 mod db;
@@ -54,6 +55,10 @@ async fn main() -> std::io::Result<()> {
             .service(
                 web::resource("/items/{list_id}")
                     .route(web::get().to(handlers::items_handlers::get_items_by_list)),
+            )
+            .service(
+                web::resource("/rankings")
+                    .route(web::get().to(handlers::rankings_handlers::get_rankings)),
             )
             .service(
                 web::scope("/app")
