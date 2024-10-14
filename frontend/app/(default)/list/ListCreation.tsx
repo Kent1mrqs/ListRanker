@@ -3,22 +3,23 @@ import {Button, MenuItem, Select, Stack, TextField, Typography} from "@mui/mater
 import {useCallback, useEffect, useState} from "react";
 import {fetchData, postData} from "@/app/api";
 
-interface Item {
+export interface Item {
     name: string;
 }
 
-interface NewList {
+export interface NewList {
     user_id: number;
     name: string;
     elements: Item[];
 }
-interface ListDb {
+
+export interface ListDb {
     user_id: number;
     name: string;
     list_id: number;
 }
 
-type Lists = ListDb[];
+export type Lists = ListDb[];
 
 const default_list: NewList = {
     user_id: 1,
@@ -37,7 +38,7 @@ export default function ListCreation() {
         fetchData<Lists>('lists', setLists).catch(err => setError(err.message));
     }, []);
 
-    const fetchItems = useCallback((list_id:number) => {
+    const fetchItems = useCallback((list_id: number) => {
         fetchData<Lists>('items/' + list_id, setCurrentItems).catch(err => setError(err.message));
     }, []);
 
@@ -103,10 +104,15 @@ export default function ListCreation() {
             <Stack>
                 <Typography>Mes listes</Typography>
                 {lists.map((li, index) => (
-                    <Button key={index} onClick={() => {
-                        setCurrentList(li.name)
-                        fetchItems(li.list_id)
-                    }}>{li.name}</Button>
+                    <Button
+                        key={index}
+                        onClick={() => {
+                            setCurrentList(li.name)
+                            setCurrentItems([])
+                            fetchItems(li.list_id)
+                        }}>
+                        {li.name}
+                    </Button>
                 ))}
             </Stack>
             <Stack>
