@@ -15,11 +15,16 @@ A web application for creating and managing custom rankings of various items
 
 ## Features
 
+### Core Feature
+
 - Create and manage lists of items.
 - Create and manage rankings of items.
+- User authentication and authorization.
+
+### More Features
+
 - Support for different types of rankings (tier list, binary list, pyramid ranking, etc.).
 - Export rankings as PNG images.
-- User authentication and authorization.
 - Wizard for assisting in ranking creation.
 - Comparison of rankings between users.
 
