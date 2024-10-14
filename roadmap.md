@@ -4,8 +4,9 @@
 
 - List creation with text as items
 - Ranking creation (1 type)
-  - All 5 tables
+- All 5 tables in db
 - User Authentification
+- Minimalist frontend
 
 ## 2 - User Workflow
 
@@ -16,6 +17,13 @@
 - Update list
 - Update ranking
 - Nice frontend?
+  - Footer
+  - Header
+  - Logo
+  - Images
+  - Title
+  - Description
+  - 
 
 ## 3 - More features
 
@@ -24,3 +32,4 @@
 - More ranking displays
 - Add Ranking creation method & algorithm
 - Ranking fusion between users
+- Create docker image
