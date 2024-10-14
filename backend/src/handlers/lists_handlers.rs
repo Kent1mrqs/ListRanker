@@ -1,7 +1,7 @@
 use crate::db;
 use crate::db::establish_connection;
 use crate::list_service;
-use crate::models::{NewListApi, NewListDb};
+use crate::models::lists_models::{NewListApi, NewListDb};
 use actix_web::{web, HttpResponse};
 
 pub async fn get_lists() -> HttpResponse {

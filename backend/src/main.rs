@@ -1,7 +1,7 @@
 extern crate diesel;
 
 pub mod schema {
-    include!("schema.rs");
+    include!("models/schema.rs");
 }
 
 mod user_service;
@@ -11,8 +11,8 @@ mod models;
 mod handlers;
 mod db;
 
-use crate::handlers::users::create_user;
-use crate::models::NewUser;
+use crate::handlers::users_handlers::create_user;
+use crate::models::users_models::NewUser;
 use actix_cors::Cors;
 use actix_web::{web, App, HttpServer, Responder};
 
@@ -45,16 +45,16 @@ async fn main() -> std::io::Result<()> {
             .wrap(cors)
             .service(
                 web::resource("/users")
-                    .route(web::get().to(handlers::users::get_users)),
+                    .route(web::get().to(handlers::users_handlers::get_users)),
             )
             .service(
                 web::resource("/lists")
-                    .route(web::get().to(handlers::lists::get_lists))
-                    .route(web::post().to(handlers::lists::create_list))
+                    .route(web::get().to(handlers::lists_handlers::get_lists))
+                    .route(web::post().to(handlers::lists_handlers::create_list))
             )
             .service(
                 web::resource("/items/{list_id}")
-                    .route(web::get().to(handlers::items::get_items_by_list)),
+                    .route(web::get().to(handlers::items_handlers::get_items_by_list)),
             )
             .service(
                 web::scope("/app")

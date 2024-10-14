@@ -1,7 +1,6 @@
+use crate::models::users_models::{NewUser, User};
 use diesel::prelude::*;
 use diesel::QueryResult;
-
-use crate::models::{NewUser, User};
 
 pub fn create_new_user(conn: &mut PgConnection, new_user: NewUser) -> QueryResult<usize> {
     use crate::schema::users;

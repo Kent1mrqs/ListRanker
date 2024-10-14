@@ -1,8 +1,8 @@
+use crate::models::items::{Item, NewItem};
 use crate::schema::items;
+use diesel::prelude::*;
 use diesel::result::Error;
 use diesel::{PgConnection, QueryResult, RunQueryDsl};
-use diesel::prelude::*;
-use crate::models::{Item, NewItem};
 
 pub fn insert_items_in_bulk(
     conn: &mut PgConnection,

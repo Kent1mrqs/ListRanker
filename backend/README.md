@@ -1,7 +1,7 @@
 # Commands
 
 ```shell
-diesel print-schema > src/schema.rs
+diesel print-schema > src/models/schema.rs
 ```
 
 ```shell
@@ -19,6 +19,7 @@ cargo build
 ```shell
 cargo run
 ```
+
 ```shell
 diesel migration generate ranking
 ```

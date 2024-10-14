@@ -1,8 +1,7 @@
 use crate::db::establish_connection;
-use crate::models::NewUser;
+use crate::models::users_models::NewUser;
 use crate::{db, user_service};
 use actix_web::HttpResponse;
-
 /*pub type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
 pub async fn get_users(db: web::Data<Pool>) -> HttpResponse {

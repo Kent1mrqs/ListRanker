@@ -1,5 +1,4 @@
 use crate::item_service::insert_items_in_bulk;
-use crate::models::{List, NewItem, NewItemApi, NewListDb};
 use diesel::prelude::*;
 use diesel::QueryResult;
 
