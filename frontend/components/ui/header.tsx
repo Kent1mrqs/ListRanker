@@ -1,7 +1,7 @@
 "use client";
 
 import Logo from "./logo";
-import TemplateButton from "@/components/Template/TemplateButton";
+import TemplateLink from "@/components/Template/TemplateLink";
 
 const menu = ['Ranking', 'List']
 
@@ -16,14 +16,13 @@ export default function Header() {
                         <Logo/>
                     </div>
                     {menu.map(el => (
-                        <TemplateButton key={el} variant='blue' text={el} route={el}/>))}
-                    {/* Desktop sign in links */}
+                        <TemplateLink key={el} variant='blue' text={el} route={el}/>))}
                     <ul className="flex flex-1 items-center justify-end gap-3">
                         <li>
-                            <TemplateButton variant='grey' text="Sign in" route="signin"/>
+                            <TemplateLink variant='grey' text="Sign in" route="signin"/>
                         </li>
                         <li>
-                            <TemplateButton variant='blue' text="Register" route="signup"/>
+                            <TemplateLink variant='blue' text="Register" route="signup"/>
                         </li>
                     </ul>
                 </div>

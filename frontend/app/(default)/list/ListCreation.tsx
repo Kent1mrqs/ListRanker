@@ -5,6 +5,7 @@ import {fetchData, postData} from "@/app/api";
 import TemplateInput from "@/components/Template/TemplateInput";
 import TemplateTextArea from "@/components/Template/TemplateTextArea";
 import TemplateSelect from "@/components/Template/TemplateSelect";
+import TemplateButton from "@/components/Template/TemplateButton";
 
 export interface Item {
     name: string;
@@ -111,26 +112,28 @@ export default function ListCreation() {
                 ))}
                 <Button onClick={saveList}>Save</Button>
             </Stack>
-            <Stack>
+            <Stack spacing={1}>
                 <Typography>Mes listes</Typography>
                 {lists.map((li, index) => (
-                    <Button
+                    <TemplateButton
                         key={index}
+                        variant='blue'
+                        text={li.name}
                         onClick={() => {
                             setCurrentList(li.name)
                             setCurrentItems([])
                             fetchItems(li.list_id)
-                        }}>
-                        {li.name}
-                    </Button>
+                        }}/>
                 ))}
             </Stack>
-            <Stack>
-                <Typography>{currentList}</Typography>
-                {currentItems[0] ? currentItems?.map((el, index) => (
-                    <Typography key={index}>{el.name}</Typography>
-                )) : <Typography>Aucun élément</Typography>}
-            </Stack>
+            {currentList &&
+				<Stack>
+					<Typography>{currentList}</Typography>
+                    {currentItems[0] ? currentItems?.map((el, index) => (
+                        <Typography key={index}>{el.name}</Typography>
+                    )) : <Typography>Aucun élément</Typography>}
+				</Stack>
+            }
         </Stack>
     );
 }
