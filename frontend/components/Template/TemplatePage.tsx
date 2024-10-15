@@ -2,7 +2,6 @@
 
 import React from "react";
 import TemplateTitle from "@/components/Template/TemplateTitle";
-import {Stack} from "@mui/material";
 
 export const metadata = {
     title: "Home - Open PRO",
@@ -25,9 +24,7 @@ export default function TemplatePage({title, description, children}: StylesProps
                         title={title}
                         description={description}
                     />
-                    <Stack direction='row' spacing={3} justifyContent='center'>
-                        {children}
-                    </Stack>
+                    {children}
                 </div>
             </div>
         </section>
