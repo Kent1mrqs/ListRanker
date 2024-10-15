@@ -5,6 +5,10 @@ use crate::schema::lists;
 use diesel::prelude::*;
 use diesel::QueryResult;
 
+pub fn get_all_lists(conn: &mut PgConnection) -> QueryResult<Vec<List>> {
+    lists::dsl::lists.load::<List>(conn)
+}
+
 pub fn create_new_list(conn: &mut PgConnection, new_list: NewListDb, items: Vec<NewItemApi>) -> QueryResult<usize> {
     use crate::schema::lists::dsl::id;
 
@@ -27,12 +31,6 @@ pub fn create_new_list(conn: &mut PgConnection, new_list: NewListDb, items: Vec<
     insert_items_in_bulk(conn, new_items)?;
     Ok(other_list_id as usize)
 }
-
-
-pub fn get_all_lists(conn: &mut PgConnection) -> QueryResult<Vec<List>> {
-    lists::dsl::lists.load::<List>(conn)
-}
-
 
 pub fn remove_list(conn: &mut PgConnection, list_id_param: i32) -> QueryResult<usize> {
     use crate::schema::items::dsl::{items, list_id};
