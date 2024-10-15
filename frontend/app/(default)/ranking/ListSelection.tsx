@@ -14,7 +14,7 @@ export const metadata = {
 
 
 export default function ListSelection() {
-    const [currentList, setCurrentListId] = useState<number>(0)
+    const [currentListId, setCurrentListId] = useState<number>(0)
     const [error, setError] = useState<string | null>(null);
     const [currentItems, setCurrentItems] = useState<Item[]>([])
     const [lists, setLists] = useState<Lists>([]);
@@ -27,7 +27,6 @@ export default function ListSelection() {
     const fetchItems = useCallback((list_id: number) => {
         fetchData<Lists>('items/' + list_id, setCurrentItems).catch(err => setError(err.message));
     }, []);
-    console.log(lists)
     if (error !== null) {
         console.error(error)
     }
@@ -40,7 +39,7 @@ export default function ListSelection() {
                     {lists.map((li, index) => (
                         <TemplateButton key={index}
                                         text={li.name}
-                                        variant={li.list_id === currentList ? "grey" : "blue"}
+                                        variant={li.list_id === currentListId ? "grey" : "blue"}
                                         onClick={() => {
                                             setCurrentListId(Number(li.list_id))
                                             setCurrentItems([])
@@ -54,7 +53,7 @@ export default function ListSelection() {
                     />
                 </Spotlight>
             </Stack>
-            {currentList !== 0 ? <Stack spacing={1} justifyContent='center'>
+            <Stack spacing={1} justifyContent='center'>
                 <Spotlight
                     className="group mx-auto grid max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-6"
                 >
@@ -64,7 +63,7 @@ export default function ListSelection() {
                         </div>
                     ))}
                 </Spotlight>
-            </Stack> : <Typography>Aucun élément</Typography>}
+            </Stack>
         </Stack>
     );
 }

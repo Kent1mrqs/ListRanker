@@ -49,9 +49,12 @@ export default function ListCreation() {
     function onClick() {
         if (isValidInput(nameList)) {
             setError(null)
-            const object: Item[] = input.split(separator).map(el => {
-                return {name: el};
-            });
+            const object: Item[] = input
+                .split(separator)
+                .filter(item => item && item.trim() !== "")
+                .map(el => {
+                    return {name: el};
+                });
             setNewList({...newList, name: nameList, items: object});
         } else {
             setError('ee')
