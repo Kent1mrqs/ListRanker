@@ -32,6 +32,25 @@ pub fn create_new_list(conn: &mut PgConnection, new_list: NewListDb, elements: V
 
 
 pub fn get_all_lists(conn: &mut PgConnection) -> QueryResult<Vec<List>> {
+    lists::dsl::lists.load::<List>(conn)
+}
+
+
+pub fn remove_list(conn: &mut PgConnection, list_id_param: i32) -> QueryResult<usize> {
+    use crate::schema::lists::dsl::{list_id as lists_list_id, lists};
+    use crate::schema::items::dsl::{items, list_id as items_list_id};
+
+    // Supprimer d'abord tous les items associés à la liste
+    diesel::delete(items.filter(items_list_id.eq(list_id_param)))
+        .execute(conn)?;
+
+    // Ensuite, supprimer la liste elle-même
+    diesel::delete(lists.filter(lists_list_id.eq(list_id_param)))
+        .execute(conn)
+}
+
+
+pub fn edit_list(conn: &mut PgConnection) -> QueryResult<Vec<List>> {
     // use crate::schema::lists::dsl::*;
 
     lists::dsl::lists.load::<List>(conn)

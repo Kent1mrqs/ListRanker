@@ -53,6 +53,11 @@ async fn main() -> std::io::Result<()> {
                     .route(web::post().to(handlers::lists_handlers::create_list))
             )
             .service(
+                web::resource("/lists/{list_id}")
+                    .route(web::delete().to(handlers::lists_handlers::delete_list)),
+                // .route(web::put().to(handlers::lists_handlers::put_list))
+            )
+            .service(
                 web::resource("/items/{list_id}")
                     .route(web::get().to(handlers::items_handlers::get_items_by_list)),
             )
