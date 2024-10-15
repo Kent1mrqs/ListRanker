@@ -7,7 +7,7 @@ use diesel::QueryResult;
 // Assurez-vous que cette ligne est présente
 
 
-pub fn create_new_list(conn: &mut PgConnection, new_list: NewListDb, elements: Vec<NewItemApi>) -> QueryResult<usize> {
+pub fn create_new_list(conn: &mut PgConnection, new_list: NewListDb, items: Vec<NewItemApi>) -> QueryResult<usize> {
     use crate::schema::lists::dsl::id;
 
     diesel::insert_into(lists::table)
@@ -19,7 +19,7 @@ pub fn create_new_list(conn: &mut PgConnection, new_list: NewListDb, elements: V
         .select(id)
         .first(conn)?;
 
-    let new_items: Vec<NewItem> = elements.into_iter()
+    let new_items: Vec<NewItem> = items.into_iter()
         .map(|item| NewItem {
             list_id: Some(other_list_id),
             name: item.name.clone(),
@@ -46,11 +46,3 @@ pub fn remove_list(conn: &mut PgConnection, list_id_param: i32) -> QueryResult<u
     diesel::delete(lists.filter(id.eq(list_id_param)))
         .execute(conn)
 }
-
-
-pub fn edit_list(conn: &mut PgConnection) -> QueryResult<Vec<List>> {
-    // use crate::schema::lists::dsl::*;
-
-    lists::dsl::lists.load::<List>(conn)
-}
-

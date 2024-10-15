@@ -10,7 +10,7 @@ export interface Item {
 export interface NewList {
     user_id: number;
     name: string;
-    elements: Item[];
+    items: Item[];
 }
 
 export interface ListDb {
@@ -24,7 +24,7 @@ export type Lists = ListDb[];
 const default_list: NewList = {
     user_id: 1,
     name: '',
-    elements: []
+    items: []
 };
 
 export default function ListCreation() {
@@ -55,7 +55,7 @@ export default function ListCreation() {
         const object: Item[] = input.split(separator).map(el => {
             return {name: el};
         });
-        setNewList({...newList, name: nameList, elements: object});
+        setNewList({...newList, name: nameList, items: object});
         setInput('');
     }
 
@@ -95,8 +95,8 @@ export default function ListCreation() {
                 <Button onClick={onClick}>Validate</Button>
             </Stack>
             <Stack spacing={1}>
-                <Typography>Elements de la liste {newList.name}: </Typography>
-                {newList.elements.map((el, index) => (
+                <Typography>items de la liste {newList.name}: </Typography>
+                {newList.items.map((el, index) => (
                     <Typography key={index}>{el.name}</Typography>
                 ))}
                 <Button onClick={saveList}>Save</Button>

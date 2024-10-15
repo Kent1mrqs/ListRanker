@@ -22,7 +22,7 @@ pub async fn create_list(new_list: web::Json<NewListApi>) -> HttpResponse {
         name: new_list.name.clone(),
     };
 
-    match list_service::create_new_list(&mut conn, list_data, new_list.elements.clone()) {
+    match list_service::create_new_list(&mut conn, list_data, new_list.items.clone()) {
         Ok(list) => {
             println!("Liste créée avec succès : {:?}", list);
             HttpResponse::Ok().json(list)
@@ -44,7 +44,7 @@ pub async fn put_list(list_id: i32, new_list: web::Json<NewListApi>) -> HttpResp
         name: new_list.name.clone(),
     };
 
-    match list_service::edit_list(&mut conn, list_data, new_list.elements.clone()) {
+    match list_service::edit_list(&mut conn, list_data, new_list.items.clone()) {
         Ok(list) => {
             println!("Liste modifiée avec succès : {:?}", list);
             HttpResponse::Ok().json(list)

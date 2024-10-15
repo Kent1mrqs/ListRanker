@@ -15,7 +15,7 @@ pub struct NewListApi {
     pub user_id: Option<i32>,
     pub name: String,
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
-    pub elements: Vec<NewItemApi>,
+    pub items: Vec<NewItemApi>,
 }
 
 #[derive(Insertable, Deserialize, Serialize, Debug)]
