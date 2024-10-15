@@ -30,6 +30,17 @@ export default function ListSelection() {
     if (error !== null) {
         console.error(error)
     }
+
+    function selectList(id: number) {
+        setCurrentItems([])
+        if (id === currentListId) {
+            setCurrentListId(0)
+        } else {
+            setCurrentListId(id)
+            fetchItems(id)
+        }
+    }
+
     return (
         <Stack spacing={3} justifyContent='center'>
             <Stack spacing={1} justifyContent='center'>
@@ -40,11 +51,7 @@ export default function ListSelection() {
                         <TemplateButton key={index}
                                         text={li.name}
                                         variant={li.list_id === currentListId ? "grey" : "blue"}
-                                        onClick={() => {
-                                            setCurrentListId(Number(li.list_id))
-                                            setCurrentItems([])
-                                            fetchItems(li.list_id)
-                                        }}
+                                        onClick={() => selectList(Number(li.list_id))}
                         />
                     ))}
                     <TemplateLink text='New list'
