@@ -128,14 +128,14 @@ A web application for creating and managing custom rankings of various items
 +image_url
 
 [Ranking]
-*ranking_id
+*id
 +user_id
 +name
 +ranking_type
 
 [RankingItem]
 *ranking_item_id
-+ranking_id
++id
 +item_id
 +rank
 

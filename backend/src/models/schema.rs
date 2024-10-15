@@ -1,8 +1,8 @@
 // @generated automatically by Diesel CLI.
 
 diesel::table! {
-    items (item_id) {
-        item_id -> Int4,
+    items (id) {
+        id -> Int4,
         list_id -> Nullable<Int4>,
         #[max_length = 255]
         name -> Varchar,
@@ -10,8 +10,8 @@ diesel::table! {
 }
 
 diesel::table! {
-    lists (list_id) {
-        list_id -> Int4,
+    lists (id) {
+        id -> Int4,
         user_id -> Nullable<Int4>,
         #[max_length = 255]
         name -> Varchar,
@@ -19,8 +19,8 @@ diesel::table! {
 }
 
 diesel::table! {
-    rankings (ranking_id) {
-        ranking_id -> Int4,
+    rankings (id) {
+        id -> Int4,
         user_id -> Nullable<Int4>,
         #[max_length = 255]
         name -> Varchar,
@@ -30,8 +30,8 @@ diesel::table! {
 }
 
 diesel::table! {
-    users (user_id) {
-        user_id -> Int4,
+    users (id) {
+        id -> Int4,
         #[max_length = 255]
         username -> Varchar,
         #[max_length = 255]

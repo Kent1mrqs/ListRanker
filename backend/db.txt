@@ -25,7 +25,7 @@ CREATE TABLE items (
 
 -- Table Rankings
 CREATE TABLE rankings (
-                          ranking_id INT PRIMARY KEY,
+                          id INT PRIMARY KEY,
                           user_id INT,
                           name VARCHAR(255) NOT NULL,
                           ranking_type VARCHAR(255) NOT NULL,
@@ -35,9 +35,9 @@ CREATE TABLE rankings (
 -- Table RankingItems
 CREATE TABLE ranking_items (
                                ranking_item_id INT PRIMARY KEY,
-                               ranking_id INT,
+                               id INT,
                                item_id INT,
                                rank INT NOT NULL,
-                               FOREIGN KEY (ranking_id) REFERENCES rankings(ranking_id),
+                               FOREIGN KEY (id) REFERENCES rankings(id),
                                FOREIGN KEY (item_id) REFERENCES items(item_id)
 );

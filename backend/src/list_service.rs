@@ -8,15 +8,15 @@ use diesel::QueryResult;
 
 
 pub fn create_new_list(conn: &mut PgConnection, new_list: NewListDb, elements: Vec<NewItemApi>) -> QueryResult<usize> {
-    print!("{:?}", new_list);
-    print!("{:?}", elements);
+    use crate::schema::lists::dsl::id;
+
     diesel::insert_into(lists::table)
         .values(&new_list) // Ajoutez le `&` pour passer une référence
         .execute(conn)?;
 
     let other_list_id: i32 = lists::table
-        .order(lists::dsl::list_id.desc())
-        .select(lists::dsl::list_id)
+        .order(id.desc())
+        .select(id)
         .first(conn)?;
 
     let new_items: Vec<NewItem> = elements.into_iter()
@@ -37,15 +37,13 @@ pub fn get_all_lists(conn: &mut PgConnection) -> QueryResult<Vec<List>> {
 
 
 pub fn remove_list(conn: &mut PgConnection, list_id_param: i32) -> QueryResult<usize> {
-    use crate::schema::lists::dsl::{list_id as lists_list_id, lists};
-    use crate::schema::items::dsl::{items, list_id as items_list_id};
+    use crate::schema::items::dsl::{items, list_id};
+    use crate::schema::lists::dsl::{id, lists};
 
-    // Supprimer d'abord tous les items associés à la liste
-    diesel::delete(items.filter(items_list_id.eq(list_id_param)))
+    diesel::delete(items.filter(list_id.eq(list_id_param)))
         .execute(conn)?;
 
-    // Ensuite, supprimer la liste elle-même
-    diesel::delete(lists.filter(lists_list_id.eq(list_id_param)))
+    diesel::delete(lists.filter(id.eq(list_id_param)))
         .execute(conn)
 }
 
