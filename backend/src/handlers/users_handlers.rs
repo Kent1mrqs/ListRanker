@@ -29,7 +29,6 @@ pub async fn get_user_by_id(
     )
 }
 
-// Handler for POST /users
 pub async fn add_user(
     db: web::Data<Pool>,
     item: web::Json<InputUser>,
@@ -40,7 +39,6 @@ pub async fn add_user(
         .map_err(|_| HttpResponse::InternalServerError())?)
 }
 
-// Handler for DELETE /users/{id}
 pub async fn delete_user(
     db: web::Data<Pool>,
     user_id: web::Path<i32>,

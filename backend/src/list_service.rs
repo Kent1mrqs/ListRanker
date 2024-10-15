@@ -4,14 +4,12 @@ use crate::models::lists_models::{List, NewListDb};
 use crate::schema::lists;
 use diesel::prelude::*;
 use diesel::QueryResult;
-// Assurez-vous que cette ligne est présente
-
 
 pub fn create_new_list(conn: &mut PgConnection, new_list: NewListDb, items: Vec<NewItemApi>) -> QueryResult<usize> {
     use crate::schema::lists::dsl::id;
 
     diesel::insert_into(lists::table)
-        .values(&new_list) // Ajoutez le `&` pour passer une référence
+        .values(&new_list)
         .execute(conn)?;
 
     let other_list_id: i32 = lists::table

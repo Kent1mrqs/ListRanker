@@ -6,7 +6,7 @@ use serde_derive::{Deserialize, Serialize};
 #[diesel(table_name = rankings)]
 pub struct Ranking {
     pub id: i32,
-    pub user_id: Option<i32>, // Champ nullable
+    pub user_id: Option<i32>,
     pub name: String,
     pub ranking_type: String,
 }
