@@ -61,7 +61,10 @@ export default function ListCreation() {
 
     async function saveList() {
         try {
-            await postData<NewList>('lists', newList).then(() => setNewList(default_list));
+            await postData<NewList>('lists', newList).then(() => {
+                setNewList(default_list)
+                fetchLists()
+            });
         } catch (error) {
             if (error instanceof Error) {
                 setError(error.message);

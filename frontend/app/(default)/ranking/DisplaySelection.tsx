@@ -1,6 +1,6 @@
 "use client";
 import Spotlight from "@/components/spotlight";
-import Card from "@/components/Card";
+import TemplateCard from "@/components/TemplateCard";
 import TournoiImg from "@/public/images/tournoi.png";
 import TierList from "@/public/images/tier_list.png";
 
@@ -48,7 +48,7 @@ export default function DisplaySelection() {
                     <Spotlight
                         className="group mx-auto grid max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-3">
                         {rankingCard.map((card, i) => (
-                            <Card key={i} title={card.title} image={card.image} description={card.description}/>
+                            <TemplateCard key={i} title={card.title} image={card.image} description={card.description}/>
                         ))}
                     </Spotlight>
                 </div>
