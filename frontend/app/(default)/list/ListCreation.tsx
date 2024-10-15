@@ -59,7 +59,6 @@ export default function ListCreation() {
             return {name: el};
         });
         setNewList({...newList, name: nameList, items: object});
-        setInput('');
     }
 
     async function saveList() {
@@ -77,17 +76,18 @@ export default function ListCreation() {
         }
     }
 
+    console.log(currentItems)
     return (
         <Stack direction='row' spacing={3}>
             <Stack spacing={1}>
                 <TemplateInput
-                    id='e'
-                    placeholder='e'
+                    id='new_list'
+                    placeholder='ex: Animés Automne 2024...'
                     label='Nouvelle liste'
                     onChange={e => setNameList(e.target.value)}
                 />
                 <TemplateTextArea
-                    id='e'
+                    id='list_items'
                     placeholder='item1\nj'
                     rows={4}
                     onChange={e => setInput(e.target.value)}
@@ -102,7 +102,6 @@ export default function ListCreation() {
                     <option value={';'}>;</option>
                     <option value={' '}>espace</option>
                 </TemplateSelect>
-
                 <Button onClick={onClick}>Validate</Button>
             </Stack>
             <Stack spacing={1}>
@@ -128,9 +127,9 @@ export default function ListCreation() {
             </Stack>
             <Stack>
                 <Typography>{currentList}</Typography>
-                {currentItems?.map((el, index) => (
+                {currentItems[0] ? currentItems?.map((el, index) => (
                     <Typography key={index}>{el.name}</Typography>
-                ))}
+                )) : <Typography>Aucun élément</Typography>}
             </Stack>
         </Stack>
     );
