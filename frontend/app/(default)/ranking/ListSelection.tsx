@@ -14,7 +14,7 @@ export const metadata = {
 
 
 export default function ListSelection() {
-    const [currentList, setCurrentList] = useState<string>('')
+    const [currentList, setCurrentListId] = useState<number>(0)
     const [error, setError] = useState<string | null>(null);
     const [currentItems, setCurrentItems] = useState<Item[]>([])
     const [lists, setLists] = useState<Lists>([]);
@@ -27,6 +27,7 @@ export default function ListSelection() {
     const fetchItems = useCallback((list_id: number) => {
         fetchData<Lists>('items/' + list_id, setCurrentItems).catch(err => setError(err.message));
     }, []);
+    console.log(lists)
     console.error(error)
     return (
         <TemplatePage
@@ -41,9 +42,9 @@ export default function ListSelection() {
                         {lists.map((li, index) => (
                             <TemplateButton key={index}
                                             text={li.name}
-                                            variant="blue"
+                                            variant={li.list_id === currentList ? "grey" : "blue"}
                                             onClick={() => {
-                                                setCurrentList(li.name)
+                                                setCurrentListId(Number(li.list_id))
                                                 setCurrentItems([])
                                                 fetchItems(li.list_id)
                                             }}
