@@ -34,9 +34,12 @@ const default_list: NewList = {
 export default function ListCreation() {
     const [error, setError] = useState<string | null>(null);
 
-    function isAlphabetic(value: string): boolean {
-        return /^[a-zA-Z]+$/.test(value);
+    function isValidInput(value: string): boolean {
+        const hasInvalidCharacters = /[.,;]/.test(value)
+        const input_length = value.trim().length;
+        return !hasInvalidCharacters && input_length < 10 && input_length > 0;
     }
+
 
     const [nameList, setNameList] = useState('');
     const [input, setInput] = useState('');
@@ -44,7 +47,7 @@ export default function ListCreation() {
     const [separator, setSeparator] = useState('\n');
 
     function onClick() {
-        if (isAlphabetic(nameList)) {
+        if (isValidInput(nameList)) {
             setError(null)
             const object: Item[] = input.split(separator).map(el => {
                 return {name: el};
@@ -99,7 +102,7 @@ export default function ListCreation() {
                         <option value={';'}>;</option>
                         <option value={' '}>espace</option>
                     </TemplateSelect>
-                    <Button disabled={!isAlphabetic(nameList)} onClick={onClick}>Validate</Button>
+                    <Button disabled={!isValidInput(nameList)} onClick={onClick}>Validate</Button>
                 </Stack>
                 <Stack spacing={1}>
                     <Typography>items de la liste {newList.name}: </Typography>
