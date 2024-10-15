@@ -1,5 +1,5 @@
 import Image from "next/image";
-import TemplateChip from "@/components/TemplateChip";
+import TemplateChip from "@/components/Template/TemplateChip";
 
 interface CardProps {
     title: string;

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Logo from "./logo";
-import TemplateButton from "@/components/TemplateButton";
+import TemplateButton from "@/components/Template/TemplateButton";
 
 const menu = ['Ranking', 'List']
 
@@ -17,7 +17,7 @@ export default function Header() {
                         <Logo/>
                     </div>
                     {menu.map(el => (
-                        <TemplateButton route={el}/>))}
+                        <TemplateButton key={el} route={el}/>))}
                     {/* Desktop sign in links */}
                     <ul className="flex flex-1 items-center justify-end gap-3">
                         <li>

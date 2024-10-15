@@ -1,6 +1,6 @@
 "use client";
 import Spotlight from "@/components/spotlight";
-import TemplateCard from "@/components/TemplateCard";
+import TemplateCard from "@/components/Template/TemplateCard";
 import TournoiImg from "@/public/images/tournoi.png";
 import TierList from "@/public/images/tier_list.png";
 

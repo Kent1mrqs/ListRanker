@@ -1,7 +1,10 @@
 "use client";
-import {Button, MenuItem, Select, Stack, TextField, Typography} from "@mui/material";
+import {Button, Stack, Typography} from "@mui/material";
 import {useCallback, useEffect, useState} from "react";
 import {fetchData, postData} from "@/app/api";
+import TemplateInput from "@/components/Template/TemplateInput";
+import TemplateTextArea from "@/components/Template/TemplateTextArea";
+import TemplateSelect from "@/components/Template/TemplateSelect";
 
 export interface Item {
     name: string;
@@ -77,24 +80,29 @@ export default function ListCreation() {
     return (
         <Stack direction='row' spacing={3}>
             <Stack spacing={1}>
-                <Typography>Nom de la liste</Typography>
-                <TextField
+                <TemplateInput
+                    id='e'
+                    placeholder='e'
+                    label='Nouvelle liste'
                     onChange={e => setNameList(e.target.value)}
                 />
-                <TextField
-                    id="outlined-multiline-flexible"
-                    label="Multiline"
-                    multiline
+                <TemplateTextArea
+                    id='e'
+                    placeholder='item1\nj'
+                    rows={4}
                     onChange={e => setInput(e.target.value)}
-                    value={input}
-                    maxRows={4}
                 />
-                <Select value={separator} onChange={event => setSeparator(event.target.value as string)}>
-                    <MenuItem value={'\n'}>Saut de ligne</MenuItem>
-                    <MenuItem value={','}>,</MenuItem>
-                    <MenuItem value={';'}>;</MenuItem>
-                    <MenuItem value={' '}>espace</MenuItem>
-                </Select>
+                <TemplateSelect
+                    onChange={event => setSeparator(event.target.value as string)}
+                    id='e'
+                    label='Separator'
+                >
+                    <option value={'\n'}>Saut de ligne</option>
+                    <option value={','}>,</option>
+                    <option value={';'}>;</option>
+                    <option value={' '}>espace</option>
+                </TemplateSelect>
+
                 <Button onClick={onClick}>Validate</Button>
             </Stack>
             <Stack spacing={1}>
