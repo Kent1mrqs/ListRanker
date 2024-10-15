@@ -1,3 +1,5 @@
+import {Stack} from "@mui/material";
+
 interface I {
     label: string;
     id: string;
@@ -5,9 +7,11 @@ interface I {
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
+const blue = "btn-sm bg-gradient-to-t from-indigo-600 to-indigo-500 bg-[length:100%_100%] bg-[bottom] py-[5px] text-white shadow-[inset_0px_1px_0px_0px_theme(colors.white/.16)] hover:bg-[length:100%_150%] placeholder-white/50";
+
 export default function TemplateInput({label, id, placeholder, onChange}: I) {
     return (
-        <div>
+        <Stack alignItems="center" spacing={1}>
             <label htmlFor={id}
                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
             >
@@ -15,11 +19,11 @@ export default function TemplateInput({label, id, placeholder, onChange}: I) {
             </label>
             <input type="text"
                    id={id}
-                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                   className={blue}
                    placeholder={placeholder}
                    onChange={onChange}
                    required
             />
-        </div>
+        </Stack>
     )
 }

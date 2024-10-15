@@ -76,43 +76,42 @@ export default function ListCreation() {
         }
     }
 
-    return (
-        <Stack>
-            <Stack direction='row' spacing={5} justifyContent='center'>
-                <Stack spacing={1}>
-                    <TemplateInput
-                        id='new_list'
-                        placeholder='ex: Meilleurs Kdrama...'
-                        label='Nouvelle liste'
-                        onChange={e => setNameList(e.target.value)}
-                    />
-                    <TemplateTextArea
-                        id='list_items'
-                        placeholder='Vincenzo...'
-                        rows={4}
-                        onChange={e => setInput(e.target.value)}
-                    />
-                    <TemplateSelect
-                        onChange={event => setSeparator(event.target.value as string)}
-                        id='e'
-                        label='Separator'
-                    >
-                        <option value={'\n'}>Saut de ligne</option>
-                        <option value={','}>,</option>
-                        <option value={';'}>;</option>
-                        <option value={' '}>espace</option>
-                    </TemplateSelect>
-                    <Button disabled={!isValidInput(nameList)} onClick={onClick}>Validate</Button>
-                </Stack>
-                <Stack spacing={1}>
-                    <Typography>items de la liste {newList.name}: </Typography>
-                    {newList.items.map((el, index) => (
-                        <Typography key={index}>{el.name}</Typography>
-                    ))}
-                    <Button onClick={saveList}>Save</Button>
-                </Stack>
-            </Stack>
+    const blue = "btn-sm bg-gradient-to-t from-indigo-600 to-indigo-500 bg-[length:100%_100%] bg-[bottom] py-[5px] text-white shadow-[inset_0px_1px_0px_0px_theme(colors.white/.16)] hover:bg-[length:100%_150%]"
 
+    return (
+        <Stack direction='row' spacing={5} justifyContent="center">
+            <Stack spacing={1} alignItems="center">
+                <TemplateInput
+                    id='new_list'
+                    placeholder='ex: Meilleurs Kdrama...'
+                    label='Nouvelle liste'
+                    onChange={e => setNameList(e.target.value)}
+                />
+                <TemplateTextArea
+                    id='list_items'
+                    placeholder='Vincenzo...'
+                    rows={4}
+                    onChange={e => setInput(e.target.value)}
+                />
+                <TemplateSelect
+                    onChange={event => setSeparator(event.target.value as string)}
+                    id='e'
+                    label='Separator : '
+                >
+                    <option value={'\n'}>Saut de ligne</option>
+                    <option value={','}>,</option>
+                    <option value={';'}>;</option>
+                    <option value={' '}>espace</option>
+                </TemplateSelect>
+                <Button disabled={!isValidInput(nameList)} onClick={onClick}>Validate</Button>
+            </Stack>
+            <Stack spacing={1} justifyContent='center'>
+                <Typography>items de la liste {newList.name}: </Typography>
+                {newList.items.map((el, index) => (
+                    <Typography key={index}>{el.name}</Typography>
+                ))}
+                <Button onClick={saveList}>Save</Button>
+            </Stack>
         </Stack>
     );
 }
