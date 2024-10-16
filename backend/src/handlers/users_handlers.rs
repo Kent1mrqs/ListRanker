@@ -33,7 +33,8 @@ pub async fn register(new_user: web::Json<NewUser>) -> HttpResponse {
     }
 }
 
-pub(crate) async fn login(user: web::Json<NewUser>) -> impl Responder {
+pub async fn login(user: web::Json<NewUser>) -> impl Responder {
+    println!("Requête reçue : {:?}", user);
     use crate::schema::users::dsl::*;
     let mut conn = establish_connection();
 
@@ -44,8 +45,10 @@ pub(crate) async fn login(user: web::Json<NewUser>) -> impl Responder {
     match user_in_db {
         Ok(user_in_db) => {
             if user.password_hash == user_in_db.password_hash {
+                println!("Login successful");
                 HttpResponse::Ok().body("Login successful")
             } else {
+                println!("Invalid credentials");
                 HttpResponse::Unauthorized().body("Invalid credentials")
             }
         }
