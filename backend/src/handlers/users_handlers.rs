@@ -1,5 +1,5 @@
 use crate::db::establish_connection;
-use crate::models::users_models::{NewUser, User};
+use crate::models::users_models::{LoginResponse, NewUser, User};
 use crate::{db, user_service};
 use actix_web::{web, HttpResponse, Responder};
 use diesel::prelude::*;
@@ -14,8 +14,6 @@ pub async fn get_users() -> HttpResponse {
 }
 
 pub async fn register(new_user: web::Json<NewUser>) -> HttpResponse {
-    println!("Requête reçue : {:?}", new_user);
-
     let mut conn = establish_connection();
     let user_data = NewUser {
         username: new_user.username.clone(),
@@ -23,7 +21,6 @@ pub async fn register(new_user: web::Json<NewUser>) -> HttpResponse {
     };
     match user_service::create_new_user(&mut conn, user_data) {
         Ok(user) => {
-            println!("Utilisateur créé avec succès : {:?}", user);
             HttpResponse::Ok().json(user)
         }
         Err(e) => {
@@ -34,7 +31,6 @@ pub async fn register(new_user: web::Json<NewUser>) -> HttpResponse {
 }
 
 pub async fn login(user: web::Json<NewUser>) -> impl Responder {
-    println!("Requête reçue : {:?}", user);
     use crate::schema::users::dsl::*;
     let mut conn = establish_connection();
 
@@ -45,8 +41,12 @@ pub async fn login(user: web::Json<NewUser>) -> impl Responder {
     match user_in_db {
         Ok(user_in_db) => {
             if user.password_hash == user_in_db.password_hash {
-                println!("Login successful");
-                HttpResponse::Ok().body("Login successful")
+                println!("OK");
+                let response = LoginResponse {
+                    id: user_in_db.id,
+                    username: user_in_db.username,
+                };
+                HttpResponse::Ok().json(response)
             } else {
                 println!("Invalid credentials");
                 HttpResponse::Unauthorized().body("Invalid credentials")

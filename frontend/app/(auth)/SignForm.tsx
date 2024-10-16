@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import TemplateInput from "@/components/Template/TemplateInput";
+import TemplateLink from "@/components/Template/TemplateLink";
 
 export const metadata = {
     title: "Sign Up - Open PRO",
@@ -72,11 +73,7 @@ export default function SignForm({sign, inputs, onClick}: SignProps) {
                     ))}
                 </div>
                 <div className="mt-6 space-y-5">
-                    <button
-                        onClick={onClick}
-                        className="btn w-full bg-gradient-to-t from-indigo-600 to-indigo-500 bg-[length:100%_100%] bg-[bottom] text-white shadow-[inset_0px_1px_0px_0px_theme(colors.white/.16)] hover:bg-[length:100%_150%]">
-                        {button[sign]}
-                    </button>
+                    <TemplateLink onClick={onClick} route="myrankings" text={button[sign]} variant='sign'/>
                 </div>
             </form>
             <div className="mt-6 text-center text-sm text-indigo-200/65">

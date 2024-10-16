@@ -2,6 +2,7 @@
 import {postData} from "@/app/api";
 import {useState} from "react";
 import SignForm from "@/app/(auth)/SignForm";
+import {useUserContext} from "@/app/UserProvider";
 
 export const metadata = {
     title: "Sign Up - Open PRO",
@@ -9,11 +10,13 @@ export const metadata = {
 };
 
 export interface NewUser {
+    id: number,
     username: string,
     password_hash: string,
 }
 
 const default_user = {
+    id: 0,
     username: '',
     password_hash: ''
 }
@@ -22,11 +25,13 @@ export default function SignUpForm() {
 
     const [newUser, setNewUser] = useState<NewUser>(default_user)
     const [error, setError] = useState<string | null>(null);
+    const {setUserId} = useUserContext();
 
     async function onClick() {
         try {
             await postData<NewUser>('register', newUser).then((e) => {
-                console.log(e)
+                setUserId(e.id.toString())
+                localStorage.setItem("userId", e.id.toString());
             });
         } catch (error) {
             if (error instanceof Error) {
@@ -63,7 +68,7 @@ export default function SignUpForm() {
                           onChange: (e) => setNewUser(prevState => {
                               return {
                                   ...prevState,
-                                  hashed_password: e.target.value
+                                  password_hash: e.target.value
                               }
                           })
                       }

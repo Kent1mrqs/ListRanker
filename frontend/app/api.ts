@@ -16,7 +16,7 @@ export const fetchData = async <T>(route: string, setData: (data: T) => void): P
     }
 };
 
-export const postData = async <T>(route: string, data: T): Promise<void> => {
+export const postData = async <T>(route: string, data: T): Promise<T> => {
     const url = "http://127.0.0.1:8080/" + route;
     console.info(JSON.stringify(data))
     try {
@@ -31,6 +31,7 @@ export const postData = async <T>(route: string, data: T): Promise<void> => {
             throw new Error('Error when posting ' + route);
         }
         const result = await response.json() as T;
+        return result;
     } catch (error) {
         if (error instanceof Error) {
             throw new Error(error.message);
