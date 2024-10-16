@@ -8,6 +8,7 @@ import TemplateLink from "@/components/Template/TemplateLink";
 type SaveRankingProps = {
     saveRanking: () => void;
     setNewRanking: (newValue: (prevValue: NewRanking) => {
+        user_id: number | null;
         list_id: number;
         name: string;
         ranking_type: string

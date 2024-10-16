@@ -20,7 +20,8 @@ type StylesProps = {
 
 export default function TemplateButton({onClick, text, variant}: StylesProps) {
     return (
-        <button onClick={onClick}
+        <button type="button"
+                onClick={onClick}
                 className={variants[variant]}
         >
             {text}

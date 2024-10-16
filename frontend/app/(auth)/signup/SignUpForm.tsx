@@ -36,8 +36,8 @@ export default function SignUpForm() {
         if (validId(newUser.username, newUser.password_hash)) {
             try {
                 await postData<NewUser>('register', newUser).then((e) => {
-                    setUserId(e.id.toString())
-                    localStorage.setItem("userId", e.id.toString());
+                    setUserId(e.id)
+                    localStorage.setItem("userId", String(e.id));
                     router.push("/myrankings");
                 });
             } catch (error) {

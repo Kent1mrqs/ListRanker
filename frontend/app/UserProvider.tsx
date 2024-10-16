@@ -2,17 +2,17 @@
 import React, {createContext, ReactNode, useContext, useEffect, useState} from "react";
 
 interface UserContextType {
-    userId: string | null;
-    setUserId: React.Dispatch<React.SetStateAction<string | null>>;
+    userId: number | null;
+    setUserId: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({children}: { children: ReactNode }) => {
-    const [userId, setUserId] = useState<string | null>(null);
+    const [userId, setUserId] = useState<number | null>(null);
 
     useEffect(() => {
-        const storedUserId = localStorage.getItem("userId");
+        const storedUserId = Number(localStorage.getItem("userId"));
         if (storedUserId) {
             setUserId(storedUserId);
         }

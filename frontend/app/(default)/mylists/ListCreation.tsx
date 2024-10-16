@@ -5,19 +5,20 @@ import {postData} from "@/app/api";
 import TemplateInput from "@/components/Template/TemplateInput";
 import TemplateTextArea from "@/components/Template/TemplateTextArea";
 import TemplateSelect from "@/components/Template/TemplateSelect";
+import {useUserContext} from "@/app/UserProvider";
 
 export interface Item {
     name: string;
 }
 
 export interface NewList {
-    user_id: number;
+    user_id: number | null;
     name: string;
     items: Item[];
 }
 
 export interface ListDb {
-    user_id: number;
+    user_id: number | null;
     name: string;
     list_id: number;
 }
@@ -26,18 +27,13 @@ export type Lists = ListDb[];
 
 export interface Ranking {
     id: number;
-    user_id: number;
+    user_id: number | null;
     name: string;
     ranking_type: string;
 }
 
 export type Rankings = Ranking[]
 
-const default_list: NewList = {
-    user_id: 1,
-    name: '',
-    items: []
-};
 
 export type FetchListProps = {
     fetchLists: () => void;
@@ -46,6 +42,7 @@ export type FetchListProps = {
 
 export default function ListCreation({fetchLists}: FetchListProps) {
     const [error, setError] = useState<string | null>(null);
+    const {userId} = useUserContext();
 
     function isValidInput(value: string): boolean {
         const hasInvalidCharacters = /[.,;]/.test(value)
@@ -53,6 +50,11 @@ export default function ListCreation({fetchLists}: FetchListProps) {
         return !hasInvalidCharacters && input_length < 10 && input_length > 0;
     }
 
+    const default_list: NewList = {
+        user_id: userId,
+        name: '',
+        items: []
+    };
 
     const [nameList, setNameList] = useState('');
     const [input, setInput] = useState('');
