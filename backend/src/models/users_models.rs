@@ -1,4 +1,4 @@
-use super::schema::users;
+use crate::schema::users;
 use diesel::{Insertable, Queryable};
 use serde::{Deserialize, Serialize};
 

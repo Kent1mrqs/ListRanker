@@ -1,7 +1,6 @@
-use super::schema::items;
+use crate::schema::items;
 use diesel::{Insertable, Queryable};
 use serde_derive::{Deserialize, Serialize};
-
 
 #[derive(Queryable, Deserialize, Serialize)]
 pub struct Item {

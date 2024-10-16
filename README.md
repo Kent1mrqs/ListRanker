@@ -1,6 +1,6 @@
 # Ranking App
 
-A web application for creating and managing custom rankings of various items 
+A web application for creating and managing custom rankings of various items
 
 ## Table of Contents
 
@@ -40,6 +40,7 @@ A web application for creating and managing custom rankings of various items
 ### Prerequisites
 
 - [Rust and Cargo installed](https://doc.rust-lang.org/cargo/getting-started/installation.html)
+- Node and NPM installed
 - [Docker compose installed ](https://docs.docker.com/compose/install/)
 
 ### Installation
@@ -63,10 +64,15 @@ A web application for creating and managing custom rankings of various items
     ```sh
    cd frontend && npm install
     ```
-   
+
 3. **Configure the database**:
     ```sh
    cd docker/dev && docker-compose up -d
+    ```
+
+4. **[Install diesel](https://diesel.rs/guides/getting-started)**
+    ```sh
+   powershell -c "irm https://github.com/diesel-rs/diesel/releases/latest/download/diesel_cli-installer.ps1 | iex"
     ```
 
 4. **Run migrations** :
@@ -87,12 +93,11 @@ A web application for creating and managing custom rankings of various items
 
 ### Docker Release
 
-
 ## Usage
 
 ### API Endpoints
 
-- **POST /users**: Create a new user. 
+- **POST /users**: Create a new user.
 - **GET /lists**: Get all lists of a user.
 - **POST /lists**: Create a new list to a user.
 - **GET /items**: Get all items of a list.
@@ -101,7 +106,6 @@ A web application for creating and managing custom rankings of various items
 - **POST /rankings**: Create a new ranking.
 - **GET /ranking_items**: Get all ranking items.
 - **POST /ranking_items**: Create a new ranking item.
-
 
 ### Database Schema
 
@@ -124,14 +128,14 @@ A web application for creating and managing custom rankings of various items
 +image_url
 
 [Ranking]
-*ranking_id
+*id
 +user_id
 +name
 +ranking_type
 
 [RankingItem]
 *ranking_item_id
-+ranking_id
++id
 +item_id
 +rank
 

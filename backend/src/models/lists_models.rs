@@ -1,8 +1,7 @@
-use super::schema::lists;
-use crate::models::items::NewItemApi;
+use crate::models::items_models::NewItemApi;
+use crate::schema::lists;
 use diesel::{Insertable, Queryable};
 use serde_derive::{Deserialize, Serialize};
-
 
 #[derive(Queryable, Deserialize, Serialize)]
 pub struct List {
@@ -16,7 +15,7 @@ pub struct NewListApi {
     pub user_id: Option<i32>,
     pub name: String,
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
-    pub elements: Vec<NewItemApi>,
+    pub items: Vec<NewItemApi>,
 }
 
 #[derive(Insertable, Deserialize, Serialize, Debug)]

@@ -1,13 +1,10 @@
+use crate::models::items_models::{Item, NewItem};
 use crate::schema::items;
+use diesel::prelude::*;
 use diesel::result::Error;
 use diesel::{PgConnection, QueryResult, RunQueryDsl};
-use diesel::prelude::*;
-use crate::models::{Item, NewItem};
 
-pub fn insert_items_in_bulk(
-    conn: &mut PgConnection,
-    new_items: Vec<NewItem>,
-) -> Result<usize, Error> {
+pub fn insert_items_in_bulk(conn: &mut PgConnection, new_items: Vec<NewItem>) -> Result<usize, Error> {
     diesel::insert_into(items::table)
         .values(&new_items)
         .execute(conn)

@@ -1,8 +1,7 @@
 use crate::db::establish_connection;
-use crate::models::NewUser;
+use crate::models::users_models::NewUser;
 use crate::{db, user_service};
-use actix_web::HttpResponse;
-
+use actix_web::{web, HttpResponse};
 /*pub type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
 pub async fn get_users(db: web::Data<Pool>) -> HttpResponse {
@@ -30,7 +29,6 @@ pub async fn get_user_by_id(
     )
 }
 
-// Handler for POST /users
 pub async fn add_user(
     db: web::Data<Pool>,
     item: web::Json<InputUser>,
@@ -41,7 +39,6 @@ pub async fn add_user(
         .map_err(|_| HttpResponse::InternalServerError())?)
 }
 
-// Handler for DELETE /users/{id}
 pub async fn delete_user(
     db: web::Data<Pool>,
     user_id: web::Path<i32>,
@@ -89,11 +86,16 @@ pub async fn get_users() -> HttpResponse {
     }
 }
 
-pub async fn create_user(new_user: NewUser) -> HttpResponse {
+pub async fn create_user(new_user: web::Json<NewUser>) -> HttpResponse {
     println!("Requête reçue : {:?}", new_user);
 
     let mut conn = establish_connection();
-    match user_service::create_new_user(&mut conn, new_user) {
+    let user_data = NewUser {
+        username: new_user.username.clone(),
+        email: new_user.email.clone(),
+        password_hash: new_user.password_hash.clone(),
+    };
+    match user_service::create_new_user(&mut conn, user_data) {
         Ok(user) => {
             println!("Utilisateur créé avec succès : {:?}", user);
             HttpResponse::Ok().json(user)

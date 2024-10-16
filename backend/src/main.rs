@@ -1,25 +1,24 @@
 extern crate diesel;
 
 pub mod schema {
-    include!("schema.rs");
+    include!("models/schema.rs");
 }
 
 mod user_service;
 mod list_service;
 mod item_service;
+mod ranking_service;
 mod models;
 mod handlers;
 mod db;
 
-use crate::handlers::users::create_user;
-use crate::models::NewUser;
 use actix_cors::Cors;
 use actix_web::{web, App, HttpServer, Responder};
 
 async fn index() -> impl Responder {
     "Hello world!"
 }
-
+/*
 async fn init_users() {
     let new_user = NewUser {
         username: "example_user".to_string(),
@@ -27,12 +26,12 @@ async fn init_users() {
         password_hash: "hashed_password".to_string(),
     };
 
-    create_user(new_user).await;
-}
+     create_user(new_user).await;
+}*/
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    init_users().await;
+    // init_users().await;
 
     HttpServer::new(move || {
         let cors = Cors::default()
@@ -45,16 +44,27 @@ async fn main() -> std::io::Result<()> {
             .wrap(cors)
             .service(
                 web::resource("/users")
-                    .route(web::get().to(handlers::users::get_users)),
+                    .route(web::get().to(handlers::users_handlers::get_users))
+                    .route(web::post().to(handlers::users_handlers::create_user))
             )
             .service(
                 web::resource("/lists")
-                    .route(web::get().to(handlers::lists::get_lists))
-                    .route(web::post().to(handlers::lists::create_list))
+                    .route(web::get().to(handlers::lists_handlers::get_lists))
+                    .route(web::post().to(handlers::lists_handlers::create_list))
+            )
+            .service(
+                web::resource("/lists/{list_id}")
+                    .route(web::delete().to(handlers::lists_handlers::delete_list)),
+                // .route(web::put().to(handlers::lists_handlers::put_list))
             )
             .service(
                 web::resource("/items/{list_id}")
-                    .route(web::get().to(handlers::items::get_items_by_list)),
+                    .route(web::get().to(handlers::items_handlers::get_items_by_list)),
+            )
+            .service(
+                web::resource("/rankings")
+                    .route(web::get().to(handlers::rankings_handlers::get_rankings))
+                    .route(web::post().to(handlers::rankings_handlers::create_ranking)),
             )
             .service(
                 web::scope("/app")
