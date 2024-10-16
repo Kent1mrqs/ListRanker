@@ -39,8 +39,12 @@ const default_list: NewList = {
     items: []
 };
 
+export type FetchListProps = {
+    fetchLists: () => void;
+};
 
-export default function ListCreation() {
+
+export default function ListCreation({fetchLists}: FetchListProps) {
     const [error, setError] = useState<string | null>(null);
 
     function isValidInput(value: string): boolean {
@@ -79,6 +83,7 @@ export default function ListCreation() {
         try {
             await postData<NewList>('lists', newList).then(() => {
                 setNewList(default_list)
+                fetchLists()
             });
         } catch (error) {
             if (error instanceof Error) {

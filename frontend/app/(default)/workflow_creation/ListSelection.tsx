@@ -12,18 +12,17 @@ export const metadata = {
 };
 
 export type ListProps = {
+    lists: Lists;
+    fetchLists: () => void;
     currentListId: number;
     setCurrentListId: (id: number) => void;
 };
 
 
-export default function ListSelection({currentListId, setCurrentListId}: ListProps) {
+export default function ListSelection({lists, fetchLists, currentListId, setCurrentListId}: ListProps) {
     const [error, setError] = useState<string | null>(null);
     const [currentItems, setCurrentItems] = useState<Item[]>([])
-    const [lists, setLists] = useState<Lists>([]);
-    const fetchLists = useCallback(() => {
-        fetchData<Lists>('lists', setLists).catch(err => setError(err.message));
-    }, []);
+
     useEffect(() => {
         fetchLists();
     }, [fetchLists]);
