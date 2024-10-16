@@ -21,7 +21,10 @@ export default function RankingName({saveRanking, setNewRanking}: SaveRankingPro
             description="Choose a name for your ranking."
         >
             <Stack spacing={2} alignItems="center">
-                <TemplateInput label='Title' id='ranking_title' placeholder="ex: Meilleurs kdrama..."
+                <TemplateInput label='Title'
+                               id='ranking_title'
+                               variant="blue"
+                               placeholder="ex: Meilleurs kdrama..."
                                onChange={(e) => setNewRanking((prevValue: NewRanking) => {
                                    return {
                                        ...prevValue,
