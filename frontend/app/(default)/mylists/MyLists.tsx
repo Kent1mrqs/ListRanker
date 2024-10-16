@@ -21,7 +21,9 @@ export default function MyLists() {
     console.error(error)
     return (
         <>
-            <ListSelection lists={lists} fetchLists={fetchLists} currentListId={currentListId}
+            <ListSelection lists={lists}
+                           fetchLists={fetchLists}
+                           currentListId={currentListId}
                            setCurrentListId={setCurrentListId}/>
             {currentListId === -1 && <ListCreation fetchLists={fetchLists}/>}
         </>

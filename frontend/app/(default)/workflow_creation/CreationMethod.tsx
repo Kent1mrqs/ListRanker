@@ -4,6 +4,7 @@ import Spotlight from "@/components/spotlight";
 import TemplateCard from "@/components/Template/TemplateCard";
 import TournoiImg from "@/public/images/tournoi.png";
 import TierList from "@/public/images/tier_list.png";
+import {RankingProps} from "@/app/(default)/workflow_creation/WorkflowCreation";
 
 export const metadata = {
     title: "Home - Open PRO",
@@ -38,7 +39,7 @@ const rankingCard = [
     }
 ]
 
-export default function CreationMethod() {
+export default function CreationMethod({setNewRanking}: RankingProps) {
 
 
     return (

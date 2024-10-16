@@ -1,6 +1,4 @@
-import ChooseList from "@/app/(default)/workflow_creation/ChooseList";
-import DisplaySelection from "@/app/(default)/workflow_creation/DisplaySelection";
-import CreationMethod from "@/app/(default)/workflow_creation/CreationMethod";
+import WorkflowCreation from "@/app/(default)/workflow_creation/WorkflowCreation";
 
 export const metadata = {
     title: "Home - Open PRO",
@@ -9,10 +7,6 @@ export const metadata = {
 
 export default function Home() {
     return (
-        <>
-            <ChooseList/>
-            <DisplaySelection/>
-            <CreationMethod/>
-        </>
+        <WorkflowCreation/>
     );
 }
