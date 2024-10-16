@@ -6,6 +6,7 @@ import {useState} from "react";
 import {postData} from "@/app/api";
 import RankingName from "@/app/(default)/workflow_creation/RankingName";
 import {useUserContext} from "@/app/UserProvider";
+import {useRouter} from "next/navigation";
 
 export const metadata = {
     title: "Home - Open PRO",
@@ -31,6 +32,7 @@ export type RankingProps = {
 
 export default function WorkflowCreation() {
     const [error, setError] = useState<string | null>(null);
+    const router = useRouter();
     const {userId} = useUserContext();
     console.log("userId", userId)
     const default_ranking: NewRanking = {
@@ -49,6 +51,7 @@ export default function WorkflowCreation() {
         try {
             await postData<NewRanking>('rankings', newRanking).then(() => {
                 setNewRanking(default_ranking)
+                router.push("/myrankings");
             });
         } catch (error) {
             if (error instanceof Error) {
@@ -64,7 +67,7 @@ export default function WorkflowCreation() {
             <ChooseList setNewRanking={setNewRanking}/>
             <DisplaySelection setNewRanking={setNewRanking}/>
             <CreationMethod setNewRanking={setNewRanking}/>
-            <RankingName saveRanking={saveRanking} setNewRanking={setNewRanking}/>
+            <RankingName newRanking={newRanking} saveRanking={saveRanking} setNewRanking={setNewRanking}/>
         </>
     );
 }

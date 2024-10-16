@@ -39,16 +39,16 @@ export type FetchListProps = {
     fetchLists: () => void;
 };
 
+export function isValidInput(value: string): boolean {
+    const hasInvalidCharacters = /[.,;]/.test(value)
+    const input_length = value.trim().length;
+    return !hasInvalidCharacters && input_length < 10 && input_length > 0;
+}
 
 export default function ListCreation({fetchLists}: FetchListProps) {
     const [error, setError] = useState<string | null>(null);
     const {userId} = useUserContext();
 
-    function isValidInput(value: string): boolean {
-        const hasInvalidCharacters = /[.,;]/.test(value)
-        const input_length = value.trim().length;
-        return !hasInvalidCharacters && input_length < 10 && input_length > 0;
-    }
 
     const default_list: NewList = {
         user_id: userId,

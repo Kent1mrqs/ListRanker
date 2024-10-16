@@ -5,14 +5,21 @@ import ListSelection from "@/app/(default)/workflow_creation/ListSelection";
 import ListCreation, {Lists} from "@/app/(default)/mylists/ListCreation";
 import {useCallback, useState} from "react";
 import {fetchData} from "@/app/api";
+import {useUserContext} from "@/app/UserProvider";
 
 export default function ChooseList({setNewRanking}: RankingProps) {
     const [error, setError] = useState<string | null>(null);
+    const {userId} = useUserContext();
     const [currentListId, setCurrentListId] = useState<number>(0)
     const [lists, setLists] = useState<Lists>([]);
     const fetchLists = useCallback(() => {
-        fetchData<Lists>('lists', setLists).catch(err => setError(err.message));
+        fetchData<Lists>('lists/' + userId, setLists).catch(err => setError(err.message));
     }, []);
+
+    if (error !== null) {
+        console.error(error)
+        setError(null);
+    }
 
     function SelectList(id: number) {
         setCurrentListId(id);

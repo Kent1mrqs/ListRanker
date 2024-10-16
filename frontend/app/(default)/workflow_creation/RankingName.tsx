@@ -3,9 +3,16 @@ import TemplatePage from "@/components/Template/TemplatePage";
 import {NewRanking} from "@/app/(default)/workflow_creation/WorkflowCreation";
 import TemplateInput from "@/components/Template/TemplateInput";
 import {Stack} from "@mui/material";
-import TemplateLink from "@/components/Template/TemplateLink";
+import {isValidInput} from "@/app/(default)/mylists/ListCreation";
+import TemplateButton from "@/components/Template/TemplateButton";
 
 type SaveRankingProps = {
+    newRanking: {
+        user_id: number | null;
+        list_id: number;
+        name: string;
+        ranking_type: string
+    };
     saveRanking: () => void;
     setNewRanking: (newValue: (prevValue: NewRanking) => {
         user_id: number | null;
@@ -15,7 +22,14 @@ type SaveRankingProps = {
     }) => void;
 }
 
-export default function RankingName({saveRanking, setNewRanking}: SaveRankingProps) {
+export default function RankingName({newRanking, saveRanking, setNewRanking}: SaveRankingProps) {
+
+    function onClick() {
+        if (isValidInput(newRanking.name)) {
+            saveRanking()
+        }
+    }
+
     return (
         <TemplatePage
             title="Step 4 : Ranking Name"
@@ -32,7 +46,7 @@ export default function RankingName({saveRanking, setNewRanking}: SaveRankingPro
                                        name: e.target.value,
                                    }
                                })}/>
-                <TemplateLink onClick={saveRanking} text="Create" variant='blue' route='myrankings'/>
+                <TemplateButton onClick={onClick} text="Create" variant='blue'/>
             </Stack>
         </TemplatePage>
     );

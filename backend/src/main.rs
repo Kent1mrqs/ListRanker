@@ -57,8 +57,11 @@ async fn main() -> std::io::Result<()> {
                     .route(web::get().to(handlers::items_handlers::get_items_by_list)),
             )
             .service(
-                web::resource("/rankings")
+                web::resource("/rankings/{userId}")
                     .route(web::get().to(handlers::rankings_handlers::get_rankings))
+            )
+            .service(
+                web::resource("/rankings")
                     .route(web::post().to(handlers::rankings_handlers::create_ranking)),
             )
             .service(

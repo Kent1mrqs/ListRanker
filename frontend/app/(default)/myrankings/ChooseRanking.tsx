@@ -6,6 +6,7 @@ import TemplatePage from "@/components/Template/TemplatePage";
 import Spotlight from "@/components/spotlight";
 import TemplateButton from "@/components/Template/TemplateButton";
 import TemplateLink from "@/components/Template/TemplateLink";
+import {useUserContext} from "@/app/UserProvider";
 
 export const metadata = {
     title: "Home - Open PRO",
@@ -14,11 +15,12 @@ export const metadata = {
 
 
 export default function ChooseRanking() {
+    const {userId} = useUserContext();
     const [currentRankingId, setCurrentRankingId] = useState<number>(0)
     const [error, setError] = useState<string | null>(null);
     const [rankings, setRankings] = useState<Rankings>([]);
     const fetchLists = useCallback(() => {
-        fetchData<Rankings>('rankings', setRankings).catch(err => setError(err.message));
+        fetchData<Rankings>('rankings/' + userId, setRankings).catch(err => setError(err.message));
     }, []);
     useEffect(() => {
         fetchLists();

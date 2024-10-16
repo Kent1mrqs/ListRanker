@@ -1,5 +1,6 @@
 export const fetchData = async <T>(route: string, setData: (data: T) => void): Promise<void> => {
     const url = "http://127.0.0.1:8080/" + route;
+    console.log(url)
     try {
         const response = await fetch(url);
         if (!response.ok) {
