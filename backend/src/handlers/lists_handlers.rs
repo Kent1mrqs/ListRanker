@@ -4,9 +4,10 @@ use crate::list_service;
 use crate::models::lists_models::{NewListApi, NewListDb};
 use actix_web::{web, HttpResponse};
 
-pub async fn get_lists() -> HttpResponse {
+pub async fn get_lists(path: web::Path<i32>) -> HttpResponse {
     let mut conn = db::establish_connection();
-    match list_service::get_all_lists(&mut conn) {
+    let user_id = path.into_inner();
+    match list_service::get_all_lists(&mut conn, user_id) {
         Ok(lists) => HttpResponse::Ok().json(lists),
         Err(_) => HttpResponse::InternalServerError().body("Error fetching lists"),
     }

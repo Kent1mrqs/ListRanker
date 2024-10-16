@@ -42,13 +42,15 @@ async fn main() -> std::io::Result<()> {
             )
             .service(
                 web::resource("/lists")
-                    .route(web::get().to(handlers::lists_handlers::get_lists))
                     .route(web::post().to(handlers::lists_handlers::create_list))
+            )
+            .service(
+                web::resource("/lists/{user_id}")
+                    .route(web::get().to(handlers::lists_handlers::get_lists))
             )
             .service(
                 web::resource("/lists/{list_id}")
                     .route(web::delete().to(handlers::lists_handlers::delete_list)),
-                // .route(web::put().to(handlers::lists_handlers::put_list))
             )
             .service(
                 web::resource("/items/{list_id}")

@@ -1,16 +1,18 @@
 use crate::item_service::insert_items_in_bulk;
 use crate::models::items_models::{NewItem, NewItemApi};
 use crate::models::lists_models::{List, NewListDb};
-use crate::schema::lists;
+use crate::schema::lists::user_id;
 use diesel::prelude::*;
 use diesel::QueryResult;
 
-pub fn get_all_lists(conn: &mut PgConnection) -> QueryResult<Vec<List>> {
-    lists::dsl::lists.load::<List>(conn)
+pub fn get_all_lists(conn: &mut PgConnection, user_id_param: i32) -> QueryResult<Vec<List>> {
+    use crate::schema::lists::dsl::lists;
+    lists.filter(user_id.eq(user_id_param)).load::<List>(conn)
 }
 
 pub fn create_new_list(conn: &mut PgConnection, new_list: NewListDb, items: Vec<NewItemApi>) -> QueryResult<usize> {
     use crate::schema::lists::dsl::id;
+    use crate::schema::lists;
 
     diesel::insert_into(lists::table)
         .values(&new_list)
