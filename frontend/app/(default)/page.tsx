@@ -1,6 +1,6 @@
-import Testimonials from "@/components/testimonials";
-import Cta from "@/components/cta";
-import Features from "@/components/features";
+import ChooseList from "@/app/(default)/workflow_creation/ChooseList";
+import DisplaySelection from "@/app/(default)/workflow_creation/DisplaySelection";
+import CreationMethod from "@/app/(default)/workflow_creation/CreationMethod";
 
 export const metadata = {
     title: "Home - Open PRO",
@@ -10,8 +10,9 @@ export const metadata = {
 export default function Home() {
     return (
         <>
-            <Features/>
-<Testimonials/>
+            <ChooseList/>
+            <DisplaySelection/>
+            <CreationMethod/>
         </>
     );
 }

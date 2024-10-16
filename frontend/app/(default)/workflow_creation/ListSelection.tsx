@@ -1,20 +1,23 @@
 "use client";
 import {Stack, Typography} from "@mui/material";
-import {useCallback, useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {fetchData} from "@/app/api";
 import Spotlight from "@/components/spotlight";
-import {Item, Lists} from "@/app/(default)/list/ListCreation";
+import {Item, Lists} from "@/app/(default)/mylists/ListCreation";
 import TemplateButton from "@/components/Template/TemplateButton";
-import TemplateLink from "@/components/Template/TemplateLink";
 
 export const metadata = {
     title: "Home - Open PRO",
     description: "Page description",
 };
 
+export type ListProps = {
+    currentListId: number;
+    setCurrentListId: (id: number) => void;
+};
 
-export default function ListSelection() {
-    const [currentListId, setCurrentListId] = useState<number>(0)
+
+export default function ListSelection({currentListId, setCurrentListId}: ListProps) {
     const [error, setError] = useState<string | null>(null);
     const [currentItems, setCurrentItems] = useState<Item[]>([])
     const [lists, setLists] = useState<Lists>([]);
@@ -54,9 +57,9 @@ export default function ListSelection() {
                                         onClick={() => selectList(Number(li.list_id))}
                         />
                     ))}
-                    <TemplateLink text='New list'
-                                  variant='outlined'
-                                  route='list'
+                    <TemplateButton text='New list'
+                                    variant='outlined'
+                                    onClick={() => selectList(-1)}
                     />
                 </Spotlight>
             </Stack>

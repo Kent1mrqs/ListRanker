@@ -24,6 +24,15 @@ export interface ListDb {
 
 export type Lists = ListDb[];
 
+export interface Ranking {
+    id: number;
+    user_id: number;
+    name: string;
+    ranking_type: string;
+}
+
+export type Rankings = Ranking[]
+
 const default_list: NewList = {
     user_id: 1,
     name: '',
@@ -64,6 +73,7 @@ export default function ListCreation() {
     if (error !== null) {
         console.error(error)
     }
+
 
     async function saveList() {
         try {

@@ -1,6 +1,5 @@
-import ListCreation from "@/app/(default)/list/ListCreation";
-import ListSelection from "@/app/(default)/ranking/ListSelection";
 import TemplatePage from "@/components/Template/TemplatePage";
+import MyLists from "@/app/(default)/mylists/MyLists";
 
 export const metadata = {
     title: "Home - Open PRO",
@@ -12,8 +11,7 @@ export default function List() {
 
     return (
         <TemplatePage title='My lists' description=''>
-            <ListSelection/>
-            <ListCreation/>
+            <MyLists/>
         </TemplatePage>
     );
 }

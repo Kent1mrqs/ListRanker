@@ -1,9 +1,9 @@
 "use client";
 import {useCallback, useEffect, useState} from "react";
 import {fetchData} from "@/app/api";
-import {Item, Lists} from "@/app/(default)/list/ListCreation";
+import ListCreation, {Lists} from "@/app/(default)/mylists/ListCreation";
 import TemplatePage from "@/components/Template/TemplatePage";
-import ListSelection from "@/app/(default)/ranking/ListSelection";
+import ListSelection from "@/app/(default)/workflow_creation/ListSelection";
 
 export const metadata = {
     title: "Home - Open PRO",
@@ -12,9 +12,9 @@ export const metadata = {
 
 
 export default function ChooseList() {
-    const [currentList, setCurrentListId] = useState<number>(0)
+    const [currentListId, setCurrentListId] = useState<number>(0)
     const [error, setError] = useState<string | null>(null);
-    const [currentItems, setCurrentItems] = useState<Item[]>([])
+    // const [currentItems, setCurrentItems] = useState<Item[]>([])
     const [lists, setLists] = useState<Lists>([]);
     const fetchLists = useCallback(() => {
         fetchData<Lists>('lists', setLists).catch(err => setError(err.message));
@@ -22,9 +22,9 @@ export default function ChooseList() {
     useEffect(() => {
         fetchLists();
     }, [fetchLists]);
-    const fetchItems = useCallback((list_id: number) => {
-        fetchData<Lists>('items/' + list_id, setCurrentItems).catch(err => setError(err.message));
-    }, []);
+    /*    const fetchItems = useCallback((list_id: number) => {
+            fetchData<Lists>('items/' + list_id, setCurrentItems).catch(err => setError(err.message));
+        }, []);*/
     console.log(lists)
     if (error !== null) {
         console.error(error)
@@ -34,7 +34,8 @@ export default function ChooseList() {
             title="Step 1 : Choose a list"
             description="Select a list to base your ranking on. Choose from existing options or create a new list."
         >
-            <ListSelection/>
+            <ListSelection currentListId={currentListId} setCurrentListId={setCurrentListId}/>
+            {currentListId === -1 && <ListCreation/>}
         </TemplatePage>
     );
 }

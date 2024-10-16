@@ -3,7 +3,7 @@
 import Logo from "./logo";
 import TemplateLink from "@/components/Template/TemplateLink";
 
-const menu = ['Ranking', 'List']
+const menu = [{name: 'My Ranking', route: 'myrankings'}, {name: 'My List', route: 'mylists'}]
 
 export default function Header() {
     return (
@@ -15,8 +15,8 @@ export default function Header() {
                     <div className="flex flex-1 items-center">
                         <Logo/>
                     </div>
-                    {menu.map(el => (
-                        <TemplateLink key={el} variant='blue' text={el} route={el}/>))}
+                    {menu.map((el, i) => (
+                        <TemplateLink key={i} variant='blue' text={el.name} route={el.route}/>))}
                     <ul className="flex flex-1 items-center justify-end gap-3">
                         <li>
                             <TemplateLink variant='grey' text="Sign in" route="signin"/>
