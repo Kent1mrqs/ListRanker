@@ -19,6 +19,15 @@ diesel::table! {
 }
 
 diesel::table! {
+    ranking_items (id) {
+        id -> Int4,
+        id_ranking -> Nullable<Int4>,
+        item_id -> Nullable<Int4>,
+        rank -> Int4,
+    }
+}
+
+diesel::table! {
     rankings (id) {
         id -> Int4,
         user_id -> Nullable<Int4>,
@@ -44,12 +53,15 @@ diesel::table! {
 
 diesel::joinable!(items -> lists (list_id));
 diesel::joinable!(lists -> users (user_id));
+diesel::joinable!(ranking_items -> items (item_id));
+diesel::joinable!(ranking_items -> rankings (id_ranking));
 diesel::joinable!(rankings -> lists (list_id));
 diesel::joinable!(rankings -> users (user_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     items,
     lists,
+    ranking_items,
     rankings,
     users,
 );
