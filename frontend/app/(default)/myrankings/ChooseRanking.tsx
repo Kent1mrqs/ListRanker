@@ -5,8 +5,8 @@ import {Item, Ranking, Rankings} from "@/app/(default)/mylists/ListCreation";
 import TemplatePage from "@/components/Template/TemplatePage";
 import Spotlight from "@/components/spotlight";
 import TemplateButton from "@/components/Template/TemplateButton";
-import TemplateLink from "@/components/Template/TemplateLink";
 import {useUserContext} from "@/app/UserProvider";
+import {useRouter} from "next/navigation";
 
 export const metadata = {
     title: "Home - Open PRO",
@@ -28,6 +28,7 @@ export default function ChooseRanking() {
         ranking_type: "",
         list_id: 0
     }
+    const router = useRouter();
     const [currentRanking, setCurrentRanking] = useState<Ranking>(default_ranking)
     const [error, setError] = useState<string | null>(null);
     const [rankings, setRankings] = useState<Rankings>([]);
@@ -45,11 +46,12 @@ export default function ChooseRanking() {
     const [currentItems, setCurrentItems] = useState<Item[]>([])
 
     function selectRanking(ranking: Ranking) {
+        console.log(currentRanking.id, ranking.id);
         if (currentRanking.id === ranking.id) {
             setCurrentRanking({...ranking, id: 0})
         } else {
-            setCurrentRanking({...ranking, id: Number(ranking)})
-            fetchData('items/' + currentRanking.list_id, setCurrentItems).then(() => console.log('currentItems', currentItems))
+            setCurrentRanking({...ranking, id: Number(ranking.id)})
+            fetchData('items/' + ranking.list_id, setCurrentItems).then(() => console.log('currentItems', currentItems))
         }
     }
 
@@ -68,9 +70,9 @@ export default function ChooseRanking() {
                                     onClick={() => selectRanking(ra)}
                     />
                 ))}
-                <TemplateLink text='New Ranking'
-                              variant='outlined'
-                              route=''
+                <TemplateButton text='New Ranking'
+                                variant='outlined'
+                                onClick={() => router.push('/')}
                 />
             </Spotlight>
         </TemplatePage>
