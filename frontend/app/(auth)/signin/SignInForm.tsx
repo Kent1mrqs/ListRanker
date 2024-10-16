@@ -3,6 +3,8 @@ import {postData} from "@/app/api";
 import {useState} from "react";
 import SignForm from "@/app/(auth)/SignForm";
 import {useUserContext} from "@/app/UserProvider";
+import {useRouter} from "next/navigation";
+import {validId} from "@/app/(auth)/signup/SignUpForm";
 
 export const metadata = {
     title: "Sign Up - Open PRO",
@@ -23,27 +25,34 @@ const default_user = {
 
 export default function SignInForm() {
 
+    const router = useRouter();
     const [user, setUser] = useState<NewUser>(default_user)
     const [error, setError] = useState<string | null>(null);
     const {setUserId} = useUserContext();
 
     async function onClick() {
-        try {
-            await postData<NewUser>('login', user).then((e) => {
-                setUserId(e.id.toString())
-                localStorage.setItem("userId", e.id.toString());
-            });
-        } catch (error) {
-            if (error instanceof Error) {
-                setError(error.message);
-            } else {
-                setError('An unknown error occurred');
+        if (validId(user.username, user.password_hash)) {
+            try {
+                await postData<NewUser>('login', user).then((e) => {
+                    setUserId(e.id.toString())
+                    localStorage.setItem("userId", e.id.toString());
+                    router.push("/myrankings");
+                });
+            } catch (error) {
+                if (error instanceof Error) {
+                    setError(error.message);
+                } else {
+                    setError('An unknown error occurred');
+                }
             }
+        } else {
+            setError("unvalid")
         }
     }
 
     if (error !== null) {
-        console.error(error)
+        console.error(error);
+        setError(null);
     }
 
     return (

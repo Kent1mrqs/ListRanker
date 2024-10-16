@@ -76,6 +76,7 @@ export default function ListCreation({fetchLists}: FetchListProps) {
 
     if (error !== null) {
         console.error(error)
+        setError(null);
     }
 
 

@@ -36,6 +36,7 @@ export default function WorkflowCreation() {
     const [newRanking, setNewRanking] = useState<NewRanking>(default_ranking)
     if (error !== null) {
         console.error(error)
+        setError(null);
     }
     console.log(newRanking)
 

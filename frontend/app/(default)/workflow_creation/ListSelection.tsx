@@ -26,6 +26,7 @@ export default function ListSelection({lists, fetchLists, currentListId, setCurr
     }, []);
     if (error !== null) {
         console.error(error)
+        setError(null);
     }
 
     function selectList(id: number) {

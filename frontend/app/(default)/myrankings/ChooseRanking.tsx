@@ -24,10 +24,9 @@ export default function ChooseRanking() {
         fetchLists();
     }, [fetchLists]);
 
-
-    console.log(rankings)
     if (error !== null) {
         console.error(error)
+        setError(null);
     }
 
     function selectRanking(id: number) {
