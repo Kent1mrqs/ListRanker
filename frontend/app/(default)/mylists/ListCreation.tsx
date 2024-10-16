@@ -30,6 +30,7 @@ export interface Ranking {
     user_id: number | null;
     name: string;
     ranking_type: string;
+    list_id: number;
 }
 
 export type Rankings = Ranking[]

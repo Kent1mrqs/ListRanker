@@ -1,7 +1,7 @@
 "use client";
 import {useCallback, useEffect, useState} from "react";
 import {fetchData} from "@/app/api";
-import {Rankings} from "@/app/(default)/mylists/ListCreation";
+import {Item, Ranking, Rankings} from "@/app/(default)/mylists/ListCreation";
 import TemplatePage from "@/components/Template/TemplatePage";
 import Spotlight from "@/components/spotlight";
 import TemplateButton from "@/components/Template/TemplateButton";
@@ -13,10 +13,22 @@ export const metadata = {
     description: "Page description",
 };
 
+interface rankprops {
+    currentRanking: Ranking;
+    setCurrentRanking: (ranking: Ranking) => void;
+}
+
 
 export default function ChooseRanking() {
     const {userId} = useUserContext();
-    const [currentRankingId, setCurrentRankingId] = useState<number>(0)
+    const default_ranking: Ranking = {
+        id: 0,
+        user_id: userId,
+        name: "",
+        ranking_type: "",
+        list_id: 0
+    }
+    const [currentRanking, setCurrentRanking] = useState<Ranking>(default_ranking)
     const [error, setError] = useState<string | null>(null);
     const [rankings, setRankings] = useState<Rankings>([]);
     const fetchLists = useCallback(() => {
@@ -30,12 +42,14 @@ export default function ChooseRanking() {
         console.error(error)
         setError(null);
     }
+    const [currentItems, setCurrentItems] = useState<Item[]>([])
 
-    function selectRanking(id: number) {
-        if (id === currentRankingId) {
-            setCurrentRankingId(0)
+    function selectRanking(ranking: Ranking) {
+        if (currentRanking.id === ranking.id) {
+            setCurrentRanking({...ranking, id: 0})
         } else {
-            setCurrentRankingId(id)
+            setCurrentRanking({...ranking, id: Number(ranking)})
+            fetchData('items/' + currentRanking.list_id, setCurrentItems).then(() => console.log('currentItems', currentItems))
         }
     }
 
@@ -50,8 +64,8 @@ export default function ChooseRanking() {
                 {rankings.map((ra, index) => (
                     <TemplateButton key={index}
                                     text={ra.name}
-                                    variant={ra.id === currentRankingId ? "grey" : "blue"}
-                                    onClick={() => selectRanking(Number(ra.id))}
+                                    variant={ra.id === currentRanking.id ? "grey" : "blue"}
+                                    onClick={() => selectRanking(ra)}
                     />
                 ))}
                 <TemplateLink text='New Ranking'
