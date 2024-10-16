@@ -6,10 +6,6 @@ import TierList from "@/public/images/tier_list.png";
 import TemplatePage from "@/components/Template/TemplatePage";
 import {NewRanking, RankingProps} from "@/app/(default)/workflow_creation/WorkflowCreation";
 
-export const metadata = {
-    title: "Home - Open PRO",
-    description: "Page description",
-};
 
 const rankingCard = [
     {

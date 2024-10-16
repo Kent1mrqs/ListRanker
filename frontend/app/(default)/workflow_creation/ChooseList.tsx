@@ -6,12 +6,6 @@ import ListCreation, {Lists} from "@/app/(default)/mylists/ListCreation";
 import {useCallback, useState} from "react";
 import {fetchData} from "@/app/api";
 
-export const metadata = {
-    title: "Home - Open PRO",
-    description: "Page description",
-};
-
-
 export default function ChooseList({setNewRanking}: RankingProps) {
     const [error, setError] = useState<string | null>(null);
     const [currentListId, setCurrentListId] = useState<number>(0)

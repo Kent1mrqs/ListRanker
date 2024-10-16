@@ -6,11 +6,6 @@ import Spotlight from "@/components/spotlight";
 import {Item, Lists} from "@/app/(default)/mylists/ListCreation";
 import TemplateButton from "@/components/Template/TemplateButton";
 
-export const metadata = {
-    title: "Home - Open PRO",
-    description: "Page description",
-};
-
 export type ListProps = {
     lists: Lists;
     fetchLists: () => void;

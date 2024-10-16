@@ -101,7 +101,7 @@ export default function ListCreation({fetchLists}: FetchListProps) {
             <Stack spacing={1} alignItems="center">
                 <TemplateInput
                     id='new_list'
-                    placeholder='ex: Meilleurs Kdrama...'
+                    placeholder='ex: Kdrama...'
                     label='Nouvelle liste'
                     onChange={e => setNameList(e.target.value)}
                 />

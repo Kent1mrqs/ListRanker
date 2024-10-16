@@ -4,7 +4,7 @@ import DisplaySelection from "@/app/(default)/workflow_creation/DisplaySelection
 import CreationMethod from "@/app/(default)/workflow_creation/CreationMethod";
 import {useState} from "react";
 import {postData} from "@/app/api";
-import {Button} from "@mui/material";
+import RankingName from "@/app/(default)/workflow_creation/RankingName";
 
 export const metadata = {
     title: "Home - Open PRO",
@@ -58,7 +58,7 @@ export default function WorkflowCreation() {
             <ChooseList setNewRanking={setNewRanking}/>
             <DisplaySelection setNewRanking={setNewRanking}/>
             <CreationMethod setNewRanking={setNewRanking}/>
-            <Button onClick={saveRanking}>Create</Button>
+            <RankingName saveRanking={saveRanking} setNewRanking={setNewRanking}/>
         </>
     );
 }
