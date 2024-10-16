@@ -18,21 +18,9 @@ use actix_web::{web, App, HttpServer, Responder};
 async fn index() -> impl Responder {
     "Hello world!"
 }
-/*
-async fn init_users() {
-    let new_user = NewUser {
-        username: "example_user".to_string(),
-        email: "user@example.com".to_string(),
-        password_hash: "hashed_password".to_string(),
-    };
-
-     create_user(new_user).await;
-}*/
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    // init_users().await;
-
     HttpServer::new(move || {
         let cors = Cors::default()
             .allow_any_origin()
@@ -43,9 +31,14 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(cors)
             .service(
+                web::resource("/register")
+                    .route(web::post().to(handlers::users_handlers::register)))
+            .service(
+                web::resource("/login")
+                    .route(web::post().to(handlers::users_handlers::login)))
+            .service(
                 web::resource("/users")
                     .route(web::get().to(handlers::users_handlers::get_users))
-                    .route(web::post().to(handlers::users_handlers::create_user))
             )
             .service(
                 web::resource("/lists")

@@ -15,3 +15,4 @@ pub fn create_new_user(conn: &mut PgConnection, new_user: NewUser) -> QueryResul
         .values(new_user)
         .execute(conn)
 }
+
