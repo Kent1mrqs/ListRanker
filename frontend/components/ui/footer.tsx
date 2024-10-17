@@ -58,10 +58,10 @@ export default function Footer() {
                 </div>
 
                 <div
-                    className="grid grid-cols-2 justify-between gap-12 py-8 sm:grid-rows-[auto_auto] md:grid-cols-4 md:grid-rows-[auto_auto] md:py-12 lg:grid-cols-[repeat(4,minmax(0,140px))_1fr] lg:grid-rows-1 xl:gap-20">
-                    <div className="space-y-2">
+                    className="grid grid-cols-2 justify-center gap-12 py-8 sm:grid-rows-[auto_auto] md:grid-cols-4 md:grid-rows-[auto_auto] md:py-12 lg:grid-cols-[repeat(4,minmax(0,140px))_1fr] lg:grid-rows-1 xl:gap-20">
+                    <div className="flex flex-col items-center space-y-2">
                         <h3 className="text-sm font-medium text-gray-200">Open Source</h3>
-                        <ul className="space-y-2 text-sm">
+                        <ul className="space-y-2 text-sm text-center">
                             {openSourceLinks.map((link) => (
                                 <li key={link.text}>
                                     <TextLink href={link.href} text={link.text}/>
@@ -69,9 +69,10 @@ export default function Footer() {
                             ))}
                         </ul>
                     </div>
-                    <div className="space-y-2">
+
+                    <div className="flex flex-col items-center space-y-2">
                         <h3 className="text-sm font-medium text-gray-200">Documentation</h3>
-                        <ul className="space-y-2 text-sm">
+                        <ul className="space-y-2 text-sm text-center">
                             {documentationLinks.map((link) => (
                                 <li key={link.text}>
                                     <TextLink href={link.href} text={link.text}/>
@@ -80,9 +81,9 @@ export default function Footer() {
                         </ul>
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="flex flex-col items-center space-y-2">
                         <h3 className="text-sm font-medium text-gray-200">Community</h3>
-                        <ul className="space-y-2 text-sm">
+                        <ul className="space-y-2 text-sm text-center">
                             {communityLinks.map((link) => (
                                 <li key={link.text}>
                                     <TextLink href={link.href} text={link.text}/>
@@ -91,9 +92,9 @@ export default function Footer() {
                         </ul>
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="flex flex-col items-center space-y-2">
                         <h3 className="text-sm font-medium text-gray-200">Legal</h3>
-                        <ul className="space-y-2 text-sm">
+                        <ul className="space-y-2 text-sm text-center">
                             {legalLinks.map((link) => (
                                 <li key={link.text}>
                                     <TextLink href={link.href} text={link.text}/>
@@ -102,11 +103,11 @@ export default function Footer() {
                         </ul>
                     </div>
 
-                    <div className="col-span-2 md:col-span-4 lg:col-span-1 lg:text-right">
+                    <div className="col-span-2 md:col-span-4 lg:col-span-1 lg:text-right flex flex-col items-center">
                         <div className="mb-3">
                             <Logo/>
                         </div>
-                        <div className="text-sm">
+                        <div className="text-sm text-center">
                             <p className="mb-3 text-indigo-200/65">
                                 © 2024 ListRanker. Licensed under{" "}
                                 <TextLink
@@ -125,7 +126,7 @@ export default function Footer() {
                                 &{" "}
                                 <TextLink href="https://tailwindcss.com" text="TailwindCSS"/>.
                             </p>
-                            <ul className="inline-flex gap-1">
+                            <ul className="inline-flex gap-1 justify-center">
                                 <li>
                                     <a
                                         className="flex items-center justify-center text-indigo-500 transition hover:text-indigo-400"

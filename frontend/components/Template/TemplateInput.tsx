@@ -3,7 +3,8 @@ import React from "react";
 interface I {
     label: string;
     id: string;
-    key: number;
+    key?: number;
+    type?: string;
     placeholder: string;
     variant: string;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -24,14 +25,14 @@ const variantsLabels: { [key: string]: string } = {
     "sign": "block text-sm font-medium text-indigo-200/65",
 };
 
-export default function TemplateInput({label, id, placeholder, onChange, variant}: I) {
+export default function TemplateInput({label, type = 'text', id, placeholder, onChange, variant}: I) {
     return (
         <div className="mb-4">
             <label htmlFor={id} className={variantsLabels[variant]}>
                 {label}
             </label>
             <input
-                type="text"
+                type={type}
                 id={id}
                 className={`${variantsInput[variant]} mt-1 block`}
                 placeholder={placeholder}

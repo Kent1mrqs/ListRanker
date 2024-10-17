@@ -1,13 +1,14 @@
 "use client";
 import React, {useCallback, useEffect, useState} from "react";
-import {fetchData} from "@/app/api";
+import {fetchData, postData} from "@/app/api";
 import {Ranking, Rankings} from "@/app/(default)/mylists/ListCreation";
 import TemplatePage from "@/components/Template/TemplatePage";
 import Spotlight from "@/components/spotlight";
 import TemplateButton from "@/components/Template/TemplateButton";
 import {useUserContext} from "@/app/UserProvider";
 import {useRouter} from "next/navigation";
-import {Stack, Typography} from "@mui/material";
+import {Button, Stack, Typography} from "@mui/material";
+import TemplateInput from "@/components/Template/TemplateInput";
 
 export const metadata = {
     title: "Home - Open PRO",
@@ -25,6 +26,11 @@ interface RankingItem {
     item_id: number,
     rank: number,
     name: string,
+}
+
+interface EditRanking {
+    id: number,
+    new_rank: number,
 }
 
 
@@ -64,6 +70,28 @@ export default function ChooseRanking() {
         }
     }
 
+    const [editRanking, setEditRanking] = useState<EditRanking[]>([])
+
+    function moveRank(id: number, new_rank: number) {
+        setEditRanking(prevState => {
+            return [...prevState, {id, new_rank}]
+        })
+    }
+
+    async function saveRanking() {
+        try {
+            await postData<EditRanking[]>('ranking-items', editRanking).then(() => {
+            });
+        } catch (error) {
+            if (error instanceof Error) {
+                setError(error.message);
+            } else {
+                setError('An unknown error occurred');
+            }
+        }
+    }
+
+
     console.log(currentRankingItems)
     return (
         <TemplatePage
@@ -89,13 +117,18 @@ export default function ChooseRanking() {
 				<Spotlight
 					className="group mx-auto grid max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-6"
 				>
-                    {currentRankingItems?.map((el, index) => (
+                    {currentRankingItems.sort((a, b) => a.rank > b.rank ? 1 : -1)?.map((el, index) => (
                         <div className="mx-auto max-w-3xl pb-12 text-center md:pb-20">
                             <Typography justifyContent='center' key={index}>{el.name}</Typography>
                             <Typography justifyContent='center' key={index}>{el.rank}</Typography>
+                            <TemplateInput label='rank' type='number'
+                                           id={'rank' + index} key={index} placeholder={String(el.rank)} variant='blue'
+                                           onChange={(e) => moveRank(el.id, Number(e.target.value))}
+                            />
                         </div>
                     ))}
 				</Spotlight>
+				<Button onClick={saveRanking}>Save</Button>
 			</Stack>}
         </TemplatePage>
     );
