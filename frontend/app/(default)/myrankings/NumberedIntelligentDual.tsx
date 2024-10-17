@@ -52,11 +52,11 @@ export default function NumberedIntelligentDual() {
                 className="group mx-auto grid max-w-sm mt-3 items-start justify-center gap-6 lg:max-w-none lg:grid-cols-2"
             >
                 <div className="flex justify-center">
-                    <TemplateCard title={currentDual[0].name} image={currentDual[0].image} description=""
+                    <TemplateCard title={currentDual[0].name} image={currentDual[0].image} variant="duel"
                                   onClick={() => chooseCard(currentDual[0].id_item)}/>
                 </div>
                 <div className="flex justify-center">
-                    <TemplateCard title={currentDual[1].name} image={currentDual[1].image} description=""
+                    <TemplateCard title={currentDual[1].name} image={currentDual[1].image} variant="duel"
                                   onClick={() => chooseCard(currentDual[1].id_item)}/>
                 </div>
             </Spotlight>
