@@ -113,7 +113,6 @@ A web application for creating and managing custom rankings of various items
 [User]
 *user_id
 +username
-+email
 +password_hash
 
 [List]

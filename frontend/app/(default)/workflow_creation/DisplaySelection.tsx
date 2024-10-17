@@ -40,7 +40,7 @@ const rankingCard = [
     }
 ]
 
-export default function DisplaySelection({setNewRanking}: RankingProps) {
+export default function DisplaySelection({newRanking, setNewRanking}: RankingProps) {
 
 
     return (
@@ -51,13 +51,19 @@ export default function DisplaySelection({setNewRanking}: RankingProps) {
             <Spotlight
                 className="group mx-auto grid max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-3">
                 {rankingCard.map((card, i) => (
-                    <TemplateCard onClick={() => setNewRanking((prevValue: NewRanking) => {
-                        return {
-                            ...prevValue,
-                            ranking_type: card.key,
-                        }
-                    })} key={i} title={card.title} image={card.image}
-                                  description={card.description}/>
+                    <TemplateCard
+                        selected={newRanking.ranking_type === card.key}
+                        onClick={() => setNewRanking((prevValue: NewRanking) => {
+                            return {
+                                ...prevValue,
+                                ranking_type: card.key,
+                            }
+                        })}
+                        key={i}
+                        title={card.title}
+                        image={card.image}
+                        description={card.description}
+                    />
                 ))}
             </Spotlight>
         </TemplatePage>

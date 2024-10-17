@@ -3,10 +3,10 @@ use crate::models::rankings_models::NewRanking;
 use crate::ranking_service;
 use actix_web::{web, HttpResponse};
 
-pub async fn get_rankings() -> HttpResponse {
+pub async fn get_rankings(path: web::Path<i32>) -> HttpResponse {
     let mut conn = establish_connection();
-
-    match ranking_service::get_all_rankings(&mut conn) {
+    let user_id = path.into_inner();
+    match ranking_service::get_all_rankings(&mut conn, user_id) {
         Ok(rankings) => HttpResponse::Ok().json(rankings),
         Err(_) => HttpResponse::InternalServerError().body("Error retrieving rankings"),
     }

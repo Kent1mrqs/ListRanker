@@ -1,82 +1,9 @@
 use crate::db::establish_connection;
-use crate::models::users_models::NewUser;
+use crate::models::users_models::{LoginResponse, NewUser, User};
 use crate::{db, user_service};
-use actix_web::{web, HttpResponse};
-/*pub type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
-
-pub async fn get_users(db: web::Data<Pool>) -> HttpResponse {
-    Ok(web::block(move || get_all_users(db))
-        .await
-        .map(|user| HttpResponse::Ok().json(user))
-        .map_err(|_| HttpResponse::InternalServerError())?)
-}
-
-fn get_all_users(pool: web::Data<Pool>) -> Result<Vec<User>, diesel::result::Error> {
-    let conn = pool.get().unwrap();
-    let items = users.load::<User>(&conn)?;
-    Ok(items)
-}
-
-pub async fn get_user_by_id(
-    db: web::Data<Pool>,
-    user_id: web::Path<i32>,
-) -> Result<HttpResponse, Error> {
-    Ok(
-        web::block(move || db_get_user_by_id(db, user_id.into_inner()))
-            .await
-            .map(|user| HttpResponse::Ok().json(user))
-            .map_err(|_| HttpResponse::InternalServerError())?,
-    )
-}
-
-pub async fn add_user(
-    db: web::Data<Pool>,
-    item: web::Json<InputUser>,
-) -> Result<HttpResponse, Error> {
-    Ok(web::block(move || add_single_user(db, item))
-        .await
-        .map(|user| HttpResponse::Created().json(user))
-        .map_err(|_| HttpResponse::InternalServerError())?)
-}
-
-pub async fn delete_user(
-    db: web::Data<Pool>,
-    user_id: web::Path<i32>,
-) -> Result<HttpResponse, Error> {
-    Ok(
-        web::block(move || delete_single_user(db, user_id.into_inner()))
-            .await
-            .map(|user| HttpResponse::Ok().json(user))
-            .map_err(|_| HttpResponse::InternalServerError())?,
-    )
-}
-
-fn db_get_user_by_id(pool: web::Data<Pool>, user_id: i32) -> Result<User, diesel::result::Error> {
-    let conn = pool.get().unwrap();
-    users.find(user_id).get_result::<User>(&conn)
-}
-
-fn add_single_user(
-    db: web::Data<Pool>,
-    item: web::Json<InputUser>,
-) -> Result<User, diesel::result::Error> {
-    let conn = db.get().unwrap();
-    let new_user = NewUser {
-        first_name: &item.first_name,
-        last_name: &item.last_name,
-        email: &item.email,
-        created_at: chrono::Local::now().naive_local(),
-    };
-    let res = insert_into(users).values(&new_user).get_result(&conn)?;
-    Ok(res)
-}
-
-fn delete_single_user(db: web::Data<Pool>, user_id: i32) -> Result<usize, diesel::result::Error> {
-    let conn = db.get().unwrap();
-    let count = delete(users.find(user_id)).execute(&conn)?;
-    Ok(count)
-}
-*/
+use actix_web::{web, HttpResponse, Responder};
+use diesel::prelude::*;
+use diesel::RunQueryDsl;
 
 pub async fn get_users() -> HttpResponse {
     let mut conn = db::establish_connection();
@@ -86,23 +13,44 @@ pub async fn get_users() -> HttpResponse {
     }
 }
 
-pub async fn create_user(new_user: web::Json<NewUser>) -> HttpResponse {
-    println!("Requête reçue : {:?}", new_user);
-
+pub async fn register(new_user: web::Json<NewUser>) -> HttpResponse {
     let mut conn = establish_connection();
     let user_data = NewUser {
         username: new_user.username.clone(),
-        email: new_user.email.clone(),
         password_hash: new_user.password_hash.clone(),
     };
     match user_service::create_new_user(&mut conn, user_data) {
         Ok(user) => {
-            println!("Utilisateur créé avec succès : {:?}", user);
             HttpResponse::Ok().json(user)
         }
         Err(e) => {
             println!("Erreur lors de la création de l'utilisateur : {:?}", e);
             HttpResponse::InternalServerError().body("Erreur lors de la création de l'utilisateur")
         }
+    }
+}
+
+pub async fn login(user: web::Json<NewUser>) -> impl Responder {
+    use crate::schema::users::dsl::*;
+    let mut conn = establish_connection();
+
+    let user_in_db = users
+        .filter(username.eq(&user.username))
+        .first::<User>(&mut conn);
+
+    match user_in_db {
+        Ok(user_in_db) => {
+            if user.password_hash == user_in_db.password_hash {
+                let response = LoginResponse {
+                    id: user_in_db.id,
+                    username: user_in_db.username,
+                };
+                HttpResponse::Ok().json(response)
+            } else {
+                println!("Invalid credentials");
+                HttpResponse::Unauthorized().body("Invalid credentials")
+            }
+        }
+        Err(_) => HttpResponse::Unauthorized().body("User not found"),
     }
 }

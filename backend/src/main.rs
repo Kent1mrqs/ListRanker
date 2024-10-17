@@ -8,6 +8,7 @@ mod user_service;
 mod list_service;
 mod item_service;
 mod ranking_service;
+mod ranking_item_service;
 mod models;
 mod handlers;
 mod db;
@@ -18,21 +19,9 @@ use actix_web::{web, App, HttpServer, Responder};
 async fn index() -> impl Responder {
     "Hello world!"
 }
-/*
-async fn init_users() {
-    let new_user = NewUser {
-        username: "example_user".to_string(),
-        email: "user@example.com".to_string(),
-        password_hash: "hashed_password".to_string(),
-    };
-
-     create_user(new_user).await;
-}*/
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    // init_users().await;
-
     HttpServer::new(move || {
         let cors = Cors::default()
             .allow_any_origin()
@@ -43,27 +32,45 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(cors)
             .service(
+                web::resource("/register")
+                    .route(web::post().to(handlers::users_handlers::register)))
+            .service(
+                web::resource("/login")
+                    .route(web::post().to(handlers::users_handlers::login)))
+            .service(
                 web::resource("/users")
                     .route(web::get().to(handlers::users_handlers::get_users))
-                    .route(web::post().to(handlers::users_handlers::create_user))
             )
             .service(
                 web::resource("/lists")
-                    .route(web::get().to(handlers::lists_handlers::get_lists))
                     .route(web::post().to(handlers::lists_handlers::create_list))
+            )
+            .service(
+                web::resource("/lists/{user_id}")
+                    .route(web::get().to(handlers::lists_handlers::get_lists))
             )
             .service(
                 web::resource("/lists/{list_id}")
                     .route(web::delete().to(handlers::lists_handlers::delete_list)),
-                // .route(web::put().to(handlers::lists_handlers::put_list))
             )
             .service(
                 web::resource("/items/{list_id}")
                     .route(web::get().to(handlers::items_handlers::get_items_by_list)),
             )
             .service(
-                web::resource("/rankings")
+                web::resource("/rankings/{userId}")
                     .route(web::get().to(handlers::rankings_handlers::get_rankings))
+            )
+            .service(
+                web::resource("/ranking-items")
+                    .route(web::post().to(handlers::ranking_items_handlers::update_ranking_items_by_ranking))
+            )
+            .service(
+                web::resource("/ranking-items/{rankingId}")
+                    .route(web::get().to(handlers::ranking_items_handlers::get_ranking_items_by_ranking))
+            )
+            .service(
+                web::resource("/rankings")
                     .route(web::post().to(handlers::rankings_handlers::create_ranking)),
             )
             .service(

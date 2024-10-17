@@ -2,10 +2,22 @@
 
 import Logo from "./logo";
 import TemplateLink from "@/components/Template/TemplateLink";
+import TemplateButton from "@/components/Template/TemplateButton";
+import {useUserContext} from "@/app/UserProvider";
+import {useRouter} from "next/navigation";
 
 const menu = [{name: 'My Ranking', route: 'myrankings'}, {name: 'My List', route: 'mylists'}]
 
 export default function Header() {
+    const {userId, setUserId} = useUserContext();
+    const router = useRouter();
+
+    function logout() {
+        localStorage.removeItem("userId");
+        setUserId(null)
+        router.push("/signin");
+    }
+
     return (
         <header className="z-30 mt-2 w-full md:mt-5">
             <div className="mx-auto max-w-6xl px-4 sm:px-6">
@@ -18,12 +30,16 @@ export default function Header() {
                     {menu.map((el, i) => (
                         <TemplateLink key={i} variant='blue' text={el.name} route={el.route}/>))}
                     <ul className="flex flex-1 items-center justify-end gap-3">
-                        <li>
-                            <TemplateLink variant='grey' text="Sign in" route="signin"/>
-                        </li>
-                        <li>
-                            <TemplateLink variant='blue' text="Register" route="signup"/>
-                        </li>
+                        {!userId ? <>
+                            <li>
+                                <TemplateLink variant='grey' text="Sign in" route="signin"/>
+                            </li>
+                            <li>
+                                <TemplateLink variant='blue' text="Register" route="signup"/>
+                            </li>
+                        </> : <li>
+                            <TemplateButton variant='blue' text="Log out" onClick={logout}/>
+                        </li>}
                     </ul>
                 </div>
             </div>

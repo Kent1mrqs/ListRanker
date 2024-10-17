@@ -13,40 +13,26 @@ export const metadata = {
 
 const rankingCard = [
     {
-        title: 'Tournoi',
+        title: 'Manual',
         image: TournoiImg,
-        description: '',
+        description: 'Make your ranking entirely by yourself',
+        key: 'manual'
+    },
+    {
+        title: 'Tournament',
+        image: TierList,
+        description: 'Generate a tournament and find your champion !',
         key: 'tournament'
     },
     {
-        title: 'Tier List',
+        title: 'Dual match',
         image: TierList,
-        description: '',
-        key: 'tier_list'
-    },
-    {
-        title: 'Numbered',
-        image: TierList,
-        description: '',
-        key: 'numbered'
-    },
-    {
-        title: 'Pyramid',
-        image: TierList,
-        description: '',
-        key: 'pyramid'
-    },
-    {
-        title: 'Points',
-        image: TierList,
-        description: '',
-        key: 'points'
+        description: 'Generate dual matches to find your total ranking',
+        key: 'dual_match'
     }
 ]
 
-export default function CreationMethod({setNewRanking}: RankingProps) {
-
-
+export default function CreationMethod({newRanking, setNewRanking}: RankingProps) {
     return (
         <TemplatePage
             title="Step 3 : Creation Method"
@@ -56,6 +42,7 @@ export default function CreationMethod({setNewRanking}: RankingProps) {
                 className="group mx-auto grid max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-3">
                 {rankingCard.map((card, i) => (
                     <TemplateCard
+                        selected={newRanking.method_creation === card.key}
                         key={i}
                         title={card.title}
                         image={card.image}

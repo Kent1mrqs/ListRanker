@@ -6,13 +6,13 @@ use serde_derive::{Deserialize, Serialize};
 #[derive(Queryable, Deserialize, Serialize)]
 pub struct List {
     pub list_id: i32,
-    pub user_id: Option<i32>,
+    pub user_id: i32,
     pub name: String,
 }
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct NewListApi {
-    pub user_id: Option<i32>,
+    pub user_id: i32,
     pub name: String,
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub items: Vec<NewItemApi>,
@@ -21,6 +21,6 @@ pub struct NewListApi {
 #[derive(Insertable, Deserialize, Serialize, Debug)]
 #[diesel(table_name = lists)]
 pub struct NewListDb {
-    pub user_id: Option<i32>,
+    pub user_id: i32,
     pub name: String,
 }
