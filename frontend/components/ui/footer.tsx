@@ -108,7 +108,7 @@ export default function Footer() {
                         </div>
                         <div className="text-sm">
                             <p className="mb-3 text-indigo-200/65">
-                                © 2024 Your Project. Licensed under{" "}
+                                © 2024 ListRanker. Licensed under{" "}
                                 <TextLink
                                     href="https://opensource.org/licenses/MIT"
                                     text="MIT"

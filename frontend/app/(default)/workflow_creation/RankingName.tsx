@@ -5,6 +5,8 @@ import TemplateInput from "@/components/Template/TemplateInput";
 import {Stack} from "@mui/material";
 import {isValidInput} from "@/app/(default)/mylists/ListCreation";
 import TemplateButton from "@/components/Template/TemplateButton";
+import {useState} from "react";
+import {useRouter} from "next/navigation";
 
 type SaveRankingProps = {
     newRanking: {
@@ -24,11 +26,21 @@ type SaveRankingProps = {
     }) => void;
 }
 
+function isValid(ranking: NewRanking) {
+    return isValidInput(ranking.name) && ranking.ranking_type && ranking.method_creation && ranking.list_id
+}
+
 export default function RankingName({newRanking, saveRanking, setNewRanking}: SaveRankingProps) {
+    const [error, setError] = useState<string | null>(null);
+    const router = useRouter();
 
     function onClick() {
-        if (isValidInput(newRanking.name)) {
+        if (isValid(newRanking)) {
             saveRanking()
+            setError(null)
+            router.push("myrankings")
+        } else {
+            setError("err")
         }
     }
 
@@ -40,7 +52,7 @@ export default function RankingName({newRanking, saveRanking, setNewRanking}: Sa
             <Stack spacing={2} alignItems="center">
                 <TemplateInput label='Title'
                                id='ranking_title'
-                               variant="blue"
+                               variant={error === null ? 'blue' : "error"}
                                placeholder="ex: Meilleurs kdrama..."
                                onChange={(e) => setNewRanking((prevValue: NewRanking) => {
                                    return {
@@ -48,7 +60,8 @@ export default function RankingName({newRanking, saveRanking, setNewRanking}: Sa
                                        name: e.target.value,
                                    }
                                })}/>
-                <TemplateButton onClick={onClick} text="Create" variant='blue'/>
+                <TemplateButton onClick={onClick} text="Create" variant={'blue'}/>
+
             </Stack>
         </TemplatePage>
     );
