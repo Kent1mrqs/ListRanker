@@ -1,7 +1,7 @@
 "use client";
 import React, {useState} from "react";
 import Spotlight from "@/components/spotlight";
-import {Button, Stack, Typography} from "@mui/material";
+import {Button, Stack} from "@mui/material";
 import TemplateInput from "@/components/Template/TemplateInput";
 
 interface RankingItem {
@@ -64,10 +64,8 @@ export default function RankingMaker({
                 className="group mx-auto grid max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-6"
             >
                 {currentRankingItems.sort((a, b) => a.rank > b.rank ? 1 : -1)?.map((el, index) => (
-                    <div className="mx-auto max-w-3xl pb-12 text-center md:pb-20">
-                        <Typography justifyContent='center' key={index}>{el.name}</Typography>
-                        <Typography justifyContent='center' key={index}>{el.rank}</Typography>
-                        <TemplateInput label='rank'
+                    <div className="mx-auto max-w-3xl pb-12 pt-12 text-center">
+                        <TemplateInput label={el.name}
                                        type='number'
                                        id={'rank' + index}
                                        key={index}
@@ -84,7 +82,7 @@ export default function RankingMaker({
                     </div>
                 ))}
             </Spotlight>
-            <Button onClick={() => saveRanking(editRanking, setEditRanking)}>Save</Button>
+            <Button disabled={!editRanking[0]} onClick={() => saveRanking(editRanking, setEditRanking)}>Save</Button>
         </Stack>
     );
 }

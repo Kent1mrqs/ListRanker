@@ -60,6 +60,9 @@ export default function RankingName({newRanking, saveRanking, setNewRanking}: Sa
                                        name: e.target.value,
                                    }
                                })}/>
+                {/*                <Typography>List : {newRanking.list_id}</Typography>
+                <Typography>List : {newRanking.ranking_type}</Typography>
+                <Typography>List : {newRanking.method_creation}</Typography>*/}
                 <TemplateButton onClick={onClick} text="Create" variant={'blue'}/>
 
             </Stack>
