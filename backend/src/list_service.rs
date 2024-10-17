@@ -25,7 +25,7 @@ pub fn create_new_list(conn: &mut PgConnection, new_list: NewListDb, items: Vec<
 
     let new_items: Vec<NewItem> = items.into_iter()
         .map(|item| NewItem {
-            list_id: Some(other_list_id),
+            list_id: other_list_id,
             name: item.name.clone(),
         })
         .collect();

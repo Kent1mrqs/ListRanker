@@ -8,6 +8,7 @@ mod user_service;
 mod list_service;
 mod item_service;
 mod ranking_service;
+mod ranking_item_service;
 mod models;
 mod handlers;
 mod db;
@@ -59,6 +60,10 @@ async fn main() -> std::io::Result<()> {
             .service(
                 web::resource("/rankings/{userId}")
                     .route(web::get().to(handlers::rankings_handlers::get_rankings))
+            )
+            .service(
+                web::resource("/ranking-items/{rankingItemId}")
+                    .route(web::get().to(handlers::ranking_items_handlers::get_ranking_items_by_ranking))
             )
             .service(
                 web::resource("/rankings")
