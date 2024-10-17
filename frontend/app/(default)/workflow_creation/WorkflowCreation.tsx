@@ -8,11 +8,6 @@ import RankingName from "@/app/(default)/workflow_creation/RankingName";
 import {useUserContext} from "@/app/UserProvider";
 import {useRouter} from "next/navigation";
 
-export const metadata = {
-    title: "Home - Open PRO",
-    description: "Page description",
-};
-
 export interface NewRanking {
     method_creation: string;
     user_id: number | null;

@@ -49,7 +49,7 @@ export default function DisplaySelection({newRanking, setNewRanking}: RankingPro
             description="Select how you want your ranking to be displayed."
         >
             <Spotlight
-                className="group mx-auto grid max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-3">
+                className="group mx-auto grid max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-5">
                 {rankingCard.map((card, i) => (
                     <TemplateCard
                         selected={newRanking.ranking_type === card.key}

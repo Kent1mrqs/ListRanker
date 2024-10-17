@@ -5,12 +5,6 @@ import {useCallback, useState} from "react";
 import {fetchData} from "@/app/api";
 import {useUserContext} from "@/app/UserProvider";
 
-export const metadata = {
-    title: "Home - Open PRO",
-    description: "Page description",
-};
-
-
 export default function MyLists() {
     const {userId} = useUserContext();
     const [error, setError] = useState<string | null>(null);

@@ -4,7 +4,7 @@ import React from "react";
 import TemplateTitle from "@/components/Template/TemplateTitle";
 
 export const metadata = {
-    title: "Home - Open PRO",
+    title: "List Ranker -Open PRO",
     description: "Page description",
 };
 

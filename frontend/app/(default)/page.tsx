@@ -1,7 +1,7 @@
 import WorkflowCreation from "@/app/(default)/workflow_creation/WorkflowCreation";
 
 export const metadata = {
-    title: "Home - Open PRO",
+    title: "List Ranker - Create your ranking",
     description: "Page description",
 };
 

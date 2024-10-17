@@ -1,15 +1,15 @@
-import ChooseRanking from "@/app/(default)/myrankings/ChooseRanking";
+import MyRankings from "@/app/(default)/myrankings/MyRankings";
 
 export const metadata = {
-    title: "Home - Open PRO",
+    title: "List Ranker - My Rankings",
     description: "Page description",
 };
 
 
-export default function MyRankings() {
+export default function MyRankingsPage() {
     return (
         <>
-            <ChooseRanking/>
+            <MyRankings/>
         </>
     );
 }
