@@ -25,10 +25,10 @@ export interface RankingMakerProps {
 
 
 export default function NumberedManualExchange({
-                                     saveRanking,
-                                     currentRankingItems,
-                                     setCurrentRankingItems,
-                                 }: RankingMakerProps) {
+                                                   saveRanking,
+                                                   currentRankingItems,
+                                                   setCurrentRankingItems,
+                                               }: RankingMakerProps) {
 
 
     const [editRanking, setEditRanking] = useState<EditRanking[]>([])
@@ -64,7 +64,7 @@ export default function NumberedManualExchange({
                 className="group mx-auto grid max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-6"
             >
                 {currentRankingItems.sort((a, b) => a.rank > b.rank ? 1 : -1)?.map((el, index) => (
-                    <div className="mx-auto max-w-3xl pb-12 pt-12 text-center">
+                    <div className="mx-auto max-w-3xl pb-12 text-center">
                         <TemplateInput label={el.name}
                                        type='number'
                                        id={'rank' + index}

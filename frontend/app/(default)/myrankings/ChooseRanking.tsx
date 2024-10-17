@@ -5,6 +5,7 @@ import {Ranking, Rankings} from "@/app/(default)/mylists/ListCreation";
 import Spotlight from "@/components/spotlight";
 import TemplateButton from "@/components/Template/TemplateButton";
 import {useRouter} from "next/navigation";
+import {useUserContext} from "@/app/UserProvider";
 
 export interface RankingItem {
     id: number,
@@ -37,10 +38,20 @@ export default function ChooseRanking({
                                       }: ChooseRankingProps) {
 
     const router = useRouter();
+    const {userId} = useUserContext();
+    const default_ranking: Ranking = {
+        id: 0,
+        user_id: userId,
+        name: "",
+        ranking_type: "numbered",
+        creation_method: "manual_exchange",
+        list_id: 0
+    }
 
     function selectRanking(ranking: Ranking) {
         if (currentRanking.id === ranking.id) {
-            setCurrentRanking({...ranking, id: 0})
+            setCurrentRanking({...default_ranking, id: 0})
+            setCurrentRankingItems([])
         } else {
             setCurrentRanking({...ranking, id: Number(ranking.id)})
             fetchData('ranking-items/' + ranking.id, setCurrentRankingItems).then(() => console.log('currentItems', currentRankingItems))
@@ -50,7 +61,7 @@ export default function ChooseRanking({
     return (
 
         <Spotlight
-            className="group mx-auto grid max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-6"
+            className="group mx-auto grid max-w-sm items-start pb-12 gap-6 lg:max-w-none lg:grid-cols-6"
         >
             {rankings.map((ra, index) => (
                 <TemplateButton key={index}

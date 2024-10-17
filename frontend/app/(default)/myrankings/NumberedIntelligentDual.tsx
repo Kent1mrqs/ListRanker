@@ -35,10 +35,14 @@ export default function NumberedIntelligentDual() {
     return (
         <Stack spacing={1} justifyContent='center'>
             <Spotlight
-                className="group mx-auto grid max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-6"
+                className="group mx-auto grid max-w-sm mt-3 items-start justify-center gap-6 lg:max-w-none lg:grid-cols-2"
             >
-                <TemplateCard title="" image={TierList} description="" onClick={chooseCard}/>
-                <TemplateCard title="" image={TierList} description="" onClick={chooseCard}/>
+                <div className="flex justify-center">
+                    <TemplateCard title="" image={TierList} description="" onClick={chooseCard}/>
+                </div>
+                <div className="flex justify-center">
+                    <TemplateCard title="" image={TierList} description="" onClick={chooseCard}/>
+                </div>
             </Spotlight>
         </Stack>
     );

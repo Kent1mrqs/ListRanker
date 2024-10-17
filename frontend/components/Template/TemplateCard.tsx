@@ -31,7 +31,9 @@ export default function TemplateCard({
                     onClick()
                 }
             }}
-            className={!disabled ? cardStyle : disabledCardStyle}
+            className={`${
+                !disabled ? cardStyle : disabledCardStyle
+            } w-80 h-96 `}
         >
             <div onClick={onClick}
                  className="relative z-20 h-full overflow-hidden rounded-[inherit] bg-gray-950 after:absolute after:inset-0 after:bg-gradient-to-br after:from-gray-900/50 after:via-gray-800/25 after:to-gray-900/50">
