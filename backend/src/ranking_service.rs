@@ -33,12 +33,11 @@ pub fn create_new_ranking(conn: &mut PgConnection, new_ranking: NewRanking) -> Q
 
     let ranking_items: Vec<Item> = get_items_by_list_id(conn, list_id_param)?;
 
-    // Créer les nouveaux éléments RankingItem avec le ranking_id associé
     let new_ranking_items: Vec<NewRankingItem> = ranking_items.into_iter()
         .map(|item| NewRankingItem {
             item_id: item.id,
-            ranking_id: other_ranking_id, // Assigner l'ID du nouveau ranking
-            rank: 0, // Valeur par défaut pour le rank, ajustez si nécessaire
+            ranking_id: other_ranking_id,
+            rank: 0,
         })
         .collect();
 

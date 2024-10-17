@@ -11,7 +11,7 @@ pub fn get_all_users(conn: &mut PgConnection) -> QueryResult<Vec<User>> {
 pub fn create_new_user(conn: &mut PgConnection, new_user: NewUser) -> Result<LoginResponse, diesel::result::Error> {
     let inserted_user: (i32, String) = diesel::insert_into(users)
         .values(&new_user)
-        .returning((id, username)) // Récupère l'id et le username de l'utilisateur inséré
+        .returning((id, username))
         .get_result(conn)?;
 
     Ok(LoginResponse {
