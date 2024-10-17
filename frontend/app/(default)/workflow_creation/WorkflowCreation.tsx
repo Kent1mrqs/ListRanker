@@ -67,6 +67,7 @@ export default function WorkflowCreation() {
         }
     }
 
+    console.log(newRanking)
     return (
         <>
             <ChooseList newRanking={newRanking} setNewRanking={setNewRanking}/>

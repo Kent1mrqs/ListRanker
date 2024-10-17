@@ -29,7 +29,8 @@ export interface Ranking {
     id: number;
     user_id: number | null;
     name: string;
-    ranking_type: string;
+    ranking_type: "numbered" | "tier_list";
+    creation_method: "manual_exchange" | "intelligent_dual";
     list_id: number;
 }
 

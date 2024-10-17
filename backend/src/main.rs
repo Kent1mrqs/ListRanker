@@ -50,7 +50,7 @@ async fn main() -> std::io::Result<()> {
                     .route(web::get().to(handlers::lists_handlers::get_lists))
             )
             .service(
-                web::resource("/lists/{list_id}")
+                web::resource("/list/{list_id}")
                     .route(web::delete().to(handlers::lists_handlers::delete_list)),
             )
             .service(

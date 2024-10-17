@@ -22,6 +22,7 @@ pub async fn create_ranking(new_ranking: web::Json<NewRanking>) -> HttpResponse 
         user_id: new_ranking.user_id,
         list_id: new_ranking.list_id,
         ranking_type: new_ranking.ranking_type.clone(),
+        creation_method: new_ranking.creation_method.clone(),
     };
 
     match ranking_service::create_new_ranking(&mut conn, list_data) {

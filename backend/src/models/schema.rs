@@ -36,6 +36,8 @@ diesel::table! {
         list_id -> Int4,
         #[max_length = 255]
         ranking_type -> Varchar,
+        #[max_length = 255]
+        creation_method -> Varchar,
     }
 }
 

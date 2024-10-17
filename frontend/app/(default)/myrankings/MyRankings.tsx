@@ -1,11 +1,12 @@
 "use client";
 import ChooseRanking, {EditRanking, RankingItem} from "@/app/(default)/myrankings/ChooseRanking";
-import RankingMaker from "@/app/(default)/myrankings/RankingMaker";
+import NumberedManualExchange from "@/app/(default)/myrankings/NumberedManualExchange";
 import TemplatePage from "@/components/Template/TemplatePage";
 import {useCallback, useEffect, useState} from "react";
 import {Ranking, Rankings} from "@/app/(default)/mylists/ListCreation";
 import {useUserContext} from "@/app/UserProvider";
 import {fetchData, postData} from "@/app/api";
+import NumberedIntelligentDual from "@/app/(default)/myrankings/NumberedIntelligentDual";
 
 export default function MyRankings() {
     const {userId} = useUserContext();
@@ -13,7 +14,8 @@ export default function MyRankings() {
         id: 0,
         user_id: userId,
         name: "",
-        ranking_type: "",
+        ranking_type: "numbered",
+        creation_method: "manual_exchange",
         list_id: 0
     }
     const [error, setError] = useState<string | null>(null);
@@ -47,6 +49,7 @@ export default function MyRankings() {
         }
     }
 
+    console.log(currentRanking)
     return (
         <TemplatePage
             title="My Rankings"
@@ -59,11 +62,17 @@ export default function MyRankings() {
                 currentRanking={currentRanking}
                 setCurrentRanking={setCurrentRanking}
             />
-            {currentRanking.id !== 0 && <RankingMaker
-				saveRanking={saveRanking}
-				currentRankingItems={currentRankingItems}
-				setCurrentRankingItems={setCurrentRankingItems}
-			/>}
+            {currentRanking.ranking_type === 'numbered' &&
+                currentRanking.creation_method === "manual_exchange" &&
+				<NumberedManualExchange
+					saveRanking={saveRanking}
+					currentRankingItems={currentRankingItems}
+					setCurrentRankingItems={setCurrentRankingItems}
+				/>}
+            {currentRanking.ranking_type === 'numbered' &&
+                currentRanking.creation_method === "intelligent_dual" &&
+				<NumberedIntelligentDual
+				/>}
         </TemplatePage>
     );
 }

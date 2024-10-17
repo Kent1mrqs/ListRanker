@@ -29,7 +29,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"username\": \"coco\",\n    \"password_hash\": \"coco\"\n}",
+					"raw": "{\n\t\"username\": \"rt\",\n    \"password_hash\": \"rt\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -70,7 +70,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"username\":\"coco\",\n    \"password_hash\":\"coco\"\n}",
+					"raw": "{\n    \"username\":\"quentin\",\n    \"password_hash\":\"marques\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -208,12 +208,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/lists",
+					"raw": "{{base_url}}/lists/1",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
-						"lists"
+						"lists",
+						"1"
 					]
 				},
 				"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
@@ -339,12 +340,99 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/rankings",
+					"raw": "{{base_url}}/rankings/2",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
-						"rankings"
+						"rankings",
+						"2"
+					]
+				},
+				"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+			},
+			"response": []
+		},
+		{
+			"name": "Get items with ranking id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/ranking-items/14",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"ranking-items",
+						"14"
+					]
+				},
+				"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+			},
+			"response": []
+		},
+		{
+			"name": "Post items with ranking id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n    {\"id\": 18, \"new_rank\": 50}\n]\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/ranking-items",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"ranking-items"
 					]
 				},
 				"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
@@ -381,13 +469,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/lists/2",
+					"raw": "{{base_url}}/list/10",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
-						"lists",
-						"2"
+						"list",
+						"10"
 					]
 				},
 				"description": "This is a DELETE request, and it is used to delete data that was previously created via a POST request. You typically identify the entity being updated by including an identifier in the URL (eg. `id=1`).\n\nA successful DELETE request typically returns a `200 OK`, `202 Accepted`, or `204 No Content` response code."

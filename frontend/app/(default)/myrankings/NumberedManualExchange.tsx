@@ -24,11 +24,11 @@ export interface RankingMakerProps {
 }
 
 
-export default function RankingMaker({
-                                         saveRanking,
-                                         currentRankingItems,
-                                         setCurrentRankingItems,
-                                     }: RankingMakerProps) {
+export default function NumberedManualExchange({
+                                     saveRanking,
+                                     currentRankingItems,
+                                     setCurrentRankingItems,
+                                 }: RankingMakerProps) {
 
 
     const [editRanking, setEditRanking] = useState<EditRanking[]>([])

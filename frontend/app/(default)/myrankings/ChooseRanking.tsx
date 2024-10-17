@@ -39,7 +39,6 @@ export default function ChooseRanking({
     const router = useRouter();
 
     function selectRanking(ranking: Ranking) {
-        console.log(currentRanking.id, ranking.id);
         if (currentRanking.id === ranking.id) {
             setCurrentRanking({...ranking, id: 0})
         } else {
