@@ -17,3 +17,10 @@ pub struct NewRankingItem {
     pub ranking_id: i32,
     pub item_id: i32,
 }
+
+#[derive(Queryable, Serialize)]
+pub struct RankingItemWithName {
+    pub(crate) id: i32,
+    pub(crate) item_id: i32,
+    pub(crate) item_name: String,
+}

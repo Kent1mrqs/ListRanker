@@ -1,8 +1,8 @@
 use crate::schema::items;
-use diesel::{Insertable, Queryable};
+use diesel::{Identifiable, Insertable, Queryable};
 use serde_derive::{Deserialize, Serialize};
 
-#[derive(Queryable, Deserialize, Serialize)]
+#[derive(Queryable, Deserialize, Serialize, Identifiable)]
 pub struct Item {
     pub id: i32,
     pub list_id: i32,
