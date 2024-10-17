@@ -46,7 +46,7 @@ export default function TemplateInput({
                 type={type}
                 id={id}
                 value={value}
-                className={`${variantsInput[variant]} mt-1 block`}
+                className={`${variantsInput[variant]} mt-1 block w-full`}
                 placeholder={placeholder}
                 onChange={onChange}
                 onBlur={onBlur}
