@@ -17,15 +17,16 @@ pub fn get_ranking_items_by_ranking_id(conn: &mut PgConnection, ranking_id_param
 
     ranking_items
         .filter(ranking_id.eq(ranking_id_param))
-        .inner_join(items_table.on(table_items_id.eq(item_id))) // Jointure correcte
-        .select((ranking_items::all_columns(), item_name_col)) // Sélectionnez les colonnes nécessaires
-        .load::<(RankingItem, String)>(conn) // Chargez en tant que tuple
+        .inner_join(items_table.on(table_items_id.eq(item_id)))
+        .select((ranking_items::all_columns(), item_name_col))
+        .load::<(RankingItem, String)>(conn)
         .map(|results| {
             results.into_iter().map(|(ranking_item, item_name)| {
                 RankingItemWithName {
                     id: ranking_item.id,
+                    ranking_id: ranking_item.ranking_id,
                     item_id: ranking_item.item_id,
-                    item_name, // Mapper item_name à partir du résultat
+                    name: item_name,
                 }
             }).collect()
         })
