@@ -41,7 +41,6 @@ pub async fn login(user: web::Json<NewUser>) -> impl Responder {
     match user_in_db {
         Ok(user_in_db) => {
             if user.password_hash == user_in_db.password_hash {
-                println!("OK");
                 let response = LoginResponse {
                     id: user_in_db.id,
                     username: user_in_db.username,

@@ -15,7 +15,7 @@ pub async fn get_ranking_items_by_ranking(path: web::Path<i32>) -> HttpResponse 
 pub async fn update_ranking_items_by_ranking(new_items: web::Json<Vec<NewRankings>>) -> HttpResponse {
     let mut conn = establish_connection();
 
-    match ranking_item_service::update_rank_with_id(&mut conn, new_items.into_inner()) {
+    match ranking_item_service::exchange_rank_with_id(&mut conn, new_items.into_inner()) {
         Ok(items) => HttpResponse::Ok().json(items),
         Err(_) => HttpResponse::InternalServerError().body("Error retrieving items"),
     }

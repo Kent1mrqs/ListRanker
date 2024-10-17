@@ -1,13 +1,15 @@
 import React from "react";
 
 interface I {
-    label: string;
-    id: string;
+    label?: string;
+    id?: string;
     key?: number;
     type?: string;
-    placeholder: string;
-    variant: string;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    placeholder?: string;
+    value?: number;
+    variant?: string;
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onBlur?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const sign = "form-input w-full";
@@ -25,7 +27,16 @@ const variantsLabels: { [key: string]: string } = {
     "sign": "block text-sm font-medium text-indigo-200/65",
 };
 
-export default function TemplateInput({label, type = 'text', id, placeholder, onChange, variant}: I) {
+export default function TemplateInput({
+                                          label,
+                                          type = 'text',
+                                          id,
+                                          value,
+                                          placeholder,
+                                          onChange,
+                                          onBlur,
+                                          variant = 'blue'
+                                      }: I) {
     return (
         <div className="mb-4">
             <label htmlFor={id} className={variantsLabels[variant]}>
@@ -34,9 +45,11 @@ export default function TemplateInput({label, type = 'text', id, placeholder, on
             <input
                 type={type}
                 id={id}
+                value={value}
                 className={`${variantsInput[variant]} mt-1 block`}
                 placeholder={placeholder}
                 onChange={onChange}
+                onBlur={onBlur}
                 required
             />
         </div>

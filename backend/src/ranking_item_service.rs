@@ -33,8 +33,20 @@ pub fn get_ranking_items_by_ranking_id(conn: &mut PgConnection, ranking_id_param
         })
 }
 
-pub fn update_rank_with_id(conn: &mut PgConnection, new_item_order: Vec<NewRankings>) -> Result<usize, Error> {
+pub fn exchange_rank_with_id(conn: &mut PgConnection, new_item_order: Vec<NewRankings>) -> Result<usize, Error> {
     for item in &new_item_order {
+        let current_item: RankingItem = ranking_items::table
+            .find(item.id)
+            .first(conn)?;
+
+        let target_item: RankingItem = ranking_items::table
+            .filter(ranking_items::rank.eq(item.new_rank))
+            .first(conn)?;
+
+        diesel::update(ranking_items::table.find(target_item.id))
+            .set(ranking_items::rank.eq(current_item.rank))
+            .execute(conn)?;
+
         diesel::update(ranking_items::table.find(item.id))
             .set(ranking_items::rank.eq(item.new_rank))
             .execute(conn)?;

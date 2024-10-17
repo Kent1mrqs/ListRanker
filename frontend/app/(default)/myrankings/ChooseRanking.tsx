@@ -15,11 +15,6 @@ export const metadata = {
     description: "Page description",
 };
 
-interface rankprops {
-    currentRanking: Ranking;
-    setCurrentRanking: (ranking: Ranking) => void;
-}
-
 interface RankingItem {
     id: number,
     ranking_id: number,
@@ -47,12 +42,12 @@ export default function ChooseRanking() {
     const [currentRanking, setCurrentRanking] = useState<Ranking>(default_ranking)
     const [error, setError] = useState<string | null>(null);
     const [rankings, setRankings] = useState<Rankings>([]);
-    const fetchLists = useCallback(() => {
+    const fetchRankings = useCallback(() => {
         fetchData<Rankings>('rankings/' + userId, setRankings).catch(err => setError(err.message));
     }, []);
     useEffect(() => {
-        fetchLists();
-    }, [fetchLists]);
+        fetchRankings();
+    }, [fetchRankings]);
 
     if (error !== null) {
         console.error(error)
@@ -72,7 +67,26 @@ export default function ChooseRanking() {
 
     const [editRanking, setEditRanking] = useState<EditRanking[]>([])
 
+    function exchangeRanks(id: number, new_rank: number) {
+        const target = currentRankingItems.filter(item => item.rank === new_rank)[0]
+        const self = currentRankingItems.filter(item => item.id === id)[0]
+
+        const new_target = {...target, rank: self.rank}
+        const new_self = {...self, rank: target.rank}
+        const updatedRankingItems = currentRankingItems.map(item => {
+            if (item.id === new_target.id) {
+                return new_target;
+            }
+            if (item.id === new_self.id) {
+                return new_self;
+            }
+            return item;
+        });
+        setCurrentRankingItems(updatedRankingItems);
+    }
+
     function moveRank(id: number, new_rank: number) {
+        exchangeRanks(id, new_rank);
         setEditRanking(prevState => {
             return [...prevState, {id, new_rank}]
         })
@@ -81,6 +95,8 @@ export default function ChooseRanking() {
     async function saveRanking() {
         try {
             await postData<EditRanking[]>('ranking-items', editRanking).then(() => {
+                setEditRanking([]);
+                fetchRankings();
             });
         } catch (error) {
             if (error instanceof Error) {
@@ -121,9 +137,19 @@ export default function ChooseRanking() {
                         <div className="mx-auto max-w-3xl pb-12 text-center md:pb-20">
                             <Typography justifyContent='center' key={index}>{el.name}</Typography>
                             <Typography justifyContent='center' key={index}>{el.rank}</Typography>
-                            <TemplateInput label='rank' type='number'
-                                           id={'rank' + index} key={index} placeholder={String(el.rank)} variant='blue'
-                                           onChange={(e) => moveRank(el.id, Number(e.target.value))}
+                            <TemplateInput label='rank'
+                                           type='number'
+                                           id={'rank' + index}
+                                           key={index}
+                                           variant='blue'
+                                           placeholder={String(el.rank)}
+                                           onBlur={(e) => {
+                                               const number_value = Number(e.target.value);
+                                               if (number_value <= currentRankingItems.length && number_value !== 0) {
+                                                   moveRank(el.id, Number(e.target.value))
+                                               }
+                                               e.target.value = ''
+                                           }}
                             />
                         </div>
                     ))}
