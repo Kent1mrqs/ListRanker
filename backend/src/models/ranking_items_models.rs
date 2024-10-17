@@ -26,3 +26,8 @@ pub struct RankingItemWithName {
     pub(crate) rank: i32,
     pub(crate) name: String,
 }
+#[derive(Deserialize, Serialize, Debug)]
+pub struct NewRankings {
+    pub(crate) id: i32,
+    pub(crate) new_rank: i32,
+}

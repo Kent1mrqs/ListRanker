@@ -23,21 +23,20 @@ pub fn create_new_ranking(conn: &mut PgConnection, new_ranking: NewRanking) -> Q
     Ok(other_ranking_id as usize)
 }
 
-/// Insère un nouveau classement dans la base de données et retourne son ID.
+/// Inserts a new ranking into the database and returns its ID.
 fn insert_ranking(conn: &mut PgConnection, new_ranking: &NewRanking) -> QueryResult<i32> {
     use crate::schema::rankings;
     diesel::insert_into(rankings::table)
         .values(new_ranking)
         .execute(conn)?;
 
-    // Récupérer l'ID du classement récemment créé
     rankings::table
         .order(rankings::dsl::id.desc())
         .select(rankings::dsl::id)
         .first(conn)
 }
 
-/// Récupère l'ID de la liste associée à un classement donné.
+/// Retrieves the ID of the list associated with a given ranking.
 fn get_list_id_by_ranking_id(conn: &mut PgConnection, ranking_id: i32) -> QueryResult<i32> {
     use crate::schema::rankings::dsl::{id, list_id};
     use crate::schema::rankings;
@@ -47,14 +46,14 @@ fn get_list_id_by_ranking_id(conn: &mut PgConnection, ranking_id: i32) -> QueryR
         .first(conn)
 }
 
-/// Crée une liste de nouveaux items de classement à partir d'une liste d'items existants.
+/// Creates a list of new ranking items from an existing list of items.
 fn create_new_ranking_items(ranking_items: &[Item], ranking_id: i32) -> Vec<NewRankingItem> {
     ranking_items.iter()
         .enumerate()
         .map(|(index, item)| NewRankingItem {
             item_id: item.id,
             ranking_id,
-            rank: index as i32,
+            rank: (index + 1) as i32,
         })
         .collect()
 }

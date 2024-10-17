@@ -92,6 +92,7 @@ export default function ChooseRanking() {
                     {currentRankingItems?.map((el, index) => (
                         <div className="mx-auto max-w-3xl pb-12 text-center md:pb-20">
                             <Typography justifyContent='center' key={index}>{el.name}</Typography>
+                            <Typography justifyContent='center' key={index}>{el.rank}</Typography>
                         </div>
                     ))}
 				</Spotlight>

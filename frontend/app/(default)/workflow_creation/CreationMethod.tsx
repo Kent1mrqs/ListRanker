@@ -33,8 +33,6 @@ const rankingCard = [
 ]
 
 export default function CreationMethod({newRanking, setNewRanking}: RankingProps) {
-
-
     return (
         <TemplatePage
             title="Step 3 : Creation Method"

@@ -1,4 +1,5 @@
-use crate::models::ranking_items_models::{NewRankingItem, RankingItem, RankingItemWithName};
+use crate::models::ranking_items_models::{NewRankingItem, NewRankings, RankingItem, RankingItemWithName};
+use crate::schema::ranking_items;
 use diesel::prelude::*;
 use diesel::result::Error;
 use diesel::{PgConnection, QueryResult, RunQueryDsl};
@@ -14,7 +15,6 @@ pub fn insert_ranking_items_in_bulk(conn: &mut PgConnection, new_ranking_items: 
 pub fn get_ranking_items_by_ranking_id(conn: &mut PgConnection, ranking_id_param: i32) -> QueryResult<Vec<RankingItemWithName>> {
     use crate::schema::ranking_items::dsl::*;
     use crate::schema::items::dsl::{id as table_items_id, items as items_table, name as item_name_col};
-
     ranking_items
         .filter(ranking_id.eq(ranking_id_param))
         .inner_join(items_table.on(table_items_id.eq(item_id)))
@@ -31,4 +31,13 @@ pub fn get_ranking_items_by_ranking_id(conn: &mut PgConnection, ranking_id_param
                 }
             }).collect()
         })
+}
+
+pub fn update_rank_with_id(conn: &mut PgConnection, new_item_order: Vec<NewRankings>) -> Result<usize, Error> {
+    for item in &new_item_order {
+        diesel::update(ranking_items::table.find(item.id))
+            .set(ranking_items::rank.eq(item.new_rank))
+            .execute(conn)?;
+    }
+    Ok(new_item_order.len())
 }
