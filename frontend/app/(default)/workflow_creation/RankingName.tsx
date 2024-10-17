@@ -8,6 +8,7 @@ import TemplateButton from "@/components/Template/TemplateButton";
 
 type SaveRankingProps = {
     newRanking: {
+        method_creation: string;
         user_id: number | null;
         list_id: number;
         name: string;
@@ -15,9 +16,10 @@ type SaveRankingProps = {
     };
     saveRanking: () => void;
     setNewRanking: (newValue: (prevValue: NewRanking) => {
-        user_id: number | null;
         list_id: number;
+        user_id: number | null;
         name: string;
+        method_creation: string;
         ranking_type: string
     }) => void;
 }

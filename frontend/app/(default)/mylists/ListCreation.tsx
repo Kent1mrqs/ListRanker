@@ -43,7 +43,7 @@ export type FetchListProps = {
 export function isValidInput(value: string): boolean {
     const hasInvalidCharacters = /[.,;]/.test(value)
     const input_length = value.trim().length;
-    return !hasInvalidCharacters && input_length < 10 && input_length > 0;
+    return !hasInvalidCharacters && input_length < 25 && input_length > 0;
 }
 
 export default function ListCreation({fetchLists}: FetchListProps) {

@@ -14,6 +14,7 @@ export const metadata = {
 };
 
 export interface NewRanking {
+    method_creation: string;
     user_id: number | null;
     name: string;
     ranking_type: string;
@@ -22,8 +23,16 @@ export interface NewRanking {
 
 
 export type RankingProps = {
+    newRanking: {
+        method_creation: string;
+        user_id: number | null;
+        list_id: number;
+        name: string;
+        ranking_type: string
+    },
     setNewRanking: (newValue: (prevValue: NewRanking) => {
         user_id: number | null;
+        method_creation: string;
         list_id: number;
         name: string;
         ranking_type: string
@@ -37,6 +46,7 @@ export default function WorkflowCreation() {
     console.log("userId", userId)
     const default_ranking: NewRanking = {
         user_id: userId,
+        method_creation: "",
         name: "",
         ranking_type: "",
         list_id: 0
@@ -64,9 +74,9 @@ export default function WorkflowCreation() {
 
     return (
         <>
-            <ChooseList setNewRanking={setNewRanking}/>
-            <DisplaySelection setNewRanking={setNewRanking}/>
-            <CreationMethod setNewRanking={setNewRanking}/>
+            <ChooseList newRanking={newRanking} setNewRanking={setNewRanking}/>
+            <DisplaySelection newRanking={newRanking} setNewRanking={setNewRanking}/>
+            <CreationMethod newRanking={newRanking} setNewRanking={setNewRanking}/>
             <RankingName newRanking={newRanking} saveRanking={saveRanking} setNewRanking={setNewRanking}/>
         </>
     );
