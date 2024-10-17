@@ -10,18 +10,29 @@ export interface Item {
     image: string,
 }
 
+const duel1 = [{
+    id_item: 1,
+    name: "tom",
+    image: ''
+}, {
+    id_item: 3,
+    name: "jerry",
+    image: ""
+}];
+
+const duel2 = [{
+    id_item: 2,
+    name: "titi",
+    image: ''
+}, {
+    id_item: 4,
+    name: "grominet",
+    image: ''
+}];
 
 export default function NumberedIntelligentDual() {
 
-    const [currentDual, setCurrentDual] = useState<Item[]>([{
-        id_item: 1,
-        name: "tom",
-        image: ''
-    }, {
-        id_item: 3,
-        name: "jerry",
-        image: ""
-    }])
+    const [currentDual, setCurrentDual] = useState<Item[]>(duel1)
 
     function chooseCard(item_id: number) {
 
@@ -30,16 +41,8 @@ export default function NumberedIntelligentDual() {
     }
 
     function nextDual() {
-        const new_duel = [{
-            id_item: 2,
-            name: "titi",
-            image: ''
-        }, {
-            id_item: 4,
-            name: "grominet",
-            image: ''
-        }];
-        setCurrentDual(new_duel)
+
+        setCurrentDual(currentDual === duel1 ? duel2 : duel1)
     }
 
     function sendResult(item_id: number) {
