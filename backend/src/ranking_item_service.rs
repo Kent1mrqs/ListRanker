@@ -26,6 +26,7 @@ pub fn get_ranking_items_by_ranking_id(conn: &mut PgConnection, ranking_id_param
                     id: ranking_item.id,
                     ranking_id: ranking_item.ranking_id,
                     item_id: ranking_item.item_id,
+                    rank: ranking_item.rank,
                     name: item_name,
                 }
             }).collect()

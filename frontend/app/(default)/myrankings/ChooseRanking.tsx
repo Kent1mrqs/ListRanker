@@ -1,7 +1,7 @@
 "use client";
 import React, {useCallback, useEffect, useState} from "react";
 import {fetchData} from "@/app/api";
-import {Item, Ranking, Rankings} from "@/app/(default)/mylists/ListCreation";
+import {Ranking, Rankings} from "@/app/(default)/mylists/ListCreation";
 import TemplatePage from "@/components/Template/TemplatePage";
 import Spotlight from "@/components/spotlight";
 import TemplateButton from "@/components/Template/TemplateButton";
@@ -17,6 +17,14 @@ export const metadata = {
 interface rankprops {
     currentRanking: Ranking;
     setCurrentRanking: (ranking: Ranking) => void;
+}
+
+interface RankingItem {
+    id: number,
+    ranking_id: number,
+    item_id: number,
+    rank: number,
+    name: string,
 }
 
 
@@ -44,7 +52,7 @@ export default function ChooseRanking() {
         console.error(error)
         setError(null);
     }
-    const [currentItems, setCurrentItems] = useState<Item[]>([])
+    const [currentRankingItems, setCurrentRankingItems] = useState<RankingItem[]>([])
 
     function selectRanking(ranking: Ranking) {
         console.log(currentRanking.id, ranking.id);
@@ -52,11 +60,11 @@ export default function ChooseRanking() {
             setCurrentRanking({...ranking, id: 0})
         } else {
             setCurrentRanking({...ranking, id: Number(ranking.id)})
-            fetchData('ranking-items/' + ranking.id, setCurrentItems).then(() => console.log('currentItems', currentItems))
+            fetchData('ranking-items/' + ranking.id, setCurrentRankingItems).then(() => console.log('currentItems', currentRankingItems))
         }
     }
 
-    console.log(currentItems)
+    console.log(currentRankingItems)
     return (
         <TemplatePage
             title="My Rankings"
@@ -81,7 +89,7 @@ export default function ChooseRanking() {
 				<Spotlight
 					className="group mx-auto grid max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-6"
 				>
-                    {currentItems?.map((el, index) => (
+                    {currentRankingItems?.map((el, index) => (
                         <div className="mx-auto max-w-3xl pb-12 text-center md:pb-20">
                             <Typography justifyContent='center' key={index}>{el.name}</Typography>
                         </div>

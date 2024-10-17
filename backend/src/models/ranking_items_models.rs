@@ -23,5 +23,6 @@ pub struct RankingItemWithName {
     pub(crate) id: i32,
     pub(crate) ranking_id: i32,
     pub(crate) item_id: i32,
+    pub(crate) rank: i32,
     pub(crate) name: String,
 }
