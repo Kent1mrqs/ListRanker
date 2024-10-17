@@ -1,5 +1,5 @@
 "use client";
-import {useCallback, useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {fetchData} from "@/app/api";
 import {Item, Ranking, Rankings} from "@/app/(default)/mylists/ListCreation";
 import TemplatePage from "@/components/Template/TemplatePage";
@@ -7,6 +7,7 @@ import Spotlight from "@/components/spotlight";
 import TemplateButton from "@/components/Template/TemplateButton";
 import {useUserContext} from "@/app/UserProvider";
 import {useRouter} from "next/navigation";
+import {Stack, Typography} from "@mui/material";
 
 export const metadata = {
     title: "Home - Open PRO",
@@ -51,10 +52,11 @@ export default function ChooseRanking() {
             setCurrentRanking({...ranking, id: 0})
         } else {
             setCurrentRanking({...ranking, id: Number(ranking.id)})
-            fetchData('items/' + ranking.list_id, setCurrentItems).then(() => console.log('currentItems', currentItems))
+            fetchData('ranking-items/' + ranking.id, setCurrentItems).then(() => console.log('currentItems', currentItems))
         }
     }
 
+    console.log(currentItems)
     return (
         <TemplatePage
             title="My Rankings"
@@ -75,6 +77,17 @@ export default function ChooseRanking() {
                                 onClick={() => router.push('/')}
                 />
             </Spotlight>
+            {currentRanking.id !== 0 && <Stack spacing={1} justifyContent='center'>
+				<Spotlight
+					className="group mx-auto grid max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-6"
+				>
+                    {currentItems?.map((el, index) => (
+                        <div className="mx-auto max-w-3xl pb-12 text-center md:pb-20">
+                            <Typography justifyContent='center' key={index}>{el.name}</Typography>
+                        </div>
+                    ))}
+				</Spotlight>
+			</Stack>}
         </TemplatePage>
     );
 }
