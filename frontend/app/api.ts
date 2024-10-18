@@ -16,9 +16,8 @@ export const fetchData = async <T>(route: string, setData: (data: T) => void): P
     }
 };
 
-export const postData = async <T>(route: string, data: T): Promise<T> => {
+export const postData = async <T, R>(route: string, data: T): Promise<R> => {
     const url = "http://127.0.0.1:8080/" + route;
-    console.info(JSON.stringify(data))
     try {
         const response = await fetch(url, {
             method: 'POST',
@@ -30,7 +29,7 @@ export const postData = async <T>(route: string, data: T): Promise<T> => {
         if (!response.ok) {
             throw new Error('Error when posting ' + route);
         }
-        const result = await response.json() as T;
+        const result = await response.json() as R;
         return result;
     } catch (error) {
         if (error instanceof Error) {

@@ -3,39 +3,57 @@ import React, {useEffect, useState} from "react";
 import Spotlight from "@/components/spotlight";
 import {Stack} from "@mui/material";
 import TemplateCard from "@/components/Template/TemplateCard";
-import {fetchData} from "@/app/api";
+import {fetchData, postData} from "@/app/api";
 
 export interface Item {
-    id_item: number;
+    id: number;
     name: string,
     image: string,
 }
 
+export interface ItemId {
+    id: number;
+}
+
 const default_duel = [{
-    id_item: 0,
+    id: 0,
     name: "",
     image: ''
 }, {
-    id_item: 0,
+    id: 0,
     name: "",
     image: ""
 }];
+
+interface DuelResponse {
+    NextDuel: Item[];
+}
 
 export default function NumberedIntelligentDual({rankingId}: { rankingId: number }) {
 
     const [currentDual, setCurrentDual] = useState<Item[]>(default_duel)
 
     useEffect(() => {
-        getDuel()
+        initDuel()
     }, []);
 
-    function chooseCard(item_id: number) {
-        getDuel()
+    function chooseCard(winnerId: number) {
+        nextDuel(winnerId)
     }
 
-    async function getDuel() {
+    async function initDuel() {
         try {
             await fetchData<Item[]>('duels-init/' + rankingId, setCurrentDual).then(() => {
+            });
+        } catch (e) {
+            console.error(e)
+        }
+    }
+
+    async function nextDuel(winnerId: number) {
+        try {
+            await postData<ItemId, DuelResponse>('duels-next/' + rankingId, {id: winnerId}).then((response: DuelResponse) => {
+                setCurrentDual(response.NextDuel)
             });
         } catch (e) {
             console.error(e)
@@ -53,11 +71,11 @@ export default function NumberedIntelligentDual({rankingId}: { rankingId: number
             >
                 <div className="flex justify-center">
                     <TemplateCard title={currentDual[0].name} image={""} variant="duel"
-                                  onClick={() => chooseCard(currentDual[0].id_item)}/>
+                                  onClick={() => chooseCard(currentDual[0].id)}/>
                 </div>
                 <div className="flex justify-center">
                     <TemplateCard title={currentDual[1].name} image={""} variant="duel"
-                                  onClick={() => chooseCard(currentDual[1].id_item)}/>
+                                  onClick={() => chooseCard(currentDual[1].id)}/>
                 </div>
             </Spotlight>
         </Stack>
