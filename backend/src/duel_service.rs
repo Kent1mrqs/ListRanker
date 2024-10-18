@@ -12,11 +12,23 @@ pub struct ItemDuel {
     pub image: String,
 }
 
-/// Je reçois l'id du ranking et l'id de l'item qui a gagné, à partir de là, je
-pub fn next_duel(conn: &mut PgConnection, ranking_id: i32, winner: Winner) -> Result<(), Box<dyn std::error::Error>> {
-    // Example logic; replace this with actual code
-    // You can add code to perform operations, query the database, etc.
-    Ok(()) // Ensure it returns `Result`
+fn battle_over(ranking_id: i32) -> bool {
+    true
+}
+#[derive(Serialize)]
+pub enum DuelResult {
+    Finished(String),
+    NextDuel(Vec<ItemDuel>),
+}
+
+/// Je reçois l'id du ranking et l'id de l'item qui a gagné
+pub fn next_duel(conn: &mut PgConnection, ranking_id: i32, winner: Winner) -> Result<DuelResult, Box<dyn std::error::Error>> {
+    if { battle_over(ranking_id) } {
+        Ok(DuelResult::Finished("fin".to_string()))
+    } else {
+        let response = pick_duel_candidates(conn, ranking_id, best_choice)?;
+        Ok(DuelResult::NextDuel(response))
+    }
 }
 
 fn pick_random_dual_candidates(max: usize, items: Vec<RankingItemWithName>) -> (usize, usize) {
