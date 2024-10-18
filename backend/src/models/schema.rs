@@ -1,6 +1,15 @@
 // @generated automatically by Diesel CLI.
 
 diesel::table! {
+    duels (id) {
+        id -> Int4,
+        ranking_id -> Int4,
+        loser -> Int4,
+        winner -> Int4,
+    }
+}
+
+diesel::table! {
     items (id) {
         id -> Int4,
         list_id -> Int4,
@@ -52,6 +61,7 @@ diesel::table! {
     }
 }
 
+diesel::joinable!(duels -> rankings (ranking_id));
 diesel::joinable!(items -> lists (list_id));
 diesel::joinable!(lists -> users (user_id));
 diesel::joinable!(ranking_items -> items (item_id));
@@ -60,6 +70,7 @@ diesel::joinable!(rankings -> lists (list_id));
 diesel::joinable!(rankings -> users (user_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
+    duels,
     items,
     lists,
     ranking_items,

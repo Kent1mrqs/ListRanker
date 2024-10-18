@@ -1,14 +1,9 @@
 use crate::db::establish_connection;
 use crate::duel_service;
+use crate::models::duel_models::BattleResult;
 use actix_web::{web, HttpResponse};
-use serde_derive::Deserialize;
 
-#[derive(Deserialize)]
-pub struct Winner {
-    pub id: i32,
-}
-
-pub async fn next_duel_handler(path: web::Path<i32>, json_winner: web::Json<Winner>) -> HttpResponse {
+pub async fn next_duel_handler(path: web::Path<i32>, json_winner: web::Json<BattleResult>) -> HttpResponse {
     let mut conn = establish_connection();
     let ranking_id = path.into_inner();
     let winner = json_winner.into_inner();

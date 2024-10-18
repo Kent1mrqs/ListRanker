@@ -86,7 +86,7 @@ export default function ListCreation({fetchLists}: FetchListProps) {
 
     async function saveList() {
         try {
-            await postData<NewList>('lists', newList).then(() => {
+            await postData<NewList, NewList>('lists', newList).then(() => {
                 setNewList(default_list)
                 fetchLists()
             });

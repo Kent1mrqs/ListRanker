@@ -37,7 +37,7 @@ export default function MyRankings() {
     async function saveRanking(editRanking: EditRanking[], setEditRanking: (editRanking: EditRanking[]) => void) {
 
         try {
-            await postData<EditRanking[]>('ranking-items', editRanking).then(() => {
+            await postData<EditRanking[], EditRanking[]>('ranking-items', editRanking).then(() => {
                 setEditRanking([]);
                 fetchRankings();
             });
@@ -71,7 +71,7 @@ export default function MyRankings() {
 				/>}
             {currentRanking.ranking_type === 'numbered' &&
                 currentRanking.creation_method === "intelligent_dual" &&
-				<NumberedIntelligentDual rankingId={currentRanking.id}
+				<NumberedIntelligentDual ranking_id={currentRanking.id}
 				/>}
         </TemplatePage>
     );

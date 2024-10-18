@@ -35,7 +35,7 @@ export default function SignUpForm() {
     async function onClick() {
         if (validId(newUser.username, newUser.password_hash)) {
             try {
-                await postData<NewUser>('register', newUser).then((e) => {
+                await postData<NewUser, NewUser>('register', newUser).then((e) => {
                     setUserId(e.id)
                     localStorage.setItem("userId", String(e.id));
                     router.push("/myrankings");

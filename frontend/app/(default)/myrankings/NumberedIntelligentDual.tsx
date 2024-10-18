@@ -11,10 +11,6 @@ export interface Item {
     image: string,
 }
 
-export interface ItemId {
-    id: number;
-}
-
 const default_duel = [{
     id: 0,
     name: "",
@@ -29,39 +25,41 @@ interface DuelResponse {
     NextDuel: Item[];
 }
 
-export default function NumberedIntelligentDual({rankingId}: { rankingId: number }) {
+interface BattleResult {
+    ranking_id: number;
+    loser: number;
+    winner: number;
+}
+
+export default function NumberedIntelligentDual({ranking_id}: { ranking_id: number }) {
 
     const [currentDual, setCurrentDual] = useState<Item[]>(default_duel)
-
+    console.log(currentDual)
     useEffect(() => {
         initDuel()
     }, []);
 
-    function chooseCard(winnerId: number) {
-        nextDuel(winnerId)
+    function chooseCard(winner: BattleResult) {
+        nextDuel(winner)
     }
 
     async function initDuel() {
         try {
-            await fetchData<Item[]>('duels-init/' + rankingId, setCurrentDual).then(() => {
+            await fetchData<Item[]>('duels-init/' + ranking_id, setCurrentDual).then(() => {
             });
         } catch (e) {
             console.error(e)
         }
     }
 
-    async function nextDuel(winnerId: number) {
+    async function nextDuel(data_result: BattleResult) {
         try {
-            await postData<ItemId, DuelResponse>('duels-next/' + rankingId, {id: winnerId}).then((response: DuelResponse) => {
+            await postData<BattleResult, DuelResponse>('duels-next/' + ranking_id, data_result).then((response: DuelResponse) => {
                 setCurrentDual(response.NextDuel)
             });
         } catch (e) {
             console.error(e)
         }
-    }
-
-    function sendResult(item_id: number) {
-        console.log(item_id + ' wins');
     }
 
     return (
@@ -71,11 +69,19 @@ export default function NumberedIntelligentDual({rankingId}: { rankingId: number
             >
                 <div className="flex justify-center">
                     <TemplateCard title={currentDual[0].name} image={""} variant="duel"
-                                  onClick={() => chooseCard(currentDual[0].id)}/>
+                                  onClick={() => chooseCard({
+                                      ranking_id,
+                                      winner: currentDual[0].id,
+                                      loser: currentDual[1].id
+                                  })}/>
                 </div>
                 <div className="flex justify-center">
                     <TemplateCard title={currentDual[1].name} image={""} variant="duel"
-                                  onClick={() => chooseCard(currentDual[1].id)}/>
+                                  onClick={() => chooseCard({
+                                      ranking_id,
+                                      winner: currentDual[1].id,
+                                      loser: currentDual[0].id
+                                  })}/>
                 </div>
             </Spotlight>
         </Stack>

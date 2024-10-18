@@ -33,7 +33,7 @@ export default function SignInForm() {
     async function onClick() {
         if (validId(user.username, user.password_hash)) {
             try {
-                await postData<NewUser>('login', user).then((e) => {
+                await postData<NewUser, NewUser>('login', user).then((e) => {
                     setUserId(e.id)
                     localStorage.setItem("userId", String(e.id));
                     router.push("/myrankings");

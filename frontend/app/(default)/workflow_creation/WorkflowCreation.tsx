@@ -54,7 +54,7 @@ export default function WorkflowCreation() {
     async function saveRanking() {
         console.log(newRanking)
         try {
-            await postData<NewRanking>('rankings', newRanking).then(() => {
+            await postData<NewRanking, NewRanking>('rankings', newRanking).then(() => {
                 setNewRanking(default_ranking)
             });
         } catch (error) {
