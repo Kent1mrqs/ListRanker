@@ -53,6 +53,7 @@ fn create_new_ranking_items(ranking_items: &[Item], ranking_id: i32) -> Vec<NewR
         .map(|(index, item)| NewRankingItem {
             item_id: item.id,
             ranking_id,
+            score: 0,
             rank: (index + 1) as i32,
         })
         .collect()

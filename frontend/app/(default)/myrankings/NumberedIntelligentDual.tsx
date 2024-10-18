@@ -1,7 +1,7 @@
 "use client";
 import React, {useEffect, useState} from "react";
 import Spotlight from "@/components/spotlight";
-import {Stack} from "@mui/material";
+import {Stack, Typography} from "@mui/material";
 import TemplateCard from "@/components/Template/TemplateCard";
 import {fetchData, postData} from "@/app/api";
 
@@ -34,6 +34,8 @@ interface BattleResult {
 export default function NumberedIntelligentDual({ranking_id}: { ranking_id: number }) {
 
     const [currentDual, setCurrentDual] = useState<Item[]>(default_duel)
+    const [duelOver, setDuelOver] = useState<Boolean>(false)
+
     console.log(currentDual)
     useEffect(() => {
         initDuel()
@@ -41,6 +43,11 @@ export default function NumberedIntelligentDual({ranking_id}: { ranking_id: numb
 
     function chooseCard(winner: BattleResult) {
         nextDuel(winner)
+    }
+
+    function endBattle() {
+        console.log('fin de la bataille');
+        setDuelOver(true)
     }
 
     async function initDuel() {
@@ -55,16 +62,21 @@ export default function NumberedIntelligentDual({ranking_id}: { ranking_id: numb
     async function nextDuel(data_result: BattleResult) {
         try {
             await postData<BattleResult, DuelResponse>('duels-next/' + ranking_id, data_result).then((response: DuelResponse) => {
-                setCurrentDual(response.NextDuel)
+                if (response.NextDuel) {
+                    setCurrentDual(response.NextDuel)
+                } else {
+                    endBattle()
+                }
             });
         } catch (e) {
             console.error(e)
         }
     }
 
+    console.log(duelOver)
     return (
         <Stack spacing={1} justifyContent='center'>
-            <Spotlight
+            {duelOver ? <Typography>Fin de la bataille</Typography> : <Spotlight
                 className="group mx-auto grid max-w-sm mt-3 items-start justify-center gap-6 lg:max-w-none lg:grid-cols-2"
             >
                 <div className="flex justify-center">
@@ -83,7 +95,7 @@ export default function NumberedIntelligentDual({ranking_id}: { ranking_id: numb
                                       loser: currentDual[0].id
                                   })}/>
                 </div>
-            </Spotlight>
+            </Spotlight>}
         </Stack>
     );
 }

@@ -17,6 +17,7 @@ pub struct NewRankingItem {
     pub ranking_id: i32,
     pub item_id: i32,
     pub rank: i32,
+    pub score: i32,
 }
 
 #[derive(Queryable, Serialize, Clone, Debug)]

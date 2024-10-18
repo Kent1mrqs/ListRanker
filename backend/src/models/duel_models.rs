@@ -16,7 +16,7 @@ pub struct ItemDuel {
 }
 
 #[derive(Insertable, Deserialize)]
-#[table_name = "duels"]
+#[diesel(table_name = duels)]
 pub struct BattleResult {
     pub ranking_id: i32,
     pub winner: i32,

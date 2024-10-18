@@ -24,9 +24,11 @@ pub fn create_new_list(conn: &mut PgConnection, new_list: NewListDb, items: Vec<
         .first(conn)?;
 
     let new_items: Vec<NewItem> = items.into_iter()
-        .map(|item| NewItem {
+        .enumerate()
+        .map(|(index, item)| NewItem {
             list_id: other_list_id,
             name: item.name.clone(),
+            position_list: index as i32,
         })
         .collect();
 

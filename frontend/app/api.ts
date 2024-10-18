@@ -33,7 +33,7 @@ export const postData = async <T, R>(route: string, data: T): Promise<R> => {
             throw new Error('Error when posting ' + route);
         }
         const result = await response.json() as R;
-        console.info("post get", response)
+        console.info("post response : ", response)
         return result;
     } catch (error) {
         if (error instanceof Error) {
