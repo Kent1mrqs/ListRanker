@@ -1,5 +1,5 @@
 use crate::models::duel_models::{BattleResult, DuelResult, ItemDuel};
-use crate::ranking_item_service::get_ranking_items_by_ranking_id;
+use crate::ranking_item_service::{get_ranking_items_by_ranking_id, update_ranks};
 use crate::schema::duels::dsl::duels;
 use crate::schema::duels::{loser, winner};
 use crate::schema::items::dsl::items;
@@ -32,6 +32,7 @@ pub fn next_duel(conn: &mut PgConnection, ranking_id_param: i32, battle_result: 
     store_winner(conn, battle_result).expect("TODO: panic message");
 
     if battle_over(conn, ranking_id_param) {
+        generate_ranking(conn, ranking_id_param);
         Ok(DuelResult::Finished("fin".to_string()))
     } else {
         let response = pick_duel_candidates(conn, ranking_id_param, find_duel)?;
@@ -132,3 +133,15 @@ pub fn store_winner(conn: &mut PgConnection, battle_result: BattleResult) -> Que
         .execute(conn)
 }
 
+pub fn generate_ranking(conn: &mut PgConnection, ranking_id_param: i32) -> QueryResult<usize> {
+    use crate::schema::ranking_items::{id, ranking_id, score};
+
+    let new_rank_order = ranking_items
+        .filter(ranking_id.eq(ranking_id_param))
+        .order(score.desc())
+        .select((id, score))
+        .load(conn)?;
+
+    let updated_count = update_ranks(conn, new_rank_order)?;
+    Ok(updated_count)
+}

@@ -54,3 +54,14 @@ pub fn exchange_rank_with_id(conn: &mut PgConnection, new_item_order: Vec<NewRan
     }
     Ok(new_item_order.len())
 }
+pub fn update_ranks(conn: &mut PgConnection, new_ranks: Vec<(i32, i32)>) -> Result<usize, Error> {
+    print!("call update ranks, new_ranks : {:?}", new_ranks);
+
+    for (index, (item_id, _)) in new_ranks.iter().enumerate() {
+        diesel::update(ranking_items::table.filter(ranking_items::id.eq(item_id)))
+            .set(ranking_items::rank.eq((index + 1) as i32))
+            .execute(conn)?;
+    }
+
+    Ok(new_ranks.len())
+}
