@@ -18,18 +18,13 @@ export default function MyRankings() {
         creation_method: "manual_exchange",
         list_id: 0
     }
-    const [error, setError] = useState<string | null>(null);
-    if (error !== null) {
-        console.error(error)
-        setError(null);
-    }
     const [rankings, setRankings] = useState<Rankings>([]);
     const [currentRanking, setCurrentRanking] = useState<Ranking>(default_ranking)
     const [currentRankingItems, setCurrentRankingItems] = useState<RankingItem[]>([])
     const fetchRankings = useCallback(() => {
         fetchData<Rankings>('rankings/' + userId)
             .then(result => setRankings(result))
-            .catch(err => setError(err.message));
+            .catch(err => console.error(err.message));
     }, []);
     useEffect(() => {
         fetchRankings();
@@ -45,9 +40,9 @@ export default function MyRankings() {
             });
         } catch (error) {
             if (error instanceof Error) {
-                setError(error.message);
+                console.error(error.message);
             } else {
-                setError('An unknown error occurred');
+                console.error('An unknown error occurred');
             }
         }
     }

@@ -48,7 +48,6 @@ export function isValidInput(value: string): boolean {
 }
 
 export default function ListCreation({fetchLists}: FetchListProps) {
-    const [error, setError] = useState<string | null>(null);
     const {userId} = useUserContext();
 
 
@@ -65,7 +64,6 @@ export default function ListCreation({fetchLists}: FetchListProps) {
 
     function onClick() {
         if (isValidInput(nameList)) {
-            setError(null)
             const object: Item[] = input
                 .split(separator)
                 .filter(item => item && item.trim() !== "")
@@ -74,15 +72,9 @@ export default function ListCreation({fetchLists}: FetchListProps) {
                 });
             setNewList({...newList, name: nameList, items: object});
         } else {
-            setError('ee')
+            console.error('invalid input')
         }
     }
-
-    if (error !== null) {
-        console.error(error)
-        setError(null);
-    }
-
 
     async function saveList() {
         try {
@@ -92,13 +84,13 @@ export default function ListCreation({fetchLists}: FetchListProps) {
             });
         } catch (error) {
             if (error instanceof Error) {
-                setError(error.message);
+                console.error(error.message);
             } else {
-                setError('An unknown error occurred');
+                console.error('An unknown error occurred');
             }
         }
     }
-    
+
     return (
         <Stack direction='row' spacing={5} justifyContent="center">
             <Stack spacing={1} alignItems="center">

@@ -29,7 +29,6 @@ export function validId(username: string, password: string) {
 export default function SignUpForm() {
     const router = useRouter();
     const [newUser, setNewUser] = useState<NewUser>(default_user)
-    const [error, setError] = useState<string | null>(null);
     const {setUserId} = useUserContext();
 
     async function onClick() {
@@ -42,19 +41,14 @@ export default function SignUpForm() {
                 });
             } catch (error) {
                 if (error instanceof Error) {
-                    setError(error.message);
+                    console.error(error.message);
                 } else {
-                    setError('An unknown error occurred');
+                    console.error('An unknown error occurred');
                 }
             }
         } else {
-            setError("unvalid")
+            console.error("unvalid")
         }
-    }
-
-    if (error !== null) {
-        console.error(error)
-        setError(null);
     }
 
     return (

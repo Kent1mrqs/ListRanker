@@ -7,16 +7,14 @@ import {useUserContext} from "@/app/UserProvider";
 
 export default function MyLists() {
     const {userId} = useUserContext();
-    const [error, setError] = useState<string | null>(null);
     const [currentListId, setCurrentListId] = useState<number>(0)
     const [lists, setLists] = useState<Lists>([]);
     const fetchLists = useCallback(() => {
         fetchData<Lists>('lists/' + userId)
             .then(result => setLists(result))
-            .catch(err => setError(err.message));
+            .catch(err => console.error(err.message));
     }, []);
 
-    console.error(error)
     return (
         <>
             <ListSelection lists={lists}

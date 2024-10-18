@@ -27,7 +27,6 @@ export default function SignInForm() {
 
     const router = useRouter();
     const [user, setUser] = useState<NewUser>(default_user)
-    const [error, setError] = useState<string | null>(null);
     const {setUserId} = useUserContext();
 
     async function onClick() {
@@ -40,19 +39,14 @@ export default function SignInForm() {
                 });
             } catch (error) {
                 if (error instanceof Error) {
-                    setError(error.message);
+                    console.error(error.message);
                 } else {
-                    setError('An unknown error occurred');
+                    console.error('An unknown error occurred');
                 }
             }
         } else {
-            setError("unvalid")
+            console.error("unvalid")
         }
-    }
-
-    if (error !== null) {
-        console.error(error);
-        setError(null);
     }
 
     return (

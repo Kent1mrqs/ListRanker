@@ -6,7 +6,6 @@ import {useState} from "react";
 import {postData} from "@/app/api";
 import RankingName from "@/app/(default)/workflow_creation/RankingName";
 import {useUserContext} from "@/app/UserProvider";
-import {useRouter} from "next/navigation";
 
 export interface NewRanking {
     creation_method: string;
@@ -35,8 +34,6 @@ export type RankingProps = {
 }
 
 export default function WorkflowCreation() {
-    const [error, setError] = useState<string | null>(null);
-    const router = useRouter();
     const {userId} = useUserContext();
     const default_ranking: NewRanking = {
         user_id: userId,
@@ -46,10 +43,6 @@ export default function WorkflowCreation() {
         list_id: 0
     }
     const [newRanking, setNewRanking] = useState<NewRanking>(default_ranking)
-    if (error !== null) {
-        console.error(error)
-        setError(null);
-    }
 
     async function saveRanking() {
         console.log(newRanking)
@@ -59,9 +52,9 @@ export default function WorkflowCreation() {
             });
         } catch (error) {
             if (error instanceof Error) {
-                setError(error.message);
+                console.error(error.message);
             } else {
-                setError('An unknown error occurred');
+                console.error('An unknown error occurred');
             }
         }
     }
