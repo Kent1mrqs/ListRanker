@@ -52,9 +52,14 @@ fn pick_random_dual_candidates(max: i64) -> (i32, i32) {
 
 
 /// Call the algorithm
-pub fn init_duel(conn: &mut PgConnection, ranking_id_param: i32) -> Result<Vec<ItemDuel>, Box<dyn std::error::Error>> {
-    let response = pick_duel_candidates(conn, ranking_id_param, find_duel)?;
-    Ok(response)
+pub fn init_duel(conn: &mut PgConnection, ranking_id_param: i32) -> Result<DuelResult, Box<dyn std::error::Error>> {
+    if battle_over(conn, ranking_id_param) {
+        generate_ranking(conn, ranking_id_param);
+        Ok(DuelResult::Finished("fin".to_string()))
+    } else {
+        let response = pick_duel_candidates(conn, ranking_id_param, find_duel)?;
+        Ok(DuelResult::NextDuel(response))
+    }
 }
 
 pub fn already_done_duel(conn: &mut PgConnection, item_1_id: i32, item_2_id: i32) -> bool {

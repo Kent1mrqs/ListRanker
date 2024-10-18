@@ -52,8 +52,8 @@ export default function NumberedIntelligentDual({ranking_id}: { ranking_id: numb
 
     async function initDuel() {
         try {
-            await fetchData<Item[]>('duels-init/' + ranking_id, setCurrentDual).then(() => {
-            });
+            await fetchData<Item[]>('duels-init/' + ranking_id)
+                .then(result => setCurrentDual(result));
         } catch (e) {
             console.error(e)
         }

@@ -13,7 +13,9 @@ export default function ChooseList({setNewRanking}: RankingProps) {
     const [currentListId, setCurrentListId] = useState<number>(0)
     const [lists, setLists] = useState<Lists>([]);
     const fetchLists = useCallback(() => {
-        fetchData<Lists>('lists/' + userId, setLists).catch(err => setError(err.message));
+        fetchData<Lists>('lists/' + userId)
+            .then(result => setLists(result))
+            .catch(err => setError(err.message));
     }, []);
 
     if (error !== null) {

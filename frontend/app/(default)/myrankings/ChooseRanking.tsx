@@ -54,7 +54,8 @@ export default function ChooseRanking({
             setCurrentRankingItems([])
         } else {
             setCurrentRanking({...ranking, id: Number(ranking.id)})
-            fetchData('ranking-items/' + ranking.id, setCurrentRankingItems).then(() => console.log('currentItems', currentRankingItems))
+            fetchData<RankingItem[]>('ranking-items/' + ranking.id)
+                .then(result => setCurrentRankingItems(result))
         }
     }
 

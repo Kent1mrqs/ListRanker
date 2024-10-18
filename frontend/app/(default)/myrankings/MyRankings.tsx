@@ -27,7 +27,9 @@ export default function MyRankings() {
     const [currentRanking, setCurrentRanking] = useState<Ranking>(default_ranking)
     const [currentRankingItems, setCurrentRankingItems] = useState<RankingItem[]>([])
     const fetchRankings = useCallback(() => {
-        fetchData<Rankings>('rankings/' + userId, setRankings).catch(err => setError(err.message));
+        fetchData<Rankings>('rankings/' + userId)
+            .then(result => setRankings(result))
+            .catch(err => setError(err.message));
     }, []);
     useEffect(() => {
         fetchRankings();

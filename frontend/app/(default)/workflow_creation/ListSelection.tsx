@@ -22,7 +22,9 @@ export default function ListSelection({lists, fetchLists, currentListId, setCurr
         fetchLists();
     }, [fetchLists]);
     const fetchItems = useCallback((list_id: number) => {
-        fetchData<Lists>('items/' + list_id, setCurrentItems).catch(err => setError(err.message));
+        fetchData<Lists>('items/' + list_id)
+            .then(result => setCurrentItems(result))
+            .catch(err => setError(err.message));
     }, []);
     if (error !== null) {
         console.error(error)
