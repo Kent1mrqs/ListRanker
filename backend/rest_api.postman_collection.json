@@ -156,7 +156,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"name\": \"List1\",\n    \"user_id\": 1,\n    \"items\":[\n        {\"name\":\"e\"},\n        {\"name\": \"o\"}\n    ]\n}",
+					"raw": "{\n\t\"name\": \"kdrama\",\n    \"user_id\": 1,\n    \"items\":[\n        {\"name\":\"Vincenzo\"},\n        {\"name\": \"The Glory\"},\n        {\"name\": \"La trace dans le sang\"},\n        {\"name\": \"King the land\"},\n        {\"name\": \"A business proposal\"},\n        {\"name\": \"Crash landing on you\"},\n        {\"name\": \"Vagabond\"},\n        {\"name\": \"Alchemy of souls\"},\n        {\"name\": \"Queen of Tears\"},\n        {\"name\": \"Flower of Evil\"}\n    ]\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -288,7 +288,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"name\": \"Ranking1\",\n    \"user_id\": 1,\n    \"list_id\": 1,\n    \"ranking_type\":\"\"\n}",
+					"raw": "{\n\t\"name\": \"Ranking1\",\n    \"user_id\": 1,\n    \"list_id\": 1,\n    \"ranking_type\":\"numbered\",\n    \"creation_method\":\"manual_exchange\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -302,6 +302,37 @@
 					],
 					"path": [
 						"rankings"
+					]
+				},
+				"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+			},
+			"response": []
+		},
+		{
+			"name": "init duel",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/duels-init/17",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"duels-init",
+						"17"
 					]
 				},
 				"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
