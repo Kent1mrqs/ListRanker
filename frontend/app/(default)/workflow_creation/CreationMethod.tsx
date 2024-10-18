@@ -38,7 +38,7 @@ export default function CreationMethod({newRanking, setNewRanking}: RankingProps
                 className="group mx-auto grid max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-3">
                 {rankingCard.map((card, i) => (
                     <TemplateCard
-                        selected={newRanking.method_creation === card.key}
+                        selected={newRanking.creation_method === card.key}
                         key={i}
                         disabled={card.disabled}
                         title={card.title}
@@ -47,7 +47,7 @@ export default function CreationMethod({newRanking, setNewRanking}: RankingProps
                         onClick={() => setNewRanking((prevValue: NewRanking) => {
                             return {
                                 ...prevValue,
-                                method_creation: card.key,
+                                creation_method: card.key,
                             }
                         })}
                     />

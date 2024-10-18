@@ -27,12 +27,12 @@ pub async fn create_ranking(new_ranking: web::Json<NewRanking>) -> HttpResponse 
 
     match ranking_service::create_new_ranking(&mut conn, list_data) {
         Ok(list) => {
-            println!("Liste créée avec succès : {:?}", list);
+            println!("Ranking créée avec succès : {:?}", list);
             HttpResponse::Ok().json(list)
         }
         Err(e) => {
-            println!("Erreur lors de la création de la liste : {:?}", e);
-            HttpResponse::InternalServerError().body("Error creating list")
+            println!("Erreur lors de la création du ranking : {:?}", e);
+            HttpResponse::InternalServerError().body("Error creating ranking")
         }
     }
 }

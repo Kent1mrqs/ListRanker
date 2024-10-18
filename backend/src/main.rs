@@ -12,6 +12,7 @@ mod ranking_item_service;
 mod models;
 mod handlers;
 mod db;
+mod duel_service;
 
 use actix_cors::Cors;
 use actix_web::{web, App, HttpServer, Responder};
@@ -72,6 +73,14 @@ async fn main() -> std::io::Result<()> {
             .service(
                 web::resource("/rankings")
                     .route(web::post().to(handlers::rankings_handlers::create_ranking)),
+            )
+            .service(
+                web::resource("/duels-next/{ranking_id}")
+                    .route(web::post().to(handlers::duel_handlers::next_duel_handler)),
+            )
+            .service(
+                web::resource("/duels-init/{ranking_id}")
+                    .route(web::get().to(handlers::duel_handlers::init_duel_handler)),
             )
             .service(
                 web::scope("/app")

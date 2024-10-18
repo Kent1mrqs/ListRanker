@@ -35,6 +35,7 @@ export default function MyRankings() {
 
 
     async function saveRanking(editRanking: EditRanking[], setEditRanking: (editRanking: EditRanking[]) => void) {
+
         try {
             await postData<EditRanking[]>('ranking-items', editRanking).then(() => {
                 setEditRanking([]);
@@ -49,7 +50,6 @@ export default function MyRankings() {
         }
     }
 
-    console.log(currentRanking)
     return (
         <TemplatePage
             title="My Rankings"
@@ -71,7 +71,7 @@ export default function MyRankings() {
 				/>}
             {currentRanking.ranking_type === 'numbered' &&
                 currentRanking.creation_method === "intelligent_dual" &&
-				<NumberedIntelligentDual
+				<NumberedIntelligentDual rankingId={currentRanking.id}
 				/>}
         </TemplatePage>
     );

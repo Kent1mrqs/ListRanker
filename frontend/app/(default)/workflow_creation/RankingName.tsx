@@ -10,7 +10,7 @@ import {useRouter} from "next/navigation";
 
 type SaveRankingProps = {
     newRanking: {
-        method_creation: string;
+        creation_method: string;
         user_id: number | null;
         list_id: number;
         name: string;
@@ -21,13 +21,13 @@ type SaveRankingProps = {
         list_id: number;
         user_id: number | null;
         name: string;
-        method_creation: string;
+        creation_method: string;
         ranking_type: string
     }) => void;
 }
 
 function isValid(ranking: NewRanking) {
-    return isValidInput(ranking.name) && ranking.ranking_type && ranking.method_creation && ranking.list_id
+    return isValidInput(ranking.name) && ranking.ranking_type && ranking.creation_method && ranking.list_id
 }
 
 export default function RankingName({newRanking, saveRanking, setNewRanking}: SaveRankingProps) {
@@ -62,7 +62,7 @@ export default function RankingName({newRanking, saveRanking, setNewRanking}: Sa
                                })}/>
                 {/*                <Typography>List : {newRanking.list_id}</Typography>
                 <Typography>List : {newRanking.ranking_type}</Typography>
-                <Typography>List : {newRanking.method_creation}</Typography>*/}
+                <Typography>List : {newRanking.creation_method}</Typography>*/}
                 <TemplateButton onClick={onClick} text="Create" variant={'blue'}/>
 
             </Stack>

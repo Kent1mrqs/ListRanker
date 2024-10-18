@@ -9,7 +9,7 @@ import {useUserContext} from "@/app/UserProvider";
 import {useRouter} from "next/navigation";
 
 export interface NewRanking {
-    method_creation: string;
+    creation_method: string;
     user_id: number | null;
     name: string;
     ranking_type: string;
@@ -19,7 +19,7 @@ export interface NewRanking {
 
 export type RankingProps = {
     newRanking: {
-        method_creation: string;
+        creation_method: string;
         user_id: number | null;
         list_id: number;
         name: string;
@@ -27,7 +27,7 @@ export type RankingProps = {
     },
     setNewRanking: (newValue: (prevValue: NewRanking) => {
         user_id: number | null;
-        method_creation: string;
+        creation_method: string;
         list_id: number;
         name: string;
         ranking_type: string
@@ -38,10 +38,9 @@ export default function WorkflowCreation() {
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
     const {userId} = useUserContext();
-    console.log("userId", userId)
     const default_ranking: NewRanking = {
         user_id: userId,
-        method_creation: "",
+        creation_method: "",
         name: "",
         ranking_type: "",
         list_id: 0
@@ -53,10 +52,10 @@ export default function WorkflowCreation() {
     }
 
     async function saveRanking() {
+        console.log(newRanking)
         try {
             await postData<NewRanking>('rankings', newRanking).then(() => {
                 setNewRanking(default_ranking)
-                router.push("/myrankings");
             });
         } catch (error) {
             if (error instanceof Error) {
@@ -67,7 +66,6 @@ export default function WorkflowCreation() {
         }
     }
 
-    console.log(newRanking)
     return (
         <>
             <ChooseList newRanking={newRanking} setNewRanking={setNewRanking}/>
