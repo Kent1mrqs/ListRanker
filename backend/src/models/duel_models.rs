@@ -23,6 +23,7 @@ pub struct BattleResult {
     pub loser: i32,
 }
 
+#[allow(dead_code)]
 pub struct ScoreId {
     pub id: i32,
     pub score: i32,

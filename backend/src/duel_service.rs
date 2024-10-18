@@ -1,23 +1,29 @@
 use crate::models::duel_models::{BattleResult, DuelResult, ItemDuel};
-use crate::ranking_item_service::{get_ranking_items_by_ranking_id, update_ranks};
+use crate::ranking_item_service::{fetch_ranking_items_with_names, set_item_ranks};
 use crate::schema::duels::dsl::duels;
 use crate::schema::duels::{loser, winner};
 use crate::schema::items::dsl::items;
 use crate::schema::ranking_items::dsl::ranking_items;
-use diesel::dsl::{count, count_star, sum};
+use diesel::dsl::{count_star, sum};
 use diesel::prelude::*;
 use rand::Rng;
 
-fn battle_over(conn: &mut PgConnection, ranking_id_param: i32) -> bool {
-    use crate::schema::ranking_items::{id, ranking_id, score};
+/// Checks if the battle for the specified ranking is complete by comparing the total score against the maximum possible score.
+fn is_battle_complete(conn: &mut PgConnection, ranking_id_param: i32) -> bool {
+    use crate::schema::ranking_items::{ranking_id, score};
+
+    // Get the total number of items in the ranking
     let number_items: i64 = ranking_items
         .filter(ranking_id.eq(ranking_id_param))
-        .select(count(id))
-        .first(conn)
+        .count()
+        .get_result(conn)
         .unwrap_or(0);
-    let max_score = number_items.clone() * (number_items - 1) / 2;
 
-    let total_score = ranking_items
+    // Calculate the maximum possible score
+    let max_score = number_items * (number_items - 1) / 2;
+
+    // Get the current total score of all ranking items
+    let total_score: i64 = ranking_items
         .filter(ranking_id.eq(ranking_id_param))
         .select(sum(score))
         .first(conn)
@@ -27,45 +33,43 @@ fn battle_over(conn: &mut PgConnection, ranking_id_param: i32) -> bool {
     total_score >= max_score
 }
 
-/// Je reçois l'id du ranking et l'id de l'item qui a gagné
-pub fn next_duel(conn: &mut PgConnection, ranking_id_param: i32, battle_result: BattleResult) -> Result<DuelResult, Box<dyn std::error::Error>> {
-    store_winner(conn, battle_result).expect("TODO: panic message");
-
-    if battle_over(conn, ranking_id_param) {
-        generate_ranking(conn, ranking_id_param);
-        Ok(DuelResult::Finished("fin".to_string()))
-    } else {
-        let response = pick_duel_candidates(conn, ranking_id_param, find_duel)?;
-        Ok(DuelResult::NextDuel(response))
-    }
-}
-
-fn pick_random_dual_candidates(max: i64) -> (i32, i32) {
+/// Selects two unique random candidates for a duel from a specified range.
+fn pick_unique_random_duel_candidates(max: i64) -> (i32, i32) {
     let mut rng = rand::thread_rng();
     let position_1 = rng.gen_range(0..max) as i32;
-    let mut position_2 = rng.gen_range(0..max) as i32;
-    while position_1 == position_2 {
-        position_2 = rng.gen_range(0..max) as i32;
-    }
+    let position_2 = loop {
+        let pos = rng.gen_range(0..max) as i32;
+        if pos != position_1 {
+            break pos;
+        }
+    };
     (position_1, position_2)
 }
 
+/// Determines the next duel or concludes the battle based on the given result.
+pub fn process_next_duel(conn: &mut PgConnection, ranking_id_param: i32, battle_result: BattleResult) -> Result<DuelResult, Box<dyn std::error::Error>> {
+    record_battle_winner(conn, battle_result)?;
+    resolve_duel_state(conn, ranking_id_param)
+}
 
-/// Call the algorithm
-pub fn init_duel(conn: &mut PgConnection, ranking_id_param: i32) -> Result<DuelResult, Box<dyn std::error::Error>> {
-    if battle_over(conn, ranking_id_param) {
-        generate_ranking(conn, ranking_id_param);
+/// Initializes the duel process by checking if the battle is complete and either generating a ranking or selecting duel candidates.
+pub fn initialize_duel(conn: &mut PgConnection, ranking_id_param: i32) -> Result<DuelResult, Box<dyn std::error::Error>> {
+    resolve_duel_state(conn, ranking_id_param)
+}
+
+/// Resolves the current state of the duel by determining if the battle is complete and either generating rankings or picking duel candidates.
+fn resolve_duel_state(conn: &mut PgConnection, ranking_id_param: i32) -> Result<DuelResult, Box<dyn std::error::Error>> {
+    if is_battle_complete(conn, ranking_id_param) {
+        let _ = update_ranking(conn, ranking_id_param);
         Ok(DuelResult::Finished("fin".to_string()))
     } else {
-        let response = pick_duel_candidates(conn, ranking_id_param, find_duel)?;
+        let response = pick_duel_candidates(conn, ranking_id_param, pick_unique_random_duel_candidates)?;
         Ok(DuelResult::NextDuel(response))
     }
 }
 
-pub fn already_done_duel(conn: &mut PgConnection, item_1_id: i32, item_2_id: i32) -> bool {
-    let item_1_id = item_1_id;
-    let item_2_id = item_2_id;
-
+/// Checks if a duel between the specified items has already occurred.
+pub fn has_duel_occurred(conn: &mut PgConnection, item_1_id: i32, item_2_id: i32) -> bool {
     let result = duels
         .filter(loser.eq(item_1_id))
         .filter(winner.eq(item_2_id))
@@ -80,7 +84,6 @@ pub fn already_done_duel(conn: &mut PgConnection, item_1_id: i32, item_2_id: i32
     }
 }
 
-
 /// Retrieves two items from a ranking list based on the given ranking ID and algorithm.
 pub fn pick_duel_candidates(conn: &mut PgConnection, ranking_id_param: i32, algo: fn(i64) -> (i32, i32)) -> Result<Vec<ItemDuel>, Box<dyn std::error::Error>> {
     use crate::schema::ranking_items::ranking_id;
@@ -91,10 +94,10 @@ pub fn pick_duel_candidates(conn: &mut PgConnection, ranking_id_param: i32, algo
     if list_size < 2 {
         return Err("Not enough items for a duel.".into());
     }
-    let items_list = get_ranking_items_by_ranking_id(conn, ranking_id_param)?;
+    let items_list = fetch_ranking_items_with_names(conn, ranking_id_param)?;
     let (mut position_id_1, mut position_id_2) = algo(list_size);
 
-    while already_done_duel(conn, position_id_1, position_id_2) || already_done_duel(conn, position_id_2, position_id_1) {
+    while has_duel_occurred(conn, position_id_1, position_id_2) || has_duel_occurred(conn, position_id_2, position_id_1) {
         (position_id_1, position_id_2) = algo(list_size);
     }
 
@@ -112,41 +115,43 @@ pub fn pick_duel_candidates(conn: &mut PgConnection, ranking_id_param: i32, algo
     Ok(vec![item_1, item_2])
 }
 
-fn find_duel(max: i64) -> (i32, i32) {
-    pick_random_dual_candidates(max)
-}
-
-
-pub fn store_winner(conn: &mut PgConnection, battle_result: BattleResult) -> QueryResult<usize> {
+/// Records the winner of a battle by inserting the battle result and updating the winner's score.
+pub fn record_battle_winner(conn: &mut PgConnection, battle_result: BattleResult) -> QueryResult<usize> {
     use crate::schema::ranking_items::{item_id, ranking_id, score};
     use crate::schema::items::{id, position_list};
 
+    // Insert the battle result into the duels table
     diesel::insert_into(duels)
         .values(&battle_result)
         .execute(conn)?;
 
+    // Retrieve the item ID of the winner based on the ranking and position
     let item_id_to_update: i32 = ranking_items
         .filter(ranking_id.eq(battle_result.ranking_id))
-        .inner_join(items.on(id.eq(item_id)))
+        .inner_join(items.on(id.eq(item_id))) // inner join on items to get position_list
         .filter(position_list.eq(battle_result.winner))
         .select(item_id)
         .first(conn)?;
 
+    // Update the score of the winner
     diesel::update(ranking_items)
         .filter(item_id.eq(item_id_to_update))
         .set(score.eq(score + 1))
         .execute(conn)
 }
 
-pub fn generate_ranking(conn: &mut PgConnection, ranking_id_param: i32) -> QueryResult<usize> {
+/// Updates the ranking by reordering items based on their scores and returns the count of updated records.
+pub fn update_ranking(conn: &mut PgConnection, ranking_id_param: i32) -> QueryResult<usize> {
     use crate::schema::ranking_items::{id, ranking_id, score};
 
+    // Load the items in the specified ranking ordered by score in descending order
     let new_rank_order = ranking_items
         .filter(ranking_id.eq(ranking_id_param))
         .order(score.desc())
         .select((id, score))
         .load(conn)?;
 
-    let updated_count = update_ranks(conn, new_rank_order)?;
+    // Update the ranks based on the new order and return the count of updated records
+    let updated_count = set_item_ranks(conn, new_rank_order)?;
     Ok(updated_count)
 }

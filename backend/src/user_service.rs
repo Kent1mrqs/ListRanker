@@ -4,11 +4,13 @@ use crate::schema::users::{id, username};
 use diesel::prelude::*;
 use diesel::QueryResult;
 
-pub fn get_all_users(conn: &mut PgConnection) -> QueryResult<Vec<User>> {
+/// Retrieves all users from the database.
+pub fn fetch_all_users(conn: &mut PgConnection) -> QueryResult<Vec<User>> {
     users.load::<User>(conn)
 }
 
-pub fn create_new_user(conn: &mut PgConnection, new_user: NewUser) -> Result<LoginResponse, diesel::result::Error> {
+/// Creates a new user in the database and returns the login response containing the user's ID and username.
+pub fn register_new_user(conn: &mut PgConnection, new_user: NewUser) -> Result<LoginResponse, diesel::result::Error> {
     let inserted_user: (i32, String) = diesel::insert_into(users)
         .values(&new_user)
         .returning((id, username))
@@ -19,4 +21,3 @@ pub fn create_new_user(conn: &mut PgConnection, new_user: NewUser) -> Result<Log
         username: inserted_user.1,
     })
 }
-

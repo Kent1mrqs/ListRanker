@@ -326,13 +326,41 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/duels-init/17",
+					"raw": "{{base_url}}/duels-init/2",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
 						"duels-init",
-						"17"
+						"2"
+					]
+				},
+				"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+			},
+			"response": []
+		},
+		{
+			"name": "next duel",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": 3\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/duels-next/1",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"duels-next",
+						"1"
 					]
 				},
 				"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
@@ -450,7 +478,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "[\n    {\"id\": 18, \"new_rank\": 50}\n]\n",
+					"raw": "[\n    {\"id\": 1, \"new_rank\": 3}\n]\n",
 					"options": {
 						"raw": {
 							"language": "json"
