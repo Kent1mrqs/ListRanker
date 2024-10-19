@@ -33,6 +33,7 @@ pub fn register_new_list(conn: &mut PgConnection, new_list: NewListDb, items: Ve
             list_id: new_list_id,
             name: item.name.clone(),
             position_list: index as i32,
+            image: item.image.clone(),
         })
         .collect();
 

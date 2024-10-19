@@ -1,14 +1,18 @@
 "use client";
 import {Button, Stack, Typography} from "@mui/material";
-import {useState} from "react";
+import React, {useState} from "react";
 import {postData} from "@/app/api";
 import TemplateInput from "@/components/Template/TemplateInput";
 import TemplateTextArea from "@/components/Template/TemplateTextArea";
 import TemplateSelect from "@/components/Template/TemplateSelect";
 import {useUserContext} from "@/app/UserProvider";
+import Spotlight from "@/components/spotlight";
+import TemplateCard from "@/components/Template/TemplateCard";
+import TemplateChip from "@/components/Template/TemplateChip";
 
 export interface Item {
     name: string;
+    image?: string;
 }
 
 export interface NewList {
@@ -47,6 +51,8 @@ export function isValidInput(value: string): boolean {
     return !hasInvalidCharacters && input_length < 25 && input_length > 0;
 }
 
+const blue = "btn-sm bg-gradient-to-t from-indigo-600 to-indigo-500 bg-[length:100%_100%] bg-[bottom] py-[5px] text-white shadow-[inset_0px_1px_0px_0px_theme(colors.white/.16)] hover:bg-[length:100%_150%] max-w-[200px] w-full";
+
 export default function ListCreation({fetchLists}: FetchListProps) {
     const {userId} = useUserContext();
 
@@ -68,7 +74,7 @@ export default function ListCreation({fetchLists}: FetchListProps) {
                 .split(separator)
                 .filter(item => item && item.trim() !== "")
                 .map(el => {
-                    return {name: el};
+                    return {name: el, image: ""};
                 });
             setNewList({...newList, name: nameList, items: object});
         } else {
@@ -90,6 +96,48 @@ export default function ListCreation({fetchLists}: FetchListProps) {
             }
         }
     }
+
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, id: number) => {
+        const file = event.target.files?.[0];
+        const newObject = newList.items[id]
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const newImage = reader.result as string;
+
+                setNewList((prevList) => {
+                    const updatedItems = prevList.items.map((item, index) => {
+                        if (index === id) {
+                            return {...item, image: newImage};
+                        }
+                        return item;
+                    });
+                    return {
+                        ...prevList,
+                        items: updatedItems,
+                    };
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+
+    const handleFileReset = (id: number) => {
+        setNewList((prevList) => {
+            const updatedItems = prevList.items.map((item, index): Item => {
+                if (index === id) {
+                    return {...item, image: undefined};
+                }
+                return item;
+            });
+            return {
+                ...prevList,
+                items: updatedItems,
+            };
+        });
+    };
 
     return (
         <Stack direction='row' spacing={5} justifyContent="center">
@@ -119,11 +167,35 @@ export default function ListCreation({fetchLists}: FetchListProps) {
                 </TemplateSelect>
                 <Button disabled={!isValidInput(nameList)} onClick={onClick}>Validate</Button>
             </Stack>
-            <Stack spacing={1} justifyContent='center'>
+            <Stack spacing={1}>
                 <Typography>items de la liste {newList.name}: </Typography>
-                {newList.items.map((el, index) => (
-                    <Typography key={index}>{el.name}</Typography>
-                ))}
+                <Spotlight
+                    className="group mx-auto grid justify-center max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-3"
+                >
+                    {
+                        newList.items.map((el, index) => (
+                            <Stack direction="row" spacing={3}>
+                                {
+                                    el.image ?
+                                        <TemplateCard title={el.name} image={el.image}/> :
+                                        <TemplateChip>
+                                            {el.name}
+                                        </TemplateChip>
+                                }
+                                <div>
+                                    <input
+                                        className="btn-sm bg-gradient-to-t from-indigo-600 to-indigo-500 bg-[length:100%_100%] bg-[bottom] py-[5px] text-white shadow-[inset_0px_1px_0px_0px_theme(colors.white/.16)] hover:bg-[length:100%_150%] max-w-[200px] w-full"
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => handleFileChange(e, index)}/>
+                                    {el.image && <Button onClick={() => handleFileReset(index)}>
+										Remove
+									</Button>}
+                                </div>
+                            </Stack>
+                        ))
+                    }
+                </Spotlight>
                 <Button onClick={saveList}>Save</Button>
             </Stack>
         </Stack>

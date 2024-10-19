@@ -166,7 +166,7 @@ pub fn pick_duel_candidates(
     let items_list = fetch_ranking_items_with_names(conn, ranking_id_param)?;
 
     // Use the algorithm to determine initial positions for duel candidates
-    let (mut position_id_1, mut position_id_2) = algo(list_size as i32, score_number as i32);
+    let (position_id_1, position_id_2) = algo(list_size as i32, score_number as i32);
 
     // Ensure that the two positions selected haven't had a duel before
     /*    while has_duel_occurred(conn, position_id_1, position_id_2) || has_duel_occurred(conn, position_id_2, position_id_1) {
@@ -185,12 +185,10 @@ pub fn pick_duel_candidates(
     let item_1 = ItemDuel {
         id: position_id_1,
         name: items_list[position_id_1 as usize].name.clone(),
-        image: format!("image_{}.png", position_id_1),
     };
     let item_2 = ItemDuel {
         id: position_id_2,
         name: items_list[position_id_2 as usize].name.clone(),
-        image: format!("image_{}.png", position_id_2),
     };
 
     println!(

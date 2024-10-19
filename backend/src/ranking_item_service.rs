@@ -50,12 +50,14 @@ pub fn update_ranks(conn: &mut PgConnection, new_rankings: Vec<NewRankings>) -> 
     for ranking in &new_rankings {
         // Fetch the current item and its current rank
         let current_item: RankingItem = ranking_items::table
+            .select(RankingItem::as_select())
             .find(ranking.id)
             .first(conn)?;
 
         // Fetch the target item based on the new rank
         let target_item: RankingItem = ranking_items::table
             .filter(ranking_items::rank.eq(ranking.new_rank))
+            .select(RankingItem::as_select())
             .first(conn)?;
 
         // Swap ranks: Set target item's rank to current item's rank

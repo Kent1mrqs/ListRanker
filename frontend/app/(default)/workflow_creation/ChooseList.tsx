@@ -8,7 +8,6 @@ import {fetchData} from "@/app/api";
 import {useUserContext} from "@/app/UserProvider";
 
 export default function ChooseList({setNewRanking}: RankingProps) {
-    (null);
     const {userId} = useUserContext();
     const [currentListId, setCurrentListId] = useState<number>(0)
     const [lists, setLists] = useState<Lists>([]);
@@ -28,6 +27,7 @@ export default function ChooseList({setNewRanking}: RankingProps) {
         })
     }
 
+    console.log('ddddddd')
     return (
         <TemplatePage
             title="Step 1 : Choose a list"

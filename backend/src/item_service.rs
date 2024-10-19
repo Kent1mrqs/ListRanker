@@ -19,5 +19,6 @@ pub fn fetch_items_by_list_id(conn: &mut PgConnection, list_id_param: i32) -> Qu
 
     items
         .filter(list_id.eq(list_id_param))
+        .select(Item::as_select())
         .load::<Item>(conn)
 }

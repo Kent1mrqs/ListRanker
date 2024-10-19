@@ -16,6 +16,7 @@ diesel::table! {
         #[max_length = 255]
         name -> Varchar,
         position_list -> Int4,
+        image -> Nullable<Bytea>,
     }
 }
 

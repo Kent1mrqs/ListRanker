@@ -8,7 +8,7 @@ interface CardProps {
     selected?: boolean;
     disabled?: boolean;
     description?: string;
-    onClick: () => void;
+    onClick?: () => void;
     variant?: "duel" | "basic";
 }
 
@@ -35,7 +35,7 @@ export default function TemplateCard({
     return (
         <div
             onClick={() => {
-                if (!disabled) {
+                if (!disabled && onClick) {
                     onClick()
                 }
             }}
