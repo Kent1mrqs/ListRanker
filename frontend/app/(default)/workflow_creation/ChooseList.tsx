@@ -1,7 +1,7 @@
 "use client";
 import TemplatePage from "@/components/Template/TemplatePage";
 import {NewRanking, RankingProps} from "@/app/(default)/workflow_creation/WorkflowCreation";
-import ListSelection from "@/app/(default)/workflow_creation/ListSelection";
+import ListSelection from "@/app/(default)/mylists/ListSelection";
 import ListCreation, {Lists} from "@/app/(default)/mylists/ListCreation";
 import {useCallback, useState} from "react";
 import {fetchData} from "@/app/api";

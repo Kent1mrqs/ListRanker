@@ -9,13 +9,14 @@ interface CardProps {
     disabled?: boolean;
     description?: string;
     onClick?: () => void;
-    variant?: "duel" | "basic";
+    variant?: "duel" | "basic" | "item";
 }
 
 const baseCardStyle = "group/card relative h-full overflow-hidden rounded-2xl bg-gray-800 p-px before:pointer-events-none before:absolute before:-left-40 before:-top-40 before:z-10 before:h-80 before:w-80 before:translate-x-[var(--mouse-x)] before:translate-y-[var(--mouse-y)] before:rounded-full before:bg-indigo-500/80 before:opacity-0 before:blur-3xl before:transition-opacity before:duration-500 after:pointer-events-none after:absolute after:-left-48 after:-top-48 after:z-30 after:h-64 after:w-64 after:translate-x-[var(--mouse-x)] after:translate-y-[var(--mouse-y)] after:rounded-full after:bg-indigo-500 after:opacity-0 after:blur-3xl after:transition-opacity after:duration-500 after:hover:opacity-20 before:group-hover:opacity-100";
 const selectedCardAdditionalStyle = "border-4 border-indigo-500 bg-gray-700";
 const disabledCardStyle = "opacity-50 cursor-not-allowed bg-gray-700 rounded-2xl hover:opacity-50 before:opacity-0 after:opacity-0";
 const duelStyle = `${baseCardStyle} w-80 h-96 cursor-pointer`
+const item_image = "group/card relative h-full overflow-hidden rounded-2xl bg-gray-800 p-px before:pointer-events-none before:absolute before:-left-40 before:-top-40 before:z-10 before:h-80 before:w-80 before:translate-x-[var(--mouse-x)] before:translate-y-[var(--mouse-y)] before:rounded-full before:bg-indigo-500/80 before:opacity-0 before:blur-3xl before:transition-opacity before:duration-500 after:pointer-events-none after:absolute after:-left-48 after:-top-48 after:z-30 after:h-64 after:w-64 after:translate-x-[var(--mouse-x)] after:translate-y-[var(--mouse-y)] after:rounded-full after:bg-indigo-500 after:opacity-0 after:blur-3xl after:transition-opacity after:duration-500 after:hover:opacity-20 before:group-hover:opacity-100";
 
 export default function TemplateCard({
                                          title,
@@ -30,7 +31,8 @@ export default function TemplateCard({
 
     const cardVariants = {
         duel: duelStyle,
-        basic: basicCardStyle
+        basic: basicCardStyle,
+        item: item_image
     }
     return (
         <div

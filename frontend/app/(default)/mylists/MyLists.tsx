@@ -1,6 +1,6 @@
 "use client";
 import ListCreation, {Lists} from "@/app/(default)/mylists/ListCreation";
-import ListSelection from "@/app/(default)/workflow_creation/ListSelection";
+import ListSelection from "@/app/(default)/mylists/ListSelection";
 import {useCallback, useState} from "react";
 import {fetchData} from "@/app/api";
 import {useUserContext} from "@/app/UserProvider";

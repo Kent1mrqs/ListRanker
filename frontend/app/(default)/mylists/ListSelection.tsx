@@ -6,6 +6,7 @@ import Spotlight from "@/components/spotlight";
 import {Item, Lists} from "@/app/(default)/mylists/ListCreation";
 import TemplateButton from "@/components/Template/TemplateButton";
 import TemplateCard from "@/components/Template/TemplateCard";
+import TemplateChip from "@/components/Template/TemplateChip";
 
 export type ListProps = {
     lists: Lists;
@@ -28,7 +29,6 @@ export default function ListSelection({lists, fetchLists, currentListId, setCurr
     }, []);
 
     function selectList(id: number) {
-        setCurrentItems([])
         if (id === currentListId) {
             setCurrentListId(0)
         } else {
@@ -36,6 +36,7 @@ export default function ListSelection({lists, fetchLists, currentListId, setCurr
             fetchItems(id)
         }
     }
+
 
     return (
         <Stack spacing={3} justifyContent='center'>
@@ -46,7 +47,7 @@ export default function ListSelection({lists, fetchLists, currentListId, setCurr
                     {lists.map((li, index) => (
                         <TemplateButton key={index}
                                         text={li.name}
-                                        variant={li.list_id === currentListId ? "grey" : "blue"}
+                                        selected={li.list_id === currentListId}
                                         onClick={() => selectList(Number(li.list_id))}
                         />
                     ))}
@@ -56,18 +57,19 @@ export default function ListSelection({lists, fetchLists, currentListId, setCurr
                     />
                 </Spotlight>
             </Stack>
-            <Stack spacing={1} justifyContent='center'>
-                <Spotlight
-                    className="group mx-auto grid max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-6"
-                >
-                    {currentItems?.map((el, index) => (
-                        <div className="mx-auto max-w-3xl pb-12 text-center md:pb-20">
-                            <Typography justifyContent='center' key={index}>{el.name}</Typography>
-                            <TemplateCard title={el.name} image={el.image}/>
-                        </div>
-                    ))}
-                </Spotlight>
-            </Stack>
+            {!!currentListId && <Stack spacing={1} justifyContent='center'>
+                {currentItems[0] ?
+                    <Spotlight
+                        className="group mx-auto grid max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-6"
+                    >
+                        {currentItems?.map((el, index) => (
+                            <div className="mx-auto max-w-3xl pb-12 text-center md:pb-20">
+                                {el.image ? <TemplateCard variant="item" title={el.name} image={el.image}/> :
+                                    <TemplateChip>{el.name}</TemplateChip>}
+                            </div>
+                        ))}
+                    </Spotlight> : <Typography>Empty list</Typography>}
+			</Stack>}
         </Stack>
     );
 }
