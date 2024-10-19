@@ -102,7 +102,7 @@ export default function NumberedIntelligentDual({
 
     const [currentDual, setCurrentDual] = useState<Item[]>(default_duel)
     const [duelOver, setDuelOver] = useState<Boolean>(false)
-    const [duelsLeft, setDuelsLeft] = useState<number>(1000)
+    const [duelsLeft, setDuelsLeft] = useState<number>(currentRankingItems.length * (currentRankingItems.length - 1) / 2)
     console.log(duelOver)
     const fetchRankingItems = useCallback(() => {
         fetchData<RankingItem[]>('ranking-items/' + ranking_id)
