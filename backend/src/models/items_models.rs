@@ -7,7 +7,7 @@ pub struct Item {
     pub id: i32,
     pub list_id: i32,
     pub name: String,
-    pub image: Option<Vec<u8>>,
+    pub image: String,
     pub position_list: i32,
 }
 
@@ -23,5 +23,5 @@ pub struct NewItem {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct NewItemApi {
     pub name: String,
-    pub image: Option<Vec<u8>>,
+    pub image: String,
 }

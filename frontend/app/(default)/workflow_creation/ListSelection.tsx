@@ -5,6 +5,7 @@ import {fetchData} from "@/app/api";
 import Spotlight from "@/components/spotlight";
 import {Item, Lists} from "@/app/(default)/mylists/ListCreation";
 import TemplateButton from "@/components/Template/TemplateButton";
+import TemplateCard from "@/components/Template/TemplateCard";
 
 export type ListProps = {
     lists: Lists;
@@ -62,6 +63,7 @@ export default function ListSelection({lists, fetchLists, currentListId, setCurr
                     {currentItems?.map((el, index) => (
                         <div className="mx-auto max-w-3xl pb-12 text-center md:pb-20">
                             <Typography justifyContent='center' key={index}>{el.name}</Typography>
+                            <TemplateCard title={el.name} image={el.image}/>
                         </div>
                     ))}
                 </Spotlight>

@@ -1,4 +1,4 @@
-use crate::item_service::bulk_insert_items;
+use crate::item_service::{bulk_insert_items, convert_image};
 use crate::models::items_models::{NewItem, NewItemApi};
 use crate::models::lists_models::{List, NewListDb};
 use diesel::prelude::*;
@@ -33,7 +33,7 @@ pub fn register_new_list(conn: &mut PgConnection, new_list: NewListDb, items: Ve
             list_id: new_list_id,
             name: item.name.clone(),
             position_list: index as i32,
-            image: item.image.clone(),
+            image: convert_image(item.image.clone()),
         })
         .collect();
 

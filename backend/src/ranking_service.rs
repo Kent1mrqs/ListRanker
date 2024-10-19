@@ -17,7 +17,7 @@ pub fn fetch_user_rankings(conn: &mut PgConnection, user_id_param: i32) -> Query
 pub fn register_new_ranking(conn: &mut PgConnection, new_ranking: NewRanking) -> QueryResult<usize> {
     let ranking_id = insert_ranking(conn, &new_ranking)?;
     let list_id = get_list_id_by_ranking_id(conn, ranking_id)?;
-    let ranking_items = fetch_items_by_list_id(conn, list_id)?;
+    let ranking_items: Vec<Item> = fetch_items_by_list_id(conn, list_id)?;
 
     let new_ranking_items = create_new_ranking_items(&ranking_items, ranking_id);
 
