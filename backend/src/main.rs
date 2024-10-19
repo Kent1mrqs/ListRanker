@@ -83,6 +83,10 @@ async fn main() -> std::io::Result<()> {
                     .route(web::get().to(handlers::duel_handlers::handle_init_duel)),
             )
             .service(
+                web::resource("/duels-reset/{ranking_id}")
+                    .route(web::post().to(handlers::duel_handlers::handle_reset_duel)),
+            )
+            .service(
                 web::scope("/app")
                     .route("/index.html", web::get().to(index)),
             )

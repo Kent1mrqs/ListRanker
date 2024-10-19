@@ -9,7 +9,7 @@ pub async fn fetch_ranking_items(path: web::Path<i32>) -> HttpResponse {
     let mut conn = establish_connection();
 
     match ranking_item_service::fetch_ranking_items_with_names(&mut conn, ranking_id) {
-        Ok(items) => HttpResponse::Ok().json(items), // Return items as JSON if successful
+        Ok(items) => HttpResponse::Ok().json(items),
         Err(e) => {
             eprintln!("Error retrieving ranking items for ranking ID {}: {:?}", ranking_id, e);
             HttpResponse::InternalServerError().body("Error retrieving ranking items")

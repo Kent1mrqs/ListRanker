@@ -5,6 +5,7 @@ import {Stack, Typography} from "@mui/material";
 import TemplateCard from "@/components/Template/TemplateCard";
 import {fetchData, postData} from "@/app/api";
 import {RankingItem} from "@/app/(default)/myrankings/ChooseRanking";
+import TemplateButton from "@/components/Template/TemplateButton";
 
 export interface Item {
     id: number;
@@ -40,6 +41,7 @@ interface BattleResult {
 interface DuelProps {
     currentDual: Item[];
     duelsLeft: number;
+    resetDuel: () => void;
     chooseCard: (winner: BattleResult) => void;
     ranking_id: number;
 }
@@ -50,20 +52,23 @@ interface ComponentProps {
     ranking_id: number;
 }
 
-function ShowRanking({currentRankingItems}: { currentRankingItems: RankingItem[] }) {
-    console.log(currentRankingItems)
+function ShowRanking({currentRankingItems, resetDuel}: { currentRankingItems: RankingItem[], resetDuel: () => void }) {
     return (
         <Stack alignItems="center" spacing={3}>
             {currentRankingItems
                 .sort((a, b) => a.rank > b.rank ? 1 : -1)
                 .map((item) => (
-                    <Typography key={item.id}>{item.rank} : {item.name}</Typography>
+                    <Typography key={item.id}>{item.rank} : {item.name} ({item.score} points)</Typography>
                 ))}
+            <TemplateButton text="Reset" onClick={resetDuel}/>
+
         </Stack>
     )
 }
 
-function Duel({currentDual, chooseCard, ranking_id, duelsLeft}: DuelProps) {
+function Duel({currentDual, resetDuel, chooseCard, ranking_id, duelsLeft}: DuelProps) {
+
+
     return (
         <Spotlight
             className="group mx-auto grid max-w-sm mt-3 items-start justify-center gap-6 lg:max-w-none lg:grid-cols-3 h-auto">
@@ -77,9 +82,13 @@ function Duel({currentDual, chooseCard, ranking_id, duelsLeft}: DuelProps) {
                               })}/>
             </div>
             <div
-                className="flex justify-center items-center relative z-20 h-full overflow-hidden rounded-[inherit] after:absolute after:inset-0 after:bg-gradient-to-br"
+                className="flex justify-center items-center relative z-20 h-full overflow-hidden rounded-[inherit]"
             >
-                Duels left: {duelsLeft}
+                <div>
+                    <div>Duels left: {duelsLeft}</div>
+                    <TemplateButton text="Reset" onClick={resetDuel}/>
+                </div>
+
             </div>
 
             <div className="flex justify-center">
@@ -103,7 +112,6 @@ export default function NumberedIntelligentDual({
     const [currentDual, setCurrentDual] = useState<Item[]>(default_duel)
     const [duelOver, setDuelOver] = useState<Boolean>(false)
     const [duelsLeft, setDuelsLeft] = useState<number>(currentRankingItems.length * (currentRankingItems.length - 1) / 2)
-    console.log(duelOver)
     const fetchRankingItems = useCallback(() => {
         fetchData<RankingItem[]>('ranking-items/' + ranking_id)
             .then(result => setCurrentRankingItems(result))
@@ -122,20 +130,20 @@ export default function NumberedIntelligentDual({
         setDuelOver(true)
     }
 
+    const fetchDuelInit = useCallback(() => {
+        fetchData<NextDuelData>('duels-init/' + ranking_id)
+            .then(response => {
+                if (!response.NextDuelData) {
+                    endBattle()
+                } else {
+                    setCurrentDual(response.NextDuelData.next_duel)
+                    setDuelsLeft(response.NextDuelData.duels_left)
+                }
+            });
+    }, [setDuelsLeft, endBattle, setCurrentDual])
+
     async function initDuel() {
-        try {
-            await fetchData<NextDuelData>('duels-init/' + ranking_id)
-                .then(response => {
-                    if (!response.NextDuelData) {
-                        endBattle()
-                    } else {
-                        setCurrentDual(response.NextDuelData.next_duel)
-                        setDuelsLeft(response.NextDuelData.duels_left)
-                    }
-                });
-        } catch (e) {
-            console.error(e)
-        }
+        fetchDuelInit()
     }
 
     async function nextDuel(data_result: BattleResult) {
@@ -153,14 +161,23 @@ export default function NumberedIntelligentDual({
         }
     }
 
-    console.log(duelOver)
+    function resetDuel() {
+        postData<{}, String>("duels-reset/" + ranking_id, {})
+            .then(() => {
+                fetchDuelInit()
+                setDuelOver(false)
+            })
+    }
+
     return (
         <Stack spacing={1} justifyContent='center'>
             {duelOver ?
                 <ShowRanking
+                    resetDuel={resetDuel}
                     currentRankingItems={currentRankingItems}
                 /> :
                 <Duel currentDual={currentDual}
+                      resetDuel={resetDuel}
                       duelsLeft={duelsLeft}
                       chooseCard={chooseCard}
                       ranking_id={ranking_id}

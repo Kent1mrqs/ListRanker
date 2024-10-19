@@ -253,13 +253,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/items/4",
+					"raw": "{{base_url}}/items/2",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
 						"items",
-						"4"
+						"2"
 					]
 				},
 				"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
@@ -326,13 +326,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/duels-init/2",
+					"raw": "{{base_url}}/duels-init/4",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
 						"duels-init",
-						"2"
+						"4"
 					]
 				},
 				"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
@@ -346,7 +346,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"id\": 3\n}",
+					"raw": "{\n    \"winner\": 2,\n    \"loser\": 7,\n    \"ranking_id\":4\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -354,13 +354,41 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/duels-next/1",
+					"raw": "{{base_url}}/duels-next/2",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
 						"duels-next",
-						"1"
+						"2"
+					]
+				},
+				"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+			},
+			"response": []
+		},
+		{
+			"name": "reset duel",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"winner\": 2,\n    \"loser\": 7,\n    \"ranking_id\":4\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/duels-reset/2",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"duels-reset",
+						"2"
 					]
 				},
 				"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
@@ -528,13 +556,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/list/10",
+					"raw": "{{base_url}}/list/3",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
 						"list",
-						"10"
+						"3"
 					]
 				},
 				"description": "This is a DELETE request, and it is used to delete data that was previously created via a POST request. You typically identify the entity being updated by including an identifier in the URL (eg. `id=1`).\n\nA successful DELETE request typically returns a `200 OK`, `202 Accepted`, or `204 No Content` response code."

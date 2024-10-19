@@ -10,11 +10,10 @@ pub async fn fetch_user_lists(path: web::Path<i32>) -> HttpResponse {
     let user_id = path.into_inner();
 
     match list_service::fetch_user_lists(&mut conn, user_id) {
-        Ok(lists) => HttpResponse::Ok().json(lists), // Return lists as JSON if successful
+        Ok(lists) => HttpResponse::Ok().json(lists),
         Err(e) => {
-            // Log the error in the console
             eprintln!("Error fetching lists for user ID {}: {:?}", user_id, e);
-            HttpResponse::InternalServerError().body("Error fetching lists") // Handle error
+            HttpResponse::InternalServerError().body("Error fetching lists")
         }
     }
 }

@@ -13,6 +13,7 @@ export interface RankingItem {
     item_id: number,
     rank: number,
     name: string,
+    score: number,
 }
 
 export interface EditRanking {
