@@ -60,6 +60,7 @@ export default function MyRankings() {
             />
             {currentRanking.ranking_type === 'numbered' &&
                 currentRanking.creation_method === "manual_exchange" &&
+                currentRankingItems[0] &&
 				<NumberedManualExchange
 					saveRanking={saveRanking}
 					currentRankingItems={currentRankingItems}
@@ -67,6 +68,7 @@ export default function MyRankings() {
 				/>}
             {currentRanking.ranking_type === 'numbered' &&
                 currentRanking.creation_method === "intelligent_dual" &&
+                currentRankingItems[0] &&
 				<NumberedIntelligentDual
 					currentRankingItems={currentRankingItems}
 					ranking_id={currentRanking.id}

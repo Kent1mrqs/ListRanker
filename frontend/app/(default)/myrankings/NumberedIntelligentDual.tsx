@@ -119,7 +119,7 @@ export default function NumberedIntelligentDual({
 
     useEffect(() => {
         initDuel()
-    }, [currentRankingItems]);
+    }, []);
 
     function chooseCard(winner: BattleResult) {
         nextDuel(winner)

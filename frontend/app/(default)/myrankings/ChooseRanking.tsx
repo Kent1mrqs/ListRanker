@@ -48,12 +48,11 @@ export default function ChooseRanking({
     }
 
     function selectRanking(ranking: Ranking) {
-        if (currentRanking.id === ranking.id) {
-            setCurrentRanking({...default_ranking, id: 0})
+        setCurrentRanking(default_ranking)
+        setCurrentRankingItems([])
+        if (currentRanking.id !== ranking.id) {
             setCurrentRankingItems([])
-        } else {
-            setCurrentRankingItems([])
-            setCurrentRanking(ranking)
+            setCurrentRanking({...ranking, id: Number(ranking.id)})
             fetchData<RankingItem[]>('ranking-items/' + ranking.id)
                 .then(result => setCurrentRankingItems(result))
         }
