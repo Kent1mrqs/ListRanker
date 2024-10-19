@@ -1,4 +1,6 @@
+use crate::item_service::convert_to_base64;
 use crate::models::duel_models::{BattleResult, DuelResult, ItemDuel, NextDuelData};
+use crate::models::ranking_items_models::RankingItemWithNameAndImage;
 use crate::ranking_item_service::{fetch_ranking_items_with_names, set_item_ranks};
 use crate::schema::duels::dsl::duels;
 use crate::schema::duels::{loser, winner};
@@ -46,7 +48,7 @@ fn get_total_score(conn: &mut PgConnection, ranking_id_param: i32) -> i64 {
 }
 
 /// Selects two unique random candidates for a duel from a specified range.
-fn pick_unique_random_duel_candidates(max: i64) -> (i32, i32) {
+fn _pick_unique_random_duel_candidates(max: i64) -> (i32, i32) {
     let mut rng = rand::thread_rng();
     let position_1 = rng.gen_range(0..max) as i32;
     let position_2 = loop {
@@ -163,7 +165,7 @@ pub fn pick_duel_candidates(
     let score_number = get_total_score(conn, ranking_id_param);
 
     // Fetch the list of ranking items along with their names
-    let items_list = fetch_ranking_items_with_names(conn, ranking_id_param)?;
+    let items_list: Vec<RankingItemWithNameAndImage> = fetch_ranking_items_with_names(conn, ranking_id_param)?;
 
     // Use the algorithm to determine initial positions for duel candidates
     let (position_id_1, position_id_2) = algo(list_size as i32, score_number as i32);
@@ -185,10 +187,12 @@ pub fn pick_duel_candidates(
     let item_1 = ItemDuel {
         id: position_id_1,
         name: items_list[position_id_1 as usize].name.clone(),
+        image: items_list[position_id_1 as usize].image.clone().map_or_else(|| "".to_string(), |bytes| convert_to_base64(bytes, "image/png")),
     };
     let item_2 = ItemDuel {
         id: position_id_2,
         name: items_list[position_id_2 as usize].name.clone(),
+        image: items_list[position_id_2 as usize].image.clone().map_or_else(|| "".to_string(), |bytes| convert_to_base64(bytes, "image/png")),
     };
 
     println!(

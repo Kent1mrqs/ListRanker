@@ -1,4 +1,5 @@
-use crate::models::ranking_items_models::{NewRankingItem, NewRankings, RankingItem, RankingItemWithName};
+use crate::models::ranking_items_models::{NewRankingItem, NewRankings, RankingItem, RankingItemWithNameAndImage};
+use crate::schema::items::image;
 use crate::schema::ranking_items;
 use diesel::prelude::*;
 use diesel::result::Error;
@@ -21,23 +22,24 @@ pub fn insert_ranking_items_bulk(conn: &mut PgConnection, ranking_items: Vec<New
 /// This function fetches ranking items for the given ranking ID, joining with the items table
 /// to include item names. It returns a vector of RankingItemWithName structs or an error if the
 /// operation fails.
-pub fn fetch_ranking_items_with_names(conn: &mut PgConnection, ranking_id_param: i32) -> QueryResult<Vec<RankingItemWithName>> {
+pub fn fetch_ranking_items_with_names(conn: &mut PgConnection, ranking_id_param: i32) -> QueryResult<Vec<RankingItemWithNameAndImage>> {
     use crate::schema::ranking_items::dsl::*;
     use crate::schema::items::dsl::{id as item_id_col, items as items_table, name as item_name_col};
 
     ranking_items
         .filter(ranking_id.eq(ranking_id_param))
         .inner_join(items_table.on(item_id_col.eq(item_id)))
-        .select((ranking_items::all_columns(), item_name_col))
-        .load::<(RankingItem, String)>(conn)
-        .map(|results| results.into_iter().map(|(ranking_item, item_name)| {
-            RankingItemWithName {
+        .select((ranking_items::all_columns(), item_name_col, image))
+        .load::<(RankingItem, String, Option<Vec<u8>>)>(conn)
+        .map(|results| results.into_iter().map(|(ranking_item, item_name, item_image)| {
+            RankingItemWithNameAndImage {
                 id: ranking_item.id,
                 ranking_id: ranking_item.ranking_id,
                 item_id: ranking_item.item_id,
                 rank: ranking_item.rank,
-                name: item_name,
                 score: ranking_item.score,
+                name: item_name,
+                image: item_image,
             }
         }).collect())
 }

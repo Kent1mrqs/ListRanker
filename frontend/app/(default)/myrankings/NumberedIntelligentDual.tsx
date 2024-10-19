@@ -72,9 +72,10 @@ function Duel({currentDual, resetDuel, chooseCard, ranking_id, duelsLeft}: DuelP
     return (
         <Spotlight
             className="group mx-auto grid max-w-sm mt-3 items-start justify-center gap-6 lg:max-w-none lg:grid-cols-3 h-auto">
-
             <div className="flex justify-center">
-                <TemplateCard title={currentDual[0].name} image={""} variant="duel"
+                <TemplateCard title={currentDual[0].name}
+                              image={currentDual[0].image}
+                              variant="duel"
                               onClick={() => chooseCard({
                                   ranking_id,
                                   winner: currentDual[0].id,
@@ -92,7 +93,9 @@ function Duel({currentDual, resetDuel, chooseCard, ranking_id, duelsLeft}: DuelP
             </div>
 
             <div className="flex justify-center">
-                <TemplateCard title={currentDual[1].name} image={""} variant="duel"
+                <TemplateCard title={currentDual[1].name}
+                              image={currentDual[1].image}
+                              variant="duel"
                               onClick={() => chooseCard({
                                   ranking_id,
                                   winner: currentDual[1].id,

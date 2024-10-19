@@ -19,6 +19,7 @@ pub enum DuelResult {
 pub struct ItemDuel {
     pub id: i32,
     pub name: String,
+    pub image: String,
 }
 
 #[derive(Insertable, Deserialize)]
