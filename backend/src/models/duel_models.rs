@@ -3,10 +3,17 @@ use diesel::Insertable;
 use serde_derive::{Deserialize, Serialize};
 
 #[derive(Serialize)]
+pub struct NextDuelData {
+    pub(crate) next_duel: Vec<ItemDuel>,
+    pub(crate) duels_left: i64,
+}
+
+#[derive(Serialize)]
 pub enum DuelResult {
     Finished(String),
-    NextDuel(Vec<ItemDuel>),
+    NextDuelData(NextDuelData),
 }
+
 
 #[derive(Serialize)]
 pub struct ItemDuel {

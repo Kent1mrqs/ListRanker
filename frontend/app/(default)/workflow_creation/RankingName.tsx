@@ -6,6 +6,7 @@ import {Stack} from "@mui/material";
 import {isValidInput} from "@/app/(default)/mylists/ListCreation";
 import TemplateButton from "@/components/Template/TemplateButton";
 import {useRouter} from "next/navigation";
+import {useState} from "react";
 
 type SaveRankingProps = {
     newRanking: {
@@ -31,13 +32,15 @@ function isValid(ranking: NewRanking) {
 
 export default function RankingName({newRanking, saveRanking, setNewRanking}: SaveRankingProps) {
     const router = useRouter();
+    const [error, setError] = useState(false);
 
     function onClick() {
         if (isValid(newRanking)) {
             saveRanking()
             router.push("myrankings")
         } else {
-            console.error("invalid input")
+            setError(true)
+            console.error("invalid input : ", newRanking)
         }
     }
 
@@ -49,7 +52,8 @@ export default function RankingName({newRanking, saveRanking, setNewRanking}: Sa
             <Stack spacing={2} alignItems="center">
                 <TemplateInput label='Title'
                                id='ranking_title'
-                               variant={error === null ? 'blue' : "error"}
+                               error={error}
+                               variant={'blue'}
                                placeholder="ex: Meilleurs kdrama..."
                                onChange={(e) => setNewRanking((prevValue: NewRanking) => {
                                    return {

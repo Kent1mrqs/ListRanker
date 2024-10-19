@@ -1,4 +1,4 @@
-use crate::models::duel_models::{BattleResult, DuelResult, ItemDuel};
+use crate::models::duel_models::{BattleResult, DuelResult, ItemDuel, NextDuelData};
 use crate::ranking_item_service::{fetch_ranking_items_with_names, set_item_ranks};
 use crate::schema::duels::dsl::duels;
 use crate::schema::duels::{loser, winner};
@@ -8,8 +8,7 @@ use diesel::dsl::{count_star, sum};
 use diesel::prelude::*;
 use rand::Rng;
 
-/// Checks if the battle for the specified ranking is complete by comparing the total score against the maximum possible score.
-fn is_battle_complete(conn: &mut PgConnection, ranking_id_param: i32) -> bool {
+fn number_duels_left(conn: &mut PgConnection, ranking_id_param: i32) -> i64 {
     use crate::schema::ranking_items::{ranking_id, score};
 
     // Get the total number of items in the ranking
@@ -30,7 +29,7 @@ fn is_battle_complete(conn: &mut PgConnection, ranking_id_param: i32) -> bool {
         .unwrap_or(Some(0))
         .unwrap_or(0);
 
-    total_score >= max_score
+    max_score - total_score
 }
 
 /// Selects two unique random candidates for a duel from a specified range.
@@ -59,12 +58,17 @@ pub fn initialize_duel(conn: &mut PgConnection, ranking_id_param: i32) -> Result
 
 /// Resolves the current state of the duel by determining if the battle is complete and either generating rankings or picking duel candidates.
 fn resolve_duel_state(conn: &mut PgConnection, ranking_id_param: i32) -> Result<DuelResult, Box<dyn std::error::Error>> {
-    if is_battle_complete(conn, ranking_id_param) {
+    if number_duels_left(conn, ranking_id_param) == 0 {
         let _ = update_ranking(conn, ranking_id_param);
         Ok(DuelResult::Finished("fin".to_string()))
     } else {
         let response = pick_duel_candidates(conn, ranking_id_param, pick_unique_random_duel_candidates)?;
-        Ok(DuelResult::NextDuel(response))
+        let data = NextDuelData {
+            next_duel: response,
+            duels_left: number_duels_left(conn, ranking_id_param),
+        };
+
+        Ok(DuelResult::NextDuelData(data))
     }
 }
 

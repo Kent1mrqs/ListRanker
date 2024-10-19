@@ -54,7 +54,6 @@ export default function MyRankings() {
         >
             <ChooseRanking
                 rankings={rankings}
-                currentRankingItems={currentRankingItems}
                 setCurrentRankingItems={setCurrentRankingItems}
                 currentRanking={currentRanking}
                 setCurrentRanking={setCurrentRanking}
@@ -68,7 +67,10 @@ export default function MyRankings() {
 				/>}
             {currentRanking.ranking_type === 'numbered' &&
                 currentRanking.creation_method === "intelligent_dual" &&
-				<NumberedIntelligentDual ranking_id={currentRanking.id}
+				<NumberedIntelligentDual
+					currentRankingItems={currentRankingItems}
+					ranking_id={currentRanking.id}
+					setCurrentRankingItems={setCurrentRankingItems}
 				/>}
         </TemplatePage>
     );

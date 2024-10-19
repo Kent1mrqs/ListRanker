@@ -24,7 +24,6 @@ export interface ChooseRankingProps {
     rankings: Rankings,
     currentRanking: Ranking,
     setCurrentRanking: (currentRanking: Ranking) => void,
-    currentRankingItems: RankingItem[],
     setCurrentRankingItems: (currentRankingItems: RankingItem[]) => void,
 }
 
@@ -33,7 +32,6 @@ export default function ChooseRanking({
                                           rankings,
                                           currentRanking,
                                           setCurrentRanking,
-                                          currentRankingItems,
                                           setCurrentRankingItems,
                                       }: ChooseRankingProps) {
 
