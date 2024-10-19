@@ -27,32 +27,26 @@ export default function SignInForm() {
 
     const router = useRouter();
     const [user, setUser] = useState<NewUser>(default_user)
-    const [error, setError] = useState<string | null>(null);
     const {setUserId} = useUserContext();
 
     async function onClick() {
         if (validId(user.username, user.password_hash)) {
             try {
-                await postData<NewUser>('login', user).then((e) => {
+                await postData<NewUser, NewUser>('login', user).then((e) => {
                     setUserId(e.id)
                     localStorage.setItem("userId", String(e.id));
                     router.push("/myrankings");
                 });
             } catch (error) {
                 if (error instanceof Error) {
-                    setError(error.message);
+                    console.error(error.message);
                 } else {
-                    setError('An unknown error occurred');
+                    console.error('An unknown error occurred');
                 }
             }
         } else {
-            setError("unvalid")
+            console.error("unvalid")
         }
-    }
-
-    if (error !== null) {
-        console.error(error);
-        setError(null);
     }
 
     return (

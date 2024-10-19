@@ -4,13 +4,17 @@ use diesel::prelude::*;
 use diesel::result::Error;
 use diesel::{PgConnection, QueryResult, RunQueryDsl};
 
-pub fn insert_items_in_bulk(conn: &mut PgConnection, new_items: Vec<NewItem>) -> Result<usize, Error> {
+/// Inserts multiple new items into the database in bulk.
+/// Returns the number of successfully inserted items.
+pub fn bulk_insert_items(conn: &mut PgConnection, new_items: Vec<NewItem>) -> Result<usize, Error> {
     diesel::insert_into(items::table)
         .values(&new_items)
         .execute(conn)
 }
 
-pub fn get_items_by_list_id(conn: &mut PgConnection, list_id_param: i32) -> QueryResult<Vec<Item>> {
+/// Retrieves all items associated with the specified list ID from the database.
+/// Returns a vector of items corresponding to the given list ID.
+pub fn fetch_items_by_list_id(conn: &mut PgConnection, list_id_param: i32) -> QueryResult<Vec<Item>> {
     use crate::schema::items::dsl::*;
 
     items

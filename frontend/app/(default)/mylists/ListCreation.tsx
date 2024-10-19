@@ -29,7 +29,8 @@ export interface Ranking {
     id: number;
     user_id: number | null;
     name: string;
-    ranking_type: string;
+    ranking_type: "numbered" | "tier_list";
+    creation_method: "manual_exchange" | "intelligent_dual";
     list_id: number;
 }
 
@@ -47,7 +48,6 @@ export function isValidInput(value: string): boolean {
 }
 
 export default function ListCreation({fetchLists}: FetchListProps) {
-    const [error, setError] = useState<string | null>(null);
     const {userId} = useUserContext();
 
 
@@ -64,7 +64,6 @@ export default function ListCreation({fetchLists}: FetchListProps) {
 
     function onClick() {
         if (isValidInput(nameList)) {
-            setError(null)
             const object: Item[] = input
                 .split(separator)
                 .filter(item => item && item.trim() !== "")
@@ -73,32 +72,24 @@ export default function ListCreation({fetchLists}: FetchListProps) {
                 });
             setNewList({...newList, name: nameList, items: object});
         } else {
-            setError('ee')
+            console.error('invalid input')
         }
     }
 
-    if (error !== null) {
-        console.error(error)
-        setError(null);
-    }
-
-
     async function saveList() {
         try {
-            await postData<NewList>('lists', newList).then(() => {
+            await postData<NewList, NewList>('lists', newList).then(() => {
                 setNewList(default_list)
                 fetchLists()
             });
         } catch (error) {
             if (error instanceof Error) {
-                setError(error.message);
+                console.error(error.message);
             } else {
-                setError('An unknown error occurred');
+                console.error('An unknown error occurred');
             }
         }
     }
-
-    const blue = "btn-sm bg-gradient-to-t from-indigo-600 to-indigo-500 bg-[length:100%_100%] bg-[bottom] py-[5px] text-white shadow-[inset_0px_1px_0px_0px_theme(colors.white/.16)] hover:bg-[length:100%_150%]"
 
     return (
         <Stack direction='row' spacing={5} justifyContent="center">

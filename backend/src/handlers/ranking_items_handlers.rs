@@ -3,20 +3,30 @@ use crate::models::ranking_items_models::NewRankings;
 use crate::ranking_item_service;
 use actix_web::{web, HttpResponse};
 
-pub async fn get_ranking_items_by_ranking(path: web::Path<i32>) -> HttpResponse {
-    let ranking_id_param = path.into_inner();
+/// Retrieves ranking items associated with the specified ranking ID and returns them as a JSON response.
+pub async fn fetch_ranking_items(path: web::Path<i32>) -> HttpResponse {
+    let ranking_id = path.into_inner(); // Extract the ranking ID from the path
     let mut conn = establish_connection();
 
-    match ranking_item_service::get_ranking_items_by_ranking_id(&mut conn, ranking_id_param) {
+    match ranking_item_service::fetch_ranking_items_with_names(&mut conn, ranking_id) {
         Ok(items) => HttpResponse::Ok().json(items),
-        Err(_) => HttpResponse::InternalServerError().body("Error retrieving items"),
+        Err(e) => {
+            eprintln!("Error retrieving ranking items for ranking ID {}: {:?}", ranking_id, e);
+            HttpResponse::InternalServerError().body("Error retrieving ranking items")
+        }
     }
 }
-pub async fn update_ranking_items_by_ranking(new_items: web::Json<Vec<NewRankings>>) -> HttpResponse {
+
+/// Updates the ranking items with the new ranking data provided in the request body.
+/// Returns a JSON response with the updated items.
+pub async fn update_ranking_items(new_items: web::Json<Vec<NewRankings>>) -> HttpResponse {
     let mut conn = establish_connection();
 
-    match ranking_item_service::exchange_rank_with_id(&mut conn, new_items.into_inner()) {
-        Ok(items) => HttpResponse::Ok().json(items),
-        Err(_) => HttpResponse::InternalServerError().body("Error retrieving items"),
+    match ranking_item_service::update_ranks(&mut conn, new_items.into_inner()) {
+        Ok(items) => HttpResponse::Ok().json(items), // Return updated items as JSON if successful
+        Err(e) => {
+            eprintln!("Error updating ranking items: {:?}", e);
+            HttpResponse::InternalServerError().body("Error updating ranking items")
+        }
     }
 }

@@ -5,12 +5,12 @@ import TemplateInput from "@/components/Template/TemplateInput";
 import {Stack} from "@mui/material";
 import {isValidInput} from "@/app/(default)/mylists/ListCreation";
 import TemplateButton from "@/components/Template/TemplateButton";
-import {useState} from "react";
 import {useRouter} from "next/navigation";
+import {useState} from "react";
 
 type SaveRankingProps = {
     newRanking: {
-        method_creation: string;
+        creation_method: string;
         user_id: number | null;
         list_id: number;
         name: string;
@@ -21,26 +21,26 @@ type SaveRankingProps = {
         list_id: number;
         user_id: number | null;
         name: string;
-        method_creation: string;
+        creation_method: string;
         ranking_type: string
     }) => void;
 }
 
 function isValid(ranking: NewRanking) {
-    return isValidInput(ranking.name) && ranking.ranking_type && ranking.method_creation && ranking.list_id
+    return isValidInput(ranking.name) && ranking.ranking_type && ranking.creation_method && ranking.list_id
 }
 
 export default function RankingName({newRanking, saveRanking, setNewRanking}: SaveRankingProps) {
-    const [error, setError] = useState<string | null>(null);
     const router = useRouter();
+    const [error, setError] = useState(false);
 
     function onClick() {
         if (isValid(newRanking)) {
             saveRanking()
-            setError(null)
             router.push("myrankings")
         } else {
-            setError("err")
+            setError(true)
+            console.error("invalid input : ", newRanking)
         }
     }
 
@@ -52,7 +52,8 @@ export default function RankingName({newRanking, saveRanking, setNewRanking}: Sa
             <Stack spacing={2} alignItems="center">
                 <TemplateInput label='Title'
                                id='ranking_title'
-                               variant={error === null ? 'blue' : "error"}
+                               error={error}
+                               variant={'blue'}
                                placeholder="ex: Meilleurs kdrama..."
                                onChange={(e) => setNewRanking((prevValue: NewRanking) => {
                                    return {
@@ -60,6 +61,9 @@ export default function RankingName({newRanking, saveRanking, setNewRanking}: Sa
                                        name: e.target.value,
                                    }
                                })}/>
+                {/*                <Typography>List : {newRanking.list_id}</Typography>
+                <Typography>List : {newRanking.ranking_type}</Typography>
+                <Typography>List : {newRanking.creation_method}</Typography>*/}
                 <TemplateButton onClick={onClick} text="Create" variant={'blue'}/>
 
             </Stack>

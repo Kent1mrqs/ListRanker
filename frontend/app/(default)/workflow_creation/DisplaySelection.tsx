@@ -12,16 +12,18 @@ const rankingCard = [
         title: 'Tournoi',
         image: TournoiImg,
         description: '',
-        key: 'tournament'
+        key: 'tournament',
+        disabled: true
     },
     {
         title: 'Tier List',
         image: TierList,
         description: '',
-        key: 'tier_list'
+        key: 'tier_list',
+        disabled: true
     },
     {
-        title: 'Numbered',
+        title: 'NumberedManualExchange',
         image: TierList,
         description: '',
         key: 'numbered'
@@ -30,13 +32,15 @@ const rankingCard = [
         title: 'Pyramid',
         image: TierList,
         description: '',
-        key: 'pyramid'
+        key: 'pyramid',
+        disabled: true
     },
     {
         title: 'Points',
         image: TierList,
         description: '',
-        key: 'points'
+        key: 'points',
+        disabled: true
     }
 ]
 
@@ -49,9 +53,10 @@ export default function DisplaySelection({newRanking, setNewRanking}: RankingPro
             description="Select how you want your ranking to be displayed."
         >
             <Spotlight
-                className="group mx-auto grid max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-3">
+                className="group mx-auto grid max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-5">
                 {rankingCard.map((card, i) => (
                     <TemplateCard
+                        disabled={card.disabled}
                         selected={newRanking.ranking_type === card.key}
                         onClick={() => setNewRanking((prevValue: NewRanking) => {
                             return {

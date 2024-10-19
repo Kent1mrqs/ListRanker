@@ -8,6 +8,7 @@ pub struct RankingItem {
     pub ranking_id: i32,
     pub item_id: i32,
     pub rank: i32,
+    pub score: i32,
 }
 
 #[derive(Insertable, Serialize, Deserialize, Debug)]
@@ -16,15 +17,17 @@ pub struct NewRankingItem {
     pub ranking_id: i32,
     pub item_id: i32,
     pub rank: i32,
+    pub score: i32,
 }
 
-#[derive(Queryable, Serialize)]
+#[derive(Queryable, Serialize, Clone, Debug)]
 pub struct RankingItemWithName {
     pub(crate) id: i32,
     pub(crate) ranking_id: i32,
     pub(crate) item_id: i32,
     pub(crate) rank: i32,
     pub(crate) name: String,
+    pub(crate) score: i32,
 }
 #[derive(Deserialize, Serialize, Debug)]
 pub struct NewRankings {

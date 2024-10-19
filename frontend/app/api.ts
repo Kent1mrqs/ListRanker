@@ -1,13 +1,14 @@
-export const fetchData = async <T>(route: string, setData: (data: T) => void): Promise<void> => {
+export const fetchData = async <T>(route: string): Promise<T> => {
     const url = "http://127.0.0.1:8080/" + route;
-    console.log(url)
+    console.info("fetch ", url)
     try {
         const response = await fetch(url);
         if (!response.ok) {
             throw new Error('Error when fetching ' + route);
         }
         const result = await response.json() as T;
-        setData(result);
+        console.info("fetch get ", result)
+        return result;
     } catch (error) {
         if (error instanceof Error) {
             throw new Error(error.message);
@@ -17,9 +18,9 @@ export const fetchData = async <T>(route: string, setData: (data: T) => void): P
     }
 };
 
-export const postData = async <T>(route: string, data: T): Promise<T> => {
+export const postData = async <T, R>(route: string, data: T): Promise<R> => {
     const url = "http://127.0.0.1:8080/" + route;
-    console.info(JSON.stringify(data))
+    console.info("post ", url, " data : ", data)
     try {
         const response = await fetch(url, {
             method: 'POST',
@@ -31,7 +32,8 @@ export const postData = async <T>(route: string, data: T): Promise<T> => {
         if (!response.ok) {
             throw new Error('Error when posting ' + route);
         }
-        const result = await response.json() as T;
+        const result = await response.json() as R;
+        console.info("post response : ", response)
         return result;
     } catch (error) {
         if (error instanceof Error) {

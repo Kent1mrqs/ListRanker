@@ -5,6 +5,7 @@ interface I {
     id?: string;
     key?: number;
     type?: string;
+    error?: boolean;
     placeholder?: string;
     value?: number;
     variant?: string;
@@ -32,6 +33,7 @@ export default function TemplateInput({
                                           type = 'text',
                                           id,
                                           value,
+                                          error = false,
                                           placeholder,
                                           onChange,
                                           onBlur,
@@ -46,7 +48,7 @@ export default function TemplateInput({
                 type={type}
                 id={id}
                 value={value}
-                className={`${variantsInput[variant]} mt-1 block w-full`}
+                className={`${variantsInput[error ? "error" : variant]} mt-1 block w-full`}
                 placeholder={placeholder}
                 onChange={onChange}
                 onBlur={onBlur}

@@ -7,6 +7,7 @@ pub struct Item {
     pub id: i32,
     pub list_id: i32,
     pub name: String,
+    pub position_list: i32,
 }
 
 #[derive(Insertable, Serialize, Deserialize, Debug)]
@@ -14,6 +15,7 @@ pub struct Item {
 pub struct NewItem {
     pub list_id: i32,
     pub name: String,
+    pub position_list: i32,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]

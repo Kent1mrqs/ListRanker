@@ -5,22 +5,16 @@ import {useCallback, useState} from "react";
 import {fetchData} from "@/app/api";
 import {useUserContext} from "@/app/UserProvider";
 
-export const metadata = {
-    title: "Home - Open PRO",
-    description: "Page description",
-};
-
-
 export default function MyLists() {
     const {userId} = useUserContext();
-    const [error, setError] = useState<string | null>(null);
     const [currentListId, setCurrentListId] = useState<number>(0)
     const [lists, setLists] = useState<Lists>([]);
     const fetchLists = useCallback(() => {
-        fetchData<Lists>('lists/' + userId, setLists).catch(err => setError(err.message));
+        fetchData<Lists>('lists/' + userId)
+            .then(result => setLists(result))
+            .catch(err => console.error(err.message));
     }, []);
 
-    console.error(error)
     return (
         <>
             <ListSelection lists={lists}

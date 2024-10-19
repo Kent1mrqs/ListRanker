@@ -6,11 +6,6 @@ import TournoiImg from "@/public/images/tournoi.png";
 import TierList from "@/public/images/tier_list.png";
 import {NewRanking, RankingProps} from "@/app/(default)/workflow_creation/WorkflowCreation";
 
-export const metadata = {
-    title: "Home - Open PRO",
-    description: "Page description",
-};
-
 const rankingCard = [
     {
         title: 'Manual',
@@ -22,13 +17,14 @@ const rankingCard = [
         title: 'Tournament',
         image: TierList,
         description: 'Generate a tournament and find your champion !',
-        key: 'tournament'
+        key: 'tournament',
+        disabled: true
     },
     {
         title: 'Dual match',
         image: TierList,
         description: 'Generate dual matches to find your total ranking',
-        key: 'dual_match'
+        key: 'intelligent_dual',
     }
 ]
 
@@ -42,15 +38,16 @@ export default function CreationMethod({newRanking, setNewRanking}: RankingProps
                 className="group mx-auto grid max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-3">
                 {rankingCard.map((card, i) => (
                     <TemplateCard
-                        selected={newRanking.method_creation === card.key}
+                        selected={newRanking.creation_method === card.key}
                         key={i}
+                        disabled={card.disabled}
                         title={card.title}
                         image={card.image}
                         description={card.description}
                         onClick={() => setNewRanking((prevValue: NewRanking) => {
                             return {
                                 ...prevValue,
-                                method_creation: card.key,
+                                creation_method: card.key,
                             }
                         })}
                     />

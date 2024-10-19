@@ -9,6 +9,7 @@ pub struct Ranking {
     pub name: String,
     pub list_id: i32,
     pub ranking_type: String,
+    pub creation_method: String,
 }
 
 #[derive(Insertable, Deserialize, Serialize, Debug)]
@@ -18,6 +19,7 @@ pub struct NewRanking {
     pub name: String,
     pub list_id: i32,
     pub ranking_type: String,
+    pub creation_method: String,
 }
 
 

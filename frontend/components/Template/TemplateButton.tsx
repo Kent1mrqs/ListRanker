@@ -17,10 +17,10 @@ const variants: { [key: string]: string } = {
 type StylesProps = {
     onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
     text: String;
-    variant: keyof typeof variants;
+    variant?: keyof typeof variants;
 };
 
-export default function TemplateButton({onClick, text, variant}: StylesProps) {
+export default function TemplateButton({onClick, text, variant = "blue"}: StylesProps) {
     return (
         <button type="button"
                 onClick={onClick}

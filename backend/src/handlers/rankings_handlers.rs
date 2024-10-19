@@ -3,35 +3,38 @@ use crate::models::rankings_models::NewRanking;
 use crate::ranking_service;
 use actix_web::{web, HttpResponse};
 
-pub async fn get_rankings(path: web::Path<i32>) -> HttpResponse {
+/// Retrieves rankings for a specified user and returns them as a JSON response.
+pub async fn fetch_user_rankings(path: web::Path<i32>) -> HttpResponse {
     let mut conn = establish_connection();
     let user_id = path.into_inner();
-    match ranking_service::get_all_rankings(&mut conn, user_id) {
-        Ok(rankings) => HttpResponse::Ok().json(rankings),
-        Err(_) => HttpResponse::InternalServerError().body("Error retrieving rankings"),
+
+    match ranking_service::fetch_user_rankings(&mut conn, user_id) {
+        Ok(rankings) => HttpResponse::Ok().json(rankings), // Return rankings as JSON if successful
+        Err(e) => {
+            eprintln!("Error retrieving rankings for user ID {}: {:?}", user_id, e);
+            HttpResponse::InternalServerError().body("Error retrieving rankings")
+        }
     }
 }
 
+/// Creates a new ranking based on the provided data and returns the created ranking as a JSON response.
 pub async fn create_ranking(new_ranking: web::Json<NewRanking>) -> HttpResponse {
-    println!("Requête reçue pour créer un classement : {:?}", new_ranking);
-
     let mut conn = establish_connection();
 
-    let list_data = NewRanking {
+    // Constructing the NewRanking object from the incoming request
+    let ranking_data = NewRanking {
         name: new_ranking.name.clone(),
         user_id: new_ranking.user_id,
         list_id: new_ranking.list_id,
         ranking_type: new_ranking.ranking_type.clone(),
+        creation_method: new_ranking.creation_method.clone(),
     };
 
-    match ranking_service::create_new_ranking(&mut conn, list_data) {
-        Ok(list) => {
-            println!("Liste créée avec succès : {:?}", list);
-            HttpResponse::Ok().json(list)
-        }
+    match ranking_service::register_new_ranking(&mut conn, ranking_data) {
+        Ok(created_ranking) => HttpResponse::Ok().json(created_ranking),
         Err(e) => {
-            println!("Erreur lors de la création de la liste : {:?}", e);
-            HttpResponse::InternalServerError().body("Error creating list")
+            println!("Error creating ranking: {:?}", e);
+            HttpResponse::InternalServerError().body("Error creating ranking")
         }
     }
 }

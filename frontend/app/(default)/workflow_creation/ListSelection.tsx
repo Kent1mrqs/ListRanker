@@ -15,19 +15,16 @@ export type ListProps = {
 
 
 export default function ListSelection({lists, fetchLists, currentListId, setCurrentListId}: ListProps) {
-    const [error, setError] = useState<string | null>(null);
     const [currentItems, setCurrentItems] = useState<Item[]>([])
 
     useEffect(() => {
         fetchLists();
     }, [fetchLists]);
     const fetchItems = useCallback((list_id: number) => {
-        fetchData<Lists>('items/' + list_id, setCurrentItems).catch(err => setError(err.message));
+        fetchData<Lists>('items/' + list_id)
+            .then(result => setCurrentItems(result))
+            .catch(err => console.error(err.message));
     }, []);
-    if (error !== null) {
-        console.error(error)
-        setError(null);
-    }
 
     function selectList(id: number) {
         setCurrentItems([])
