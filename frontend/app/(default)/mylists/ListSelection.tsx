@@ -9,9 +9,9 @@ import {TemplateEditionItemCardOrChip, TemplateItemCardOrChip} from "@/component
 import IconEdit from "@/components/Icons/IconEdit";
 import {List} from "@/app/(default)/workflow_creation/ChooseList";
 import {useUserContext} from "@/app/UserProvider";
+import {useListsContext} from "@/app/ListsProvider";
 
 export type ListProps = {
-    lists: Lists;
     fetchLists: () => void;
     currentList: List;
     setCurrentList: (list: List) => void;
@@ -21,7 +21,6 @@ export type ListProps = {
 
 
 export default function ListSelection({
-                                          lists,
                                           fetchLists,
                                           setCreationMode,
                                           creationMode,
@@ -31,6 +30,7 @@ export default function ListSelection({
     const {userId} = useUserContext();
     const [currentItems, setCurrentItems] = useState<Item[]>([])
     const [editionMode, setEditionMode] = useState<boolean>(false)
+    const {lists} = useListsContext();
 
     useEffect(() => {
         fetchLists();
