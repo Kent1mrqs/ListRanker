@@ -66,6 +66,12 @@ function ShowRanking({currentRankingItems, resetDuel}: { currentRankingItems: Ra
     )
 }
 
+function ShowTournamentPreview() {
+    return (
+        <></>
+    )
+}
+
 function Duel({currentDual, resetDuel, chooseCard, ranking_id, duelsLeft}: DuelProps) {
 
 
@@ -106,11 +112,11 @@ function Duel({currentDual, resetDuel, chooseCard, ranking_id, duelsLeft}: DuelP
     )
 }
 
-export default function NumberedIntelligentDual({
-                                                    ranking_id,
-                                                    setCurrentRankingItems,
-                                                    currentRankingItems
-                                                }: ComponentProps) {
+export default function RandomTournament({
+                                             ranking_id,
+                                             setCurrentRankingItems,
+                                             currentRankingItems
+                                         }: ComponentProps) {
 
     const [currentDual, setCurrentDual] = useState<Item[]>(default_duel)
     const [duelOver, setDuelOver] = useState<Boolean>(false)
@@ -174,6 +180,7 @@ export default function NumberedIntelligentDual({
 
     return (
         <Stack spacing={1} justifyContent='center'>
+            <ShowTournamentPreview/>
             {duelOver ?
                 <ShowRanking
                     resetDuel={resetDuel}

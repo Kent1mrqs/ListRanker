@@ -7,9 +7,14 @@ import {useCallback, useState} from "react";
 import {fetchData} from "@/app/api";
 import {useUserContext} from "@/app/UserProvider";
 
+export interface List {
+    name: string;
+    id: number;
+}
+
 export default function ChooseList({setNewRanking}: RankingProps) {
     const {userId} = useUserContext();
-    const [currentListId, setCurrentListId] = useState<number>(0)
+    const [currentList, setCurrentList] = useState<List>({name: '', id: 0})
     const [creationMode, setCreationMode] = useState<boolean>(false)
     const [lists, setLists] = useState<Lists>([]);
     const fetchLists = useCallback(() => {
@@ -18,12 +23,12 @@ export default function ChooseList({setNewRanking}: RankingProps) {
             .catch(err => console.error(err.message));
     }, []);
 
-    function SelectList(id: number) {
-        setCurrentListId(id);
+    function SelectList(list: List) {
+        setCurrentList(list);
         setNewRanking((prevValue: NewRanking) => {
             return {
                 ...prevValue,
-                list_id: id,
+                list_id: list.id,
             }
         })
     }
@@ -37,8 +42,8 @@ export default function ChooseList({setNewRanking}: RankingProps) {
                            creationMode={creationMode}
                            setCreationMode={setCreationMode}
                            fetchLists={fetchLists}
-                           currentListId={currentListId}
-                           setCurrentListId={SelectList}/>
+                           currentList={currentList.id}
+                           setCurrentList={SelectList}/>
             {creationMode && <ListCreation fetchLists={fetchLists}/>}
         </TemplatePage>
     );

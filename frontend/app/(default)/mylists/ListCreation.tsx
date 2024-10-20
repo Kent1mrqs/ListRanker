@@ -82,6 +82,14 @@ export default function ListCreation({fetchLists}: FetchListProps) {
         }
     }
 
+    function importList() {
+        postData<NewList, NewList>('lists', newList).then(() => {
+            setNewList(default_list)
+            fetchLists()
+        });
+    }
+
+
     async function saveList() {
         console.log("save", newList)
         try {
@@ -129,7 +137,7 @@ export default function ListCreation({fetchLists}: FetchListProps) {
         setNewList((prevList) => {
             const updatedItems = prevList.items.map((item, index): Item => {
                 if (index === id) {
-                    return {...item, image: undefined};
+                    return {...item, image: ""};
                 }
                 return item;
             });

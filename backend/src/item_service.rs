@@ -53,6 +53,10 @@ pub fn convert_image(image: String) -> Option<Vec<u8>> {
 }
 
 pub fn convert_to_base64(bytes: Vec<u8>, mime_type: &str) -> String {
+    if bytes.is_empty() {
+        return "".to_string(); // Renvoie une chaîne vide si les octets sont vides
+    }
+
     let base64_string = base64::engine::general_purpose::STANDARD.encode(&bytes);
     format!("data:{};base64,{}", mime_type, base64_string)
 }

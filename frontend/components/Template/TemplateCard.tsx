@@ -135,3 +135,33 @@ export function TemplateItemCardOrChip({
         </>
     )
 }
+
+export function TemplateDuelCard({
+                                     title,
+                                     image,
+                                 }: CardProps) {
+
+    return (
+        <div className={duelStyle}
+        >
+            <div
+                className="relative z-20 h-full overflow-hidden rounded-[inherit] bg-gray-950 after:absolute after:bg-gradient-to-br after:from-gray-900/50 after:via-gray-800/25 after:to-gray-900/50"
+            >
+                <Image
+                    className="inline-flex"
+                    src={image}
+                    width={350}
+                    height={200}
+                    alt={title}
+                />
+                <div className="p-6">
+                    <div className="mb-3">
+                        <TemplateChip>
+                            {title}
+                        </TemplateChip>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}
