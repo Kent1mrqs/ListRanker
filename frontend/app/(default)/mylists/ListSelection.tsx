@@ -1,7 +1,7 @@
 "use client";
 import {Button, Stack, Typography} from "@mui/material";
 import React, {useCallback, useState} from "react";
-import {fetchData, postData} from "@/app/api";
+import {deleteData, fetchData} from "@/app/api";
 import Spotlight from "@/components/spotlight";
 import {Item, Lists, NewList} from "@/app/(default)/mylists/ListCreation";
 import TemplateButton from "@/components/Template/TemplateButton";
@@ -10,7 +10,7 @@ import IconEdit from "@/components/Icons/IconEdit";
 import {List} from "@/app/(default)/workflow_creation/ChooseList";
 import {useUserContext} from "@/app/UserProvider";
 import {useListsContext} from "@/app/ListsProvider";
-import {fetchLists} from "@/app/(default)/mylists/ListServices";
+import {fetchLists, saveList} from "@/app/(default)/mylists/ListServices";
 
 export type ListProps = {
     currentList: List;
@@ -54,22 +54,14 @@ export default function ListSelection({
         document.body.removeChild(link);
     };
 
-    async function saveList(newList: NewList) {
-        try {
-            await postData<NewList, NewList>('lists', newList).then(() => {
-                fetchLists(userId, setLists)
-            });
-        } catch (error) {
-            if (error instanceof Error) {
-                console.error(error.message);
-            } else {
-                console.error('An unknown error occurred');
-            }
-        }
-    }
 
     async function deleteList() {
-
+        deleteData("list/" + currentList.id)
+            .then(() => {
+                fetchLists(userId, setLists)
+                setCurrentItems([])
+                setCurrentList({name: '', id: 0})
+            })
     }
 
     const importList = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,18 +73,16 @@ export default function ListSelection({
         const reader = new FileReader();
         reader.onload = (e) => {
             const result = e?.target?.result;
-            console.log(result)
             if (typeof result === 'string') {
                 try {
                     const jsonData: NewList = JSON.parse(result);
-                    saveList({...jsonData, user_id: userId});
+                    saveList({...jsonData, user_id: userId}, userId, setLists);
                 } catch (error) {
                     console.error("Erreur lors de l'analyse du JSON :", error);
                     alert("Le fichier sélectionné n'est pas un JSON valide.");
                 }
             }
         };
-
         reader.readAsText(file);
     };
 

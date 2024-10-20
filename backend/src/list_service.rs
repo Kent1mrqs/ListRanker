@@ -48,11 +48,13 @@ pub fn delete_list(conn: &mut PgConnection, list_id: i32) -> QueryResult<usize> 
     use crate::schema::items::dsl::{items, list_id as item_list_id};
     use crate::schema::lists::dsl::{id, lists};
 
-    // Delete all items associated with the specified list ID
-    diesel::delete(items.filter(item_list_id.eq(list_id)))
-        .execute(conn)?;
+    conn.transaction::<_, diesel::result::Error, _>(|conn| {
+        // Delete all items associated with the specified list ID
+        diesel::delete(items.filter(item_list_id.eq(list_id)))
+            .execute(conn)?;
 
-    // Delete the list itself
-    diesel::delete(lists.filter(id.eq(list_id)))
-        .execute(conn)
+        // Delete the list itself
+        diesel::delete(lists.filter(id.eq(list_id)))
+            .execute(conn)
+    })
 }

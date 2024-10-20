@@ -44,7 +44,7 @@ pub async fn remove_list(path: web::Path<i32>) -> HttpResponse {
     let mut conn = establish_connection();
 
     match list_service::delete_list(&mut conn, list_id) {
-        Ok(_) => HttpResponse::Ok().body("List removed successfully"),
+        Ok(result) => HttpResponse::Ok().json(result),
         Err(e) => {
             println!("Error deleting the list: {:?}", e);
             HttpResponse::InternalServerError().body("Error removing list")
