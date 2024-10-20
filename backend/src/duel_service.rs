@@ -3,7 +3,6 @@ use crate::models::duel_models::{BattleResult, DuelResult, ItemDuel, NextDuelDat
 use crate::models::ranking_items_models::RankingItemWithNameAndImage;
 use crate::ranking_item_service::{fetch_ranking_items_with_names, set_item_ranks};
 use crate::schema::duels::dsl::duels;
-use crate::schema::duels::{loser, winner};
 use crate::schema::items::dsl::items;
 use crate::schema::items::id;
 use crate::schema::ranking_items::dsl::ranking_items;
@@ -76,7 +75,7 @@ fn pick_unique_sequence_duel_candidates(max: i32, score_param: i32) -> (i32, i32
 
 /// Determines the next duel or concludes the battle based on the given result.
 pub fn process_next_duel(conn: &mut PgConnection, ranking_id_param: i32, battle_result: BattleResult) -> Result<DuelResult, Box<dyn std::error::Error>> {
-    if !has_duel_occurred(conn, battle_result.winner, battle_result.loser) & !has_duel_occurred(conn, battle_result.loser, battle_result.winner) {
+    if !has_duel_occurred(conn, battle_result.winner, battle_result.loser, ranking_id_param) & !has_duel_occurred(conn, battle_result.loser, battle_result.winner, ranking_id_param) {
         record_battle_winner(conn, battle_result)?;
     } else {
         print!("Duel has already occured");
@@ -93,9 +92,10 @@ pub fn initialize_duel(conn: &mut PgConnection, ranking_id_param: i32) -> Result
 /// and either generating rankings or picking duel candidates.
 fn resolve_duel_state(conn: &mut PgConnection, ranking_id_param: i32) -> Result<DuelResult, Box<dyn std::error::Error>> {
     println!("\nResolving duel state for ranking ID: {}", ranking_id_param);
+    let duels_left = number_duels_left(conn, ranking_id_param);
 
     // Check if there are no more duels left
-    if number_duels_left(conn, ranking_id_param) <= 0 {
+    if duels_left <= 0 {
         println!("No more duels left for ranking ID: {}. Updating ranking...\n", ranking_id_param);
 
         let update_result = update_ranking(conn, ranking_id_param);
@@ -110,8 +110,6 @@ fn resolve_duel_state(conn: &mut PgConnection, ranking_id_param: i32) -> Result<
 
         let response = pick_duel_candidates(conn, ranking_id_param, pick_unique_sequence_duel_candidates)?;
 
-        let duels_left = number_duels_left(conn, ranking_id_param);
-
         let data = NextDuelData {
             next_duel: response,
             duels_left,
@@ -123,8 +121,10 @@ fn resolve_duel_state(conn: &mut PgConnection, ranking_id_param: i32) -> Result<
 
 
 /// Checks if a duel between the specified items has already occurred.
-pub fn has_duel_occurred(conn: &mut PgConnection, item_1_id: i32, item_2_id: i32) -> bool {
+pub fn has_duel_occurred(conn: &mut PgConnection, item_1_id: i32, item_2_id: i32, ranking_id_param: i32) -> bool {
+    use crate::schema::duels::dsl::{duels, loser, ranking_id, winner};
     let result = duels
+        .filter(ranking_id.eq(ranking_id_param))
         .filter(loser.eq(item_1_id))
         .filter(winner.eq(item_2_id))
         .select((loser, winner))
@@ -204,29 +204,62 @@ pub fn pick_duel_candidates(
 }
 
 /// Records the winner of a battle by inserting the battle result and updating the winner's score.
+/// Logs the progress and handles errors accordingly.
 pub fn record_battle_winner(conn: &mut PgConnection, battle_result: BattleResult) -> QueryResult<usize> {
     use crate::schema::ranking_items::{item_id, ranking_id, score};
     use crate::schema::items::position_list;
 
+    // Log the start of the process
+    println!("Starting to record battle winner for ranking ID: {}, winner position: {}",
+             battle_result.ranking_id, battle_result.winner);
+
     // Insert the battle result into the duels table
-    diesel::insert_into(duels)
+    if let Err(err) = diesel::insert_into(duels)
         .values(&battle_result)
-        .execute(conn)?;
+        .execute(conn)
+    {
+        eprintln!("Failed to insert battle result into duels table: {:?}", err);
+        return Err(err);
+    } else {
+        println!("Successfully recorded battle result in the duels table.");
+    }
 
     // Retrieve the item ID of the winner based on the ranking and position
-    let item_id_to_update: i32 = ranking_items
+    let item_id_to_update: i32 = match ranking_items
         .filter(ranking_id.eq(battle_result.ranking_id))
         .inner_join(items.on(id.eq(item_id))) // inner join on items to get position_list
         .filter(position_list.eq(battle_result.winner))
         .select(item_id)
-        .first(conn)?;
+        .first(conn)
+    {
+        Ok(item_id_param) => {
+            println!("Found item ID {} for the winner in ranking ID: {}", item_id_param, battle_result.ranking_id);
+            item_id_param
+        }
+        Err(err) => {
+            eprintln!("Failed to retrieve the item ID of the winner: {:?}", err);
+            return Err(err);
+        }
+    };
 
     // Update the score of the winner
-    diesel::update(ranking_items)
+    match diesel::update(ranking_items)
         .filter(item_id.eq(item_id_to_update))
         .set(score.eq(score + 1))
         .execute(conn)
+    {
+        Ok(rows_updated) => {
+            println!("Successfully updated the score for item ID: {}. Rows affected: {}",
+                     item_id_to_update, rows_updated);
+            Ok(rows_updated)
+        }
+        Err(err) => {
+            eprintln!("Failed to update the score for item ID: {}: {:?}", item_id_to_update, err);
+            Err(err)
+        }
+    }
 }
+
 
 /// Updates the ranking by reordering items based on their scores and returns the count of updated records.
 pub fn update_ranking(conn: &mut PgConnection, ranking_id_param: i32) -> QueryResult<usize> {
