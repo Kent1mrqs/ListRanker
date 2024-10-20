@@ -1,6 +1,6 @@
 "use client";
 import {Button, Stack, Typography} from "@mui/material";
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useCallback, useState} from "react";
 import {fetchData, postData} from "@/app/api";
 import Spotlight from "@/components/spotlight";
 import {Item, Lists, NewList} from "@/app/(default)/mylists/ListCreation";
@@ -10,9 +10,9 @@ import IconEdit from "@/components/Icons/IconEdit";
 import {List} from "@/app/(default)/workflow_creation/ChooseList";
 import {useUserContext} from "@/app/UserProvider";
 import {useListsContext} from "@/app/ListsProvider";
+import {fetchLists} from "@/app/(default)/mylists/ListServices";
 
 export type ListProps = {
-    fetchLists: () => void;
     currentList: List;
     setCurrentList: (list: List) => void;
     creationMode: boolean;
@@ -21,7 +21,6 @@ export type ListProps = {
 
 
 export default function ListSelection({
-                                          fetchLists,
                                           setCreationMode,
                                           creationMode,
                                           currentList,
@@ -30,11 +29,8 @@ export default function ListSelection({
     const {userId} = useUserContext();
     const [currentItems, setCurrentItems] = useState<Item[]>([])
     const [editionMode, setEditionMode] = useState<boolean>(false)
-    const {lists} = useListsContext();
+    const {lists, setLists} = useListsContext();
 
-    useEffect(() => {
-        fetchLists();
-    }, [fetchLists]);
     const fetchItems = useCallback((list_id: number) => {
         fetchData<Lists>('items/' + list_id)
             .then(result => setCurrentItems(result))
@@ -61,7 +57,7 @@ export default function ListSelection({
     async function saveList(newList: NewList) {
         try {
             await postData<NewList, NewList>('lists', newList).then(() => {
-                fetchLists()
+                fetchLists(userId, setLists)
             });
         } catch (error) {
             if (error instanceof Error) {

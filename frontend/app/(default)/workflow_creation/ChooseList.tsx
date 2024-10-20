@@ -2,11 +2,8 @@
 import TemplatePage from "@/components/Template/TemplatePage";
 import {NewRanking, RankingProps} from "@/app/(default)/workflow_creation/WorkflowCreation";
 import ListSelection from "@/app/(default)/mylists/ListSelection";
-import ListCreation, {Lists} from "@/app/(default)/mylists/ListCreation";
-import {useCallback, useState} from "react";
-import {fetchData} from "@/app/api";
-import {useUserContext} from "@/app/UserProvider";
-import {useListsContext} from "@/app/ListsProvider";
+import ListCreation from "@/app/(default)/mylists/ListCreation";
+import {useState} from "react";
 
 export interface List {
     name: string;
@@ -14,15 +11,9 @@ export interface List {
 }
 
 export default function ChooseList({setNewRanking}: RankingProps) {
-    const {userId} = useUserContext();
     const [currentList, setCurrentList] = useState<List>({name: '', id: 0})
     const [creationMode, setCreationMode] = useState<boolean>(false)
-    const {setLists} = useListsContext();
-    const fetchLists = useCallback(() => {
-        fetchData<Lists>('lists/' + userId)
-            .then(result => setLists(result))
-            .catch(err => console.error(err.message));
-    }, []);
+
 
     function SelectList(list: List) {
         setCurrentList(list);
@@ -41,10 +32,9 @@ export default function ChooseList({setNewRanking}: RankingProps) {
         >
             <ListSelection creationMode={creationMode}
                            setCreationMode={setCreationMode}
-                           fetchLists={fetchLists}
                            currentList={currentList}
                            setCurrentList={SelectList}/>
-            {creationMode && <ListCreation fetchLists={fetchLists}/>}
+            {creationMode && <ListCreation/>}
         </TemplatePage>
     );
 }

@@ -9,6 +9,8 @@ import {useUserContext} from "@/app/UserProvider";
 import Spotlight from "@/components/spotlight";
 import TemplateCard from "@/components/Template/TemplateCard";
 import TemplateChip from "@/components/Template/TemplateChip";
+import {fetchLists} from "@/app/(default)/mylists/ListServices";
+import {useListsContext} from "@/app/ListsProvider";
 
 export interface Item {
     name: string;
@@ -40,11 +42,6 @@ export interface Ranking {
 
 export type Rankings = Ranking[]
 
-
-export type FetchListProps = {
-    fetchLists: () => void;
-};
-
 export function isValidInput(value: string): boolean {
     const hasInvalidCharacters = /[.,;]/.test(value)
     const input_length = value.trim().length;
@@ -53,8 +50,9 @@ export function isValidInput(value: string): boolean {
 
 const blue = "btn-sm bg-gradient-to-t from-indigo-600 to-indigo-500 bg-[length:100%_100%] bg-[bottom] py-[5px] text-white shadow-[inset_0px_1px_0px_0px_theme(colors.white/.16)] hover:bg-[length:100%_150%] max-w-[200px] w-full";
 
-export default function ListCreation({fetchLists}: FetchListProps) {
+export default function ListCreation() {
     const {userId} = useUserContext();
+    const {setLists} = useListsContext();
 
 
     const default_list: NewList = {
@@ -85,25 +83,18 @@ export default function ListCreation({fetchLists}: FetchListProps) {
     function importList() {
         postData<NewList, NewList>('lists', newList).then(() => {
             setNewList(default_list)
-            fetchLists()
+            fetchLists(userId, setLists)
         });
     }
 
 
     async function saveList() {
-        console.log("save", newList)
-        try {
-            await postData<NewList, NewList>('lists', newList).then(() => {
-                setNewList(default_list)
-                fetchLists()
-            });
-        } catch (error) {
-            if (error instanceof Error) {
-                console.error(error.message);
-            } else {
-                console.error('An unknown error occurred');
-            }
-        }
+
+        postData<NewList, NewList>('lists', newList).then(() => {
+            setNewList(default_list)
+            fetchLists(userId, setLists)
+        });
+
     }
 
 
