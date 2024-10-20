@@ -5,19 +5,29 @@ import {fetchData} from "@/app/api";
 import Spotlight from "@/components/spotlight";
 import {Item, Lists} from "@/app/(default)/mylists/ListCreation";
 import TemplateButton from "@/components/Template/TemplateButton";
-import TemplateCard from "@/components/Template/TemplateCard";
-import TemplateChip from "@/components/Template/TemplateChip";
+import {TemplateEditionItemCardOrChip, TemplateItemCardOrChip} from "@/components/Template/TemplateCard";
+import IconEdit from "@/components/Icons/IconEdit";
 
 export type ListProps = {
     lists: Lists;
     fetchLists: () => void;
     currentListId: number;
     setCurrentListId: (id: number) => void;
+    creationMode: boolean;
+    setCreationMode: (bool: boolean) => void;
 };
 
 
-export default function ListSelection({lists, fetchLists, currentListId, setCurrentListId}: ListProps) {
+export default function ListSelection({
+                                          lists,
+                                          fetchLists,
+                                          setCreationMode,
+                                          creationMode,
+                                          currentListId,
+                                          setCurrentListId
+                                      }: ListProps) {
     const [currentItems, setCurrentItems] = useState<Item[]>([])
+    const [editionMode, setEditionMode] = useState<boolean>(false)
 
     useEffect(() => {
         fetchLists();
@@ -29,6 +39,8 @@ export default function ListSelection({lists, fetchLists, currentListId, setCurr
     }, []);
 
     function selectList(id: number) {
+        setEditionMode(false)
+        setCreationMode(false)
         if (id === currentListId) {
             setCurrentListId(0)
         } else {
@@ -39,7 +51,7 @@ export default function ListSelection({lists, fetchLists, currentListId, setCurr
 
 
     return (
-        <Stack spacing={3} justifyContent='center'>
+        <Stack spacing={3} justifyContent='center' mb={4}>
             <Stack spacing={1} justifyContent='center'>
                 <Spotlight
                     className="group mx-auto grid max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-6"
@@ -47,25 +59,30 @@ export default function ListSelection({lists, fetchLists, currentListId, setCurr
                     {lists.map((li, index) => (
                         <TemplateButton key={index}
                                         text={li.name}
+                                        icon={<IconEdit/>}
+                                        onClickIcon={() => setEditionMode(!editionMode)}
                                         selected={li.list_id === currentListId}
                                         onClick={() => selectList(Number(li.list_id))}
                         />
                     ))}
                     <TemplateButton text='New list'
                                     variant='outlined'
-                                    onClick={() => selectList(-1)}
+                                    onClick={() => {
+                                        setEditionMode(false)
+                                        setCreationMode(true)
+                                    }}
                     />
                 </Spotlight>
             </Stack>
-            {!!currentListId && <Stack spacing={1} justifyContent='center'>
+            {!!currentListId && !creationMode && <Stack spacing={1} justifyContent='center'>
                 {currentItems[0] ?
                     <Spotlight
                         className="group mx-auto grid max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-6"
                     >
                         {currentItems?.map((el, index) => (
                             <div className="mx-auto max-w-3xl pb-12 text-center md:pb-20">
-                                {el.image ? <TemplateCard variant="item" title={el.name} image={el.image}/> :
-                                    <TemplateChip>{el.name}</TemplateChip>}
+                                {editionMode ? <TemplateEditionItemCardOrChip title={el.name} image={el.image}/> :
+                                    <TemplateItemCardOrChip title={el.name} image={el.image}/>}
                             </div>
                         ))}
                     </Spotlight> : <Typography>Empty list</Typography>}

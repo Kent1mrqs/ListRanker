@@ -8,6 +8,7 @@ import {useUserContext} from "@/app/UserProvider";
 export default function MyLists() {
     const {userId} = useUserContext();
     const [currentListId, setCurrentListId] = useState<number>(0)
+    const [creationMode, setCreationMode] = useState<boolean>(false)
     const [lists, setLists] = useState<Lists>([]);
     const fetchLists = useCallback(() => {
         fetchData<Lists>('lists/' + userId)
@@ -18,10 +19,12 @@ export default function MyLists() {
     return (
         <>
             <ListSelection lists={lists}
+                           creationMode={creationMode}
+                           setCreationMode={setCreationMode}
                            fetchLists={fetchLists}
                            currentListId={currentListId}
                            setCurrentListId={setCurrentListId}/>
-            {currentListId === -1 && <ListCreation fetchLists={fetchLists}/>}
+            {creationMode && <ListCreation fetchLists={fetchLists}/>}
         </>
     );
 }

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import TemplateChip from "@/components/Template/TemplateChip";
 import React from "react";
+import TemplateInput from "@/components/Template/TemplateInput";
 
 interface CardProps {
     title: string;
@@ -44,8 +45,18 @@ export default function TemplateCard({
             className={cardVariants[variant]}
         >
             <div
-                className="relative z-20 h-full overflow-hidden rounded-[inherit] bg-gray-950 after:absolute after:inset-0 after:bg-gradient-to-br after:from-gray-900/50 after:via-gray-800/25 after:to-gray-900/50"
+                className="relative z-20 h-full overflow-hidden rounded-[inherit] bg-gray-950 after:absolute after:bg-gradient-to-br after:from-gray-900/50 after:via-gray-800/25 after:to-gray-900/50"
             >
+                {/* <div
+                    onClick={(event) => {
+                        event.stopPropagation(); // Empêche la propagation du clic au parent
+                        console.log("edit");
+                    }}
+                    className="absolute cursor-pointer right-3 bottom-12 flex h-8 w-8 items-center justify-center rounded-full border border-gray-700/50 bg-gray-800/65 text-gray-200 opacity-0 transition-opacity group-hover/card:opacity-100"
+                    aria-hidden="true"
+                >
+                    <IconEdit/>
+                </div>*/}
                 <Image
                     className="inline-flex"
                     src={image}
@@ -64,6 +75,63 @@ export default function TemplateCard({
                     </p>
                 </div>
             </div>
+
         </div>
+    )
+}
+
+export function TemplateEditionCard({
+                                        title,
+                                        image,
+                                    }: CardProps) {
+    return (
+        <div className={item_image}
+        >
+            <div
+                className="relative z-20 h-full overflow-hidden rounded-[inherit] bg-gray-950 after:absolute after:bg-gradient-to-br after:from-gray-900/50 after:via-gray-800/25 after:to-gray-900/50"
+            >
+                <Image
+                    className="inline-flex cursor-pointer"
+                    src={image}
+                    width={350}
+                    height={200}
+                    alt={title}
+                />
+                <div className="p-6">
+                    <div className="mb-3">
+                        <TemplateInput placeholder={title}/>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    )
+}
+
+export function TemplateEditionItemCardOrChip({
+                                                  title,
+                                                  image,
+                                              }: CardProps) {
+    return (
+        <>
+            {image ?
+                <TemplateEditionCard variant="item" title={title} image={image}/> :
+                <TemplateInput/>
+            }
+        </>
+    )
+}
+
+export function TemplateItemCardOrChip({
+                                           title,
+                                           image,
+                                       }: CardProps) {
+    return (
+        <>
+            {image ?
+                <TemplateCard variant="item" title={title} image={image}/> :
+                <TemplateChip>{title}</TemplateChip>
+            }
+        </>
     )
 }
