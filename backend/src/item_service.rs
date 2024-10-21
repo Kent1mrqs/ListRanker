@@ -45,6 +45,18 @@ pub fn fetch_items_by_list_id(conn: &mut PgConnection, list_id_param: i32) -> Qu
     Ok(converted_items)
 }
 
+/*pub fn edit_items(conn: &mut PgConnection, edit_item_list: Vec<NewItemId>) -> QueryResult<i32> {
+    for item in &edit_item_list {
+        diesel::update(items::table.find(item.id))
+            .set((
+                items::name.eq(&item.name),
+                items::image.eq(&item.image)
+            ))
+            .execute(conn)?;
+    }
+    Ok(1)
+}*/
+
 pub fn convert_image(image: String) -> Option<Vec<u8>> {
     let base64_image = image
         .strip_prefix("data:image/png;base64,")

@@ -1,6 +1,6 @@
 use crate::item_service::{bulk_insert_items, convert_image};
 use crate::models::items_models::{NewItem, NewItemApi};
-use crate::models::lists_models::{List, NewListDb};
+use crate::models::lists_models::{EditList, List, NewListDb};
 use diesel::prelude::*;
 use diesel::QueryResult;
 
@@ -56,5 +56,16 @@ pub fn delete_list(conn: &mut PgConnection, list_id: i32) -> QueryResult<usize> 
         // Delete the list itself
         diesel::delete(lists.filter(id.eq(list_id)))
             .execute(conn)
+    })
+}
+
+pub fn edit_list(conn: &mut PgConnection, list_id: i32, data: EditList) -> QueryResult<usize> {
+    use crate::schema::lists::dsl::{id, lists, name};
+    conn.transaction::<_, diesel::result::Error, _>(|transaction_conn| {
+        diesel::update(lists.filter(id.eq(list_id)))
+            .set(name.eq(data.name))
+            .execute(transaction_conn)?;
+        //edit_items(transaction_conn, data.items)?;
+        Ok(1)
     })
 }

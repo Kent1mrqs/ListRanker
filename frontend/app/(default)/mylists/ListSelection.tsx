@@ -1,16 +1,16 @@
 "use client";
 import {Button, Stack, Typography} from "@mui/material";
 import React, {useCallback, useState} from "react";
-import {deleteData, fetchData} from "@/app/api";
+import {deleteData, editData, fetchData} from "@/app/api";
 import Spotlight from "@/components/spotlight";
 import {Item, Lists, NewList} from "@/app/(default)/mylists/ListCreation";
 import TemplateButton from "@/components/Template/TemplateButton";
 import {TemplateEditionItemCardOrChip, TemplateItemCardOrChip} from "@/components/Template/TemplateCard";
-import IconEdit from "@/components/Icons/IconEdit";
 import {List} from "@/app/(default)/workflow_creation/ChooseList";
 import {useUserContext} from "@/app/UserProvider";
 import {useListsContext} from "@/app/ListsProvider";
 import {fetchLists, saveList} from "@/app/(default)/mylists/ListServices";
+import TemplateInput from "@/components/Template/TemplateInput";
 
 export type ListProps = {
     currentList: List;
@@ -18,6 +18,12 @@ export type ListProps = {
     creationMode: boolean;
     setCreationMode: (bool: boolean) => void;
 };
+
+type ListItems = {
+    name: string,
+    id: number,
+    items: Item[]
+}
 
 
 export default function ListSelection({
@@ -29,6 +35,7 @@ export default function ListSelection({
     const {userId} = useUserContext();
     const [currentItems, setCurrentItems] = useState<Item[]>([])
     const [editionMode, setEditionMode] = useState<boolean>(false)
+    const [editedList, setEditedList] = useState<ListItems>({name: "", id: 0, items: []})
     const {lists, setLists} = useListsContext();
 
     const fetchItems = useCallback((list_id: number) => {
@@ -63,6 +70,15 @@ export default function ListSelection({
                 setCurrentList({name: '', id: 0})
             })
     }
+
+    async function saveEditedList() {
+        editData("list-edit/" + currentList.id, editedList)
+            .then(() => {
+                setEditionMode(false)
+                fetchLists(userId, setLists)
+            })
+    }
+
 
     const importList = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -105,13 +121,22 @@ export default function ListSelection({
                     className="group mx-auto grid max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-6"
                 >
                     {lists.map((li, index) => (
-                        <TemplateButton key={index}
-                                        text={li.name}
-                                        icon={<IconEdit/>}
-                                        onClickIcon={() => setEditionMode(!editionMode)}
-                                        selected={li.list_id === currentList.id}
-                                        onClick={() => selectList({name: li.name, id: li.list_id})}
-                        />
+                        <>
+                            {editionMode && li.list_id === currentList.id ?
+                                <TemplateInput placeholder={li.name} onChange={(e) => setEditedList(prevState => {
+                                    return {
+                                        ...prevState,
+                                        name: e.target.value
+                                    }
+                                })}/> :
+                                <TemplateButton key={index}
+                                                text={li.name}
+                                    //icon={<IconEdit/>}
+                                    // onClickIcon={() => setEditionMode(!editionMode)}
+                                                selected={li.list_id === currentList.id}
+                                                onClick={() => selectList({name: li.name, id: li.list_id})}
+                                />}
+                        </>
                     ))}
                     <TemplateButton text='New list'
                                     variant='outlined'
@@ -122,10 +147,16 @@ export default function ListSelection({
                     />
                 </Spotlight>
                 <Stack direction="row" justifyContent="center" spacing={3}>
-                    <Button onClick={() => deleteList()}>Delete list</Button>
+                    <Button disabled={!currentList.id}
+                            onClick={() => setEditionMode(!editionMode)}>Edit list</Button>
+                    <Button disabled={!currentList.id} onClick={() => deleteList()}>Delete list</Button>
+                    <Button disabled={!editionMode || !currentList.id} onClick={() => saveEditedList()}>Save
+                        list</Button>
                     <Button onClick={() => handleDownload()}>Download list</Button>
+                    <Button onClick={() => document.getElementById('file-input')?.click()}>Import list</Button>
                     <input
-                        className="btn-sm bg-gradient-to-t from-indigo-600 to-indigo-500 bg-[length:100%_100%] bg-[bottom] py-[5px] text-white shadow-[inset_0px_1px_0px_0px_theme(colors.white/.16)] hover:bg-[length:100%_150%] max-w-[200px] w-full"
+                        id="file-input"
+                        className="hidden"
                         type="file"
                         accept=".json"
                         onChange={importList}/>

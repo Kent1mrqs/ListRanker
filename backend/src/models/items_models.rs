@@ -25,3 +25,9 @@ pub struct NewItemApi {
     pub name: String,
     pub image: String,
 }
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct NewItemId {
+    pub name: String,
+    pub image: String,
+    pub id: i32,
+}

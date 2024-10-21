@@ -24,7 +24,7 @@ const variantsInput: { [key: string]: string } = {
 };
 
 const variantsLabels: { [key: string]: string } = {
-    "blue": "block mb-2 text-sm font-medium text-gray-900 dark:text-white",
+    "blue": "block text-sm font-medium text-gray-900 dark:text-white",
     "sign": "block text-sm font-medium text-indigo-200/65",
 };
 
@@ -48,7 +48,7 @@ export default function TemplateInput({
                 type={type}
                 id={id}
                 value={value}
-                className={`${variantsInput[error ? "error" : variant]} mt-1 block w-full`}
+                className={`${variantsInput[error ? "error" : variant]} block w-full`}
                 placeholder={placeholder}
                 onChange={onChange}
                 onBlur={onBlur}

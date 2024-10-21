@@ -67,3 +67,27 @@ export const deleteData = async <T>(route: string): Promise<T> => {
         }
     }
 };
+export const editData = async <T>(route: string, data: T): Promise<T> => {
+    const url = "http://127.0.0.1:8080/" + route;
+    try {
+        const response = await fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+        if (!response.ok) {
+            throw new Error('Error when editing ' + route);
+        }
+        const result = await response.json() as T;
+        console.info("put response : ", response)
+        return result;
+    } catch (error) {
+        if (error instanceof Error) {
+            throw new Error(error.message);
+        } else {
+            throw new Error('An unknown error occurred');
+        }
+    }
+};

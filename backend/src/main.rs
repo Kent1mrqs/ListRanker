@@ -15,7 +15,9 @@ mod db;
 mod duel_service;
 
 use actix_cors::Cors;
+use actix_web::middleware::Logger;
 use actix_web::{web, App, HttpServer, Responder};
+use std::env;
 
 async fn index() -> impl Responder {
     "Hello world!"
@@ -23,6 +25,9 @@ async fn index() -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    env_logger::init();
+
+    env::set_var("RUST_LOG", "actix_web=info");
     HttpServer::new(move || {
         let cors = Cors::default()
             .allow_any_origin()
@@ -32,6 +37,7 @@ async fn main() -> std::io::Result<()> {
 
         App::new()
             .wrap(cors)
+            .wrap(Logger::default())
             .service(
                 web::resource("/register")
                     .route(web::post().to(handlers::users_handlers::register_user)))
@@ -53,6 +59,10 @@ async fn main() -> std::io::Result<()> {
             .service(
                 web::resource("/list/{list_id}")
                     .route(web::delete().to(handlers::lists_handlers::remove_list)),
+            )
+            .service(
+                web::resource("/list-edit/{list_id}")
+                    .route(web::put().to(handlers::lists_handlers::edit_list_handler)),
             )
             .service(
                 web::resource("/items/{list_id}")
