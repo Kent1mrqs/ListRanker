@@ -71,8 +71,8 @@ export default function ListCreation() {
             const object: Item[] = input
                 .split(separator)
                 .filter(item => item && item.trim() !== "")
-                .map(el => {
-                    return {name: el, image: ""};
+                .map((el, index) => {
+                    return {name: el, image: newList.items[index].image};
                 });
             setNewList({...newList, name: nameList, items: object});
         } else {
@@ -81,7 +81,6 @@ export default function ListCreation() {
     }
 
     async function saveList() {
-
         postData<NewList, NewList>('lists', newList).then(() => {
             setNewList(default_list)
             fetchLists(userId, setLists)
@@ -130,7 +129,7 @@ export default function ListCreation() {
             };
         });
     };
-
+    console.log(newList.items)
     return (
         <Stack direction='row' spacing={5} justifyContent="center">
             <Stack spacing={1} alignItems="center">
@@ -166,7 +165,7 @@ export default function ListCreation() {
                 >
                     {
                         newList.items.map((el, index) => (
-                            <Stack direction="row" spacing={3}>
+                            <Stack direction="row" spacing={3} key={"stack" + index}>
                                 {
                                     el.image ?
                                         <TemplateCard title={el.name} image={el.image}/> :
