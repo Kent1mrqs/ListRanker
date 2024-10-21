@@ -22,7 +22,7 @@ pub struct ItemDuel {
     pub image: String,
 }
 
-#[derive(Insertable, Deserialize)]
+#[derive(Insertable, Deserialize, Clone)]
 #[diesel(table_name = duels)]
 pub struct BattleResult {
     pub ranking_id: i32,

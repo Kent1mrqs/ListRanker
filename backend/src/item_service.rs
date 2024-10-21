@@ -8,9 +8,19 @@ use diesel::{PgConnection, QueryResult, RunQueryDsl};
 /// Inserts multiple new items into the database in bulk.
 /// Returns the number of successfully inserted items.
 pub fn bulk_insert_items(conn: &mut PgConnection, new_items: Vec<NewItem>) -> Result<usize, Error> {
-    diesel::insert_into(items::table)
+    match diesel::insert_into(items::table)
         .values(&new_items)
-        .execute(conn)
+        .execute(conn) {
+        Ok(rows_inserted) => {
+            println!("Successfully inserted {} new items.", rows_inserted);
+            Ok(rows_inserted) // Return the number of inserted rows on success
+        }
+        Err(err) => {
+            // Log the error message in English
+            println!("Failed to insert items: {}", err);
+            Err(err) // Return the error
+        }
+    }
 }
 
 /// Retrieves all items associated with the specified list ID from the database.

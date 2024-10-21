@@ -139,10 +139,16 @@ export function TemplateItemCardOrChip({
 export function TemplateDuelCard({
                                      title,
                                      image,
+                                     onClick
                                  }: CardProps) {
 
     return (
         <div className={duelStyle}
+             onClick={() => {
+                 if (onClick) {
+                     onClick()
+                 }
+             }}
         >
             <div
                 className="relative z-20 h-full overflow-hidden rounded-[inherit] bg-gray-950 after:absolute after:bg-gradient-to-br after:from-gray-900/50 after:via-gray-800/25 after:to-gray-900/50"

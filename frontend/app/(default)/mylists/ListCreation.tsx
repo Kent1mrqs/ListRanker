@@ -80,14 +80,6 @@ export default function ListCreation() {
         }
     }
 
-    function importList() {
-        postData<NewList, NewList>('lists', newList).then(() => {
-            setNewList(default_list)
-            fetchLists(userId, setLists)
-        });
-    }
-
-
     async function saveList() {
 
         postData<NewList, NewList>('lists', newList).then(() => {
