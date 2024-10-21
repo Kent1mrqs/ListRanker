@@ -11,6 +11,7 @@ import TemplateCard from "@/components/Template/TemplateCard";
 import TemplateChip from "@/components/Template/TemplateChip";
 import {fetchLists} from "@/app/(default)/mylists/ListServices";
 import {useListsContext} from "@/app/ListsProvider";
+import {LoadingButton} from "@/components/Template/TemplateButton";
 
 export interface Item {
     name: string;
@@ -54,7 +55,6 @@ export default function ListCreation() {
     const {userId} = useUserContext();
     const {setLists} = useListsContext();
 
-
     const default_list: NewList = {
         user_id: userId,
         name: '',
@@ -64,15 +64,16 @@ export default function ListCreation() {
     const [nameList, setNameList] = useState('');
     const [input, setInput] = useState('');
     const [newList, setNewList] = useState<NewList>(default_list);
+    const [loading, setLoading] = useState<boolean>(false);
     const [separator, setSeparator] = useState('\n');
 
     function onClick() {
         if (isValidInput(nameList)) {
             const object: Item[] = input
                 .split(separator)
-                .filter(item => item && item.trim() !== "")
-                .map((el, index) => {
-                    return {name: el, image: newList.items[index].image};
+                .filter((item: string) => item && item.trim() !== "")
+                .map((el: any, index: number) => {
+                    return {name: el, image: newList?.items?.[index]?.image ?? ""};
                 });
             setNewList({...newList, name: nameList, items: object});
         } else {
@@ -81,29 +82,37 @@ export default function ListCreation() {
     }
 
     async function saveList() {
+        setLoading(true)
         postData<NewList, NewList>('lists', newList).then(() => {
+            setLoading(false)
             setNewList(default_list)
             fetchLists(userId, setLists)
         });
 
     }
 
-
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, id: number) => {
         const file = event.target.files?.[0];
-        const newObject = newList.items[id]
+        const MAX_FILE_SIZE = 1 * 1024 * 1024; // 5 Mo en octets
         if (file) {
+            if (file.size > MAX_FILE_SIZE) {
+                console.log(file.size);
+                return;
+            }
             const reader = new FileReader();
             reader.onloadend = () => {
                 const newImage = reader.result as string;
+                console.log("reader : ", reader);
 
-                setNewList((prevList) => {
+                setNewList((prevList: NewList) => {
                     const updatedItems = prevList.items.map((item, index) => {
                         if (index === id) {
                             return {...item, image: newImage};
                         }
                         return item;
                     });
+
+                    // Include all properties of prevList when returning the new state
                     return {
                         ...prevList,
                         items: updatedItems,
@@ -116,7 +125,7 @@ export default function ListCreation() {
 
 
     const handleFileReset = (id: number) => {
-        setNewList((prevList) => {
+        setNewList((prevList: NewList) => {
             const updatedItems = prevList.items.map((item, index): Item => {
                 if (index === id) {
                     return {...item, image: ""};
@@ -187,7 +196,7 @@ export default function ListCreation() {
                         ))
                     }
                 </Spotlight>
-                <Button onClick={saveList}>Save</Button>
+                {loading ? <LoadingButton/> : <Button onClick={saveList}>Save</Button>}
             </Stack>
         </Stack>
     );

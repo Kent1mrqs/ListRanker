@@ -58,7 +58,7 @@ export default function TemplateCard({
                     <IconEdit/>
                 </div>*/}
                 <Image
-                    className="inline-flex"
+                    className="inline-flex object-cover w-[350px] h-[200px]"
                     src={image}
                     width={350}
                     height={200}
@@ -66,7 +66,8 @@ export default function TemplateCard({
                 />
                 <div className="p-6">
                     <div className="mb-3">
-                        <TemplateChip>
+                        <TemplateChip
+                        >
                             {title}
                         </TemplateChip>
                     </div>
@@ -116,7 +117,7 @@ export function TemplateEditionItemCardOrChip({
         <>
             {image ?
                 <TemplateEditionCard variant="item" title={title} image={image}/> :
-                <TemplateInput/>
+                <TemplateInput placeholder={title}/>
             }
         </>
     )

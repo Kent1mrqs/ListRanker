@@ -131,7 +131,16 @@ export default function ListSelection({
                         onChange={importList}/>
                 </Stack>
             </Stack>
-            {!!currentList.id && !creationMode && <Stack spacing={1} justifyContent='center'>
+            {!!currentList.id && !creationMode && <ShowItems currentItems={currentItems} editionMode={editionMode}/>}
+        </Stack>
+    );
+}
+
+
+function ShowItems({currentItems, editionMode}: { currentItems: Item[], editionMode: boolean }) {
+    return (
+        <>
+            <Stack spacing={1} justifyContent='center'>
                 {currentItems[0] ?
                     <Spotlight
                         className="group mx-auto grid max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-6"
@@ -143,7 +152,7 @@ export default function ListSelection({
                             </div>
                         ))}
                     </Spotlight> : <Typography>Empty list</Typography>}
-			</Stack>}
-        </Stack>
-    );
+            </Stack>
+        </>
+    )
 }
