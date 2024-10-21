@@ -6,6 +6,7 @@ import localFont from "next/font/local";
 import Header from "@/components/ui/header";
 import {UserProvider} from "@/app/UserProvider";
 import {ListsProvider} from "@/app/ListsProvider";
+import {RankingsProvider} from "@/app/RankingsProvider";
 
 const inter = Inter({
     subsets: ["latin"],
@@ -56,12 +57,14 @@ export default function RootLayout({
             className={`${inter.variable} ${nacelle.variable} bg-gray-950 font-inter text-base text-gray-200 antialiased`}
         >
         <UserProvider>
-            <ListsProvider>
-            <div className="flex min-h-screen flex-col overflow-hidden supports-[overflow:clip]:overflow-clip">
-                <Header/>
-                {children}
-            </div>
-            </ListsProvider>
+            <RankingsProvider>
+                <ListsProvider>
+                    <div className="flex min-h-screen flex-col overflow-hidden supports-[overflow:clip]:overflow-clip">
+                        <Header/>
+                        {children}
+                    </div>
+                </ListsProvider>
+            </RankingsProvider>
         </UserProvider>
         </body>
         </html>
