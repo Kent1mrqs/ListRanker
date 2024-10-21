@@ -93,7 +93,7 @@ export default function ListCreation() {
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, id: number) => {
         const file = event.target.files?.[0];
-        const MAX_FILE_SIZE = 1 * 1024 * 1024; // 5 Mo en octets
+        const MAX_FILE_SIZE = 1024 * 1024;
         if (file) {
             if (file.size > MAX_FILE_SIZE) {
                 console.log(file.size);

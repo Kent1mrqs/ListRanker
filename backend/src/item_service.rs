@@ -13,12 +13,11 @@ pub fn bulk_insert_items(conn: &mut PgConnection, new_items: Vec<NewItem>) -> Re
         .execute(conn) {
         Ok(rows_inserted) => {
             println!("Successfully inserted {} new items.", rows_inserted);
-            Ok(rows_inserted) // Return the number of inserted rows on success
+            Ok(rows_inserted)
         }
         Err(err) => {
-            // Log the error message in English
             println!("Failed to insert items: {}", err);
-            Err(err) // Return the error
+            Err(err)
         }
     }
 }
@@ -64,7 +63,7 @@ pub fn convert_image(image: String) -> Option<Vec<u8>> {
 
 pub fn convert_to_base64(bytes: Vec<u8>, mime_type: &str) -> String {
     if bytes.is_empty() {
-        return "".to_string(); // Renvoie une chaîne vide si les octets sont vides
+        return "".to_string();
     }
 
     let base64_string = base64::engine::general_purpose::STANDARD.encode(&bytes);

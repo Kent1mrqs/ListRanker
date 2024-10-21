@@ -9,7 +9,7 @@ pub async fn fetch_user_rankings(path: web::Path<i32>) -> HttpResponse {
     let user_id = path.into_inner();
 
     match ranking_service::fetch_user_rankings(&mut conn, user_id) {
-        Ok(rankings) => HttpResponse::Ok().json(rankings), // Return rankings as JSON if successful
+        Ok(rankings) => HttpResponse::Ok().json(rankings),
         Err(e) => {
             eprintln!("Error retrieving rankings for user ID {}: {:?}", user_id, e);
             HttpResponse::InternalServerError().body("Error retrieving rankings")

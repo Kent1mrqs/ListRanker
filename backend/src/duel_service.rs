@@ -230,28 +230,21 @@ pub fn pick_duel_candidates(
 
     println!("\n---- Picking duel candidates for ranking ID: {} ----", ranking_id_param);
 
-    // Étape 1: Récupérer la taille totale de la liste de classement
     let list_size: i64 = ranking_items
         .filter(ranking_id.eq(ranking_id_param))
         .select(count_star())
         .first(conn)?;
 
-
-    // Étape 2: Vérifier s'il y a suffisamment d'éléments pour créer un duel
     if list_size < 2 {
         return Err("Not enough items for a duel.".into());
     }
 
-    // Étape 3: Récupérer le score total actuel pour l'ID de classement
     let score_number = get_total_score(conn, ranking_id_param);
 
-    // Étape 4: Récupérer la liste des éléments de classement avec leurs noms et images
     let items_list: Vec<RankingItemWithNameAndImage> = fetch_ranking_items_with_names(conn, ranking_id_param)?;
 
-    // Étape 5: Utiliser l'algorithme pour déterminer les positions initiales des candidats au duel
     let (mut position_id_1, mut position_id_2) = algo(list_size as i32, score_number as i32, conn, ranking_id_param);
 
-    // Étape 6: S'assurer que les deux positions sélectionnées n'ont pas déjà eu de duel
     while has_duel_occurred(conn, position_id_1, position_id_2, ranking_id_param)
         || has_duel_occurred(conn, position_id_2, position_id_1, ranking_id_param)
     {
@@ -268,7 +261,6 @@ pub fn pick_duel_candidates(
         position_id_2 = new_position_id_2;
     }
 
-    // Étape 7: Créer des objets ItemDuel pour les éléments sélectionnés
     let item_1 = ItemDuel {
         id: position_id_1,
         name: items_list[position_id_1 as usize].name.clone(),

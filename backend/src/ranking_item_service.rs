@@ -72,7 +72,7 @@ pub fn update_ranks(conn: &mut PgConnection, new_rankings: Vec<NewRankings>) -> 
             .set(ranking_items::rank.eq(ranking.new_rank))
             .execute(conn)?;
     }
-    Ok(new_rankings.len()) // Return the count of updated rankings
+    Ok(new_rankings.len())
 }
 
 /// Updates the ranks of items in the ranking_items table based on the provided new ranks.

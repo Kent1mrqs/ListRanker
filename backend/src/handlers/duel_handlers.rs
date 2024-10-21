@@ -40,7 +40,7 @@ pub async fn handle_init_duel(path: web::Path<i32>) -> HttpResponse {
 
 pub async fn handle_reset_duel(path: web::Path<i32>) -> HttpResponse {
     let mut conn = establish_connection();
-    let ranking_id = path.into_inner(); // Extract the ranking ID from the path
+    let ranking_id = path.into_inner();
 
     match duel_service::reset_duel(&mut conn, ranking_id) {
         Ok(result) => HttpResponse::Ok().json(result),

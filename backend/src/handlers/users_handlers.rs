@@ -24,15 +24,13 @@ pub async fn fetch_all_users() -> HttpResponse {
 pub async fn register_user(new_user: web::Json<NewUser>) -> HttpResponse {
     let mut conn = establish_connection();
 
-    // Prepare user data for registration
     let user_data = NewUser {
         username: new_user.username.clone(),
         password_hash: new_user.password_hash.clone(),
     };
 
-    // Attempt to register the new user
     match user_service::register_new_user(&mut conn, user_data) {
-        Ok(user) => HttpResponse::Ok().json(user), // Respond with the registered user data if successful
+        Ok(user) => HttpResponse::Ok().json(user),
         Err(e) => {
             eprintln!("Error creating user: {:?}", e);
             HttpResponse::InternalServerError().body("Error creating user")
@@ -53,18 +51,17 @@ pub async fn login_user(credentials: web::Json<NewUser>) -> impl Responder {
 
     match user_in_db_result {
         Ok(user_in_db) => {
-            // Validate password
             if credentials.password_hash == user_in_db.password_hash {
                 let response = LoginResponse {
                     id: user_in_db.id,
                     username: user_in_db.username,
                 };
-                HttpResponse::Ok().json(response) // Respond with user information if credentials are valid
+                HttpResponse::Ok().json(response)
             } else {
                 eprintln!("Invalid credentials for username: {}", credentials.username);
                 HttpResponse::Unauthorized().body("Invalid credentials")
             }
         }
-        Err(_) => HttpResponse::Unauthorized().body("User not found"), // Respond if user is not found
+        Err(_) => HttpResponse::Unauthorized().body("User not found"),
     }
 }

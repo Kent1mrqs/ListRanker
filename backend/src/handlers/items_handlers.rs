@@ -4,7 +4,7 @@ use actix_web::{web, HttpResponse};
 
 /// Retrieves items associated with the specified list ID and returns them as a JSON response.
 pub async fn fetch_items_by_list(path: web::Path<i32>) -> HttpResponse {
-    let list_id = path.into_inner(); // Extract the list ID from the path
+    let list_id = path.into_inner();
     let mut conn = establish_connection();
 
     match item_service::fetch_items_by_list_id(&mut conn, list_id) {
