@@ -50,7 +50,7 @@ export default function TemplateCard({
             className={cardVariants[variant]}
         >
             <div
-                className="relative z-20 h-[300px] overflow-hidden rounded-[inherit] bg-gray-950 after:absolute after:bg-gradient-to-br after:from-gray-900/50 after:via-gray-800/25 after:to-gray-900/50"
+                className={`relative z-20 ${variant === 'item' ? 'h-[300px]' : 'h-full'} overflow-hidden rounded-[inherit] bg-gray-950 after:absolute after:bg-gradient-to-br after:from-gray-900/50 after:via-gray-800/25 after:to-gray-900/50`}
             >
                 {/* <div
                     onClick={(event) => {
@@ -62,7 +62,7 @@ export default function TemplateCard({
                     <IconEdit/>
                 </div>*/}
                 <Image
-                    className="inline-flex object-cover w-[350px] h-[200px]"
+                    className={`inline-flex object-cover w-[350px] ${variant === 'item' && 'h-[200px]'}`}
                     src={image}
                     width={350}
                     height={200}

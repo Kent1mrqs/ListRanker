@@ -22,6 +22,13 @@ pub struct ItemDuel {
     pub image: String,
 }
 
+#[derive(Serialize, Clone)]
+pub struct ItemDuelWithNameAndImage {
+    pub id: i32,
+    pub name: String,
+    pub image: Option<Vec<u8>>,
+}
+
 #[derive(Insertable, Deserialize, Clone)]
 #[diesel(table_name = duels)]
 pub struct BattleResultApi {

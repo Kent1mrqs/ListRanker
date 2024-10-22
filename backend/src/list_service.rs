@@ -29,13 +29,13 @@ pub fn register_new_list(conn: &mut PgConnection, new_list: NewListDb, items: Ve
     // Prepare the items to be inserted
     let new_items: Vec<NewItem> = items.into_iter()
         .enumerate()
-        .map(|(index, item)| NewItem {
+        .map(|(_index, item)| NewItem {
             list_id: new_list_id,
             name: item.name.clone(),
-            position_list: index as i32,
             image: convert_image(item.image.clone()),
         })
         .collect();
+
 
     // Insert the items into the database
     bulk_insert_items(conn, new_items)?;
