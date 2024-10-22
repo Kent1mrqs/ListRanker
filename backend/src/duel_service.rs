@@ -44,19 +44,28 @@ fn get_total_score(conn: &mut PgConnection, ranking_id_param: i32) -> i64 {
     total_score
 }
 
-fn get_min_max_scores(conn: &mut PgConnection, ranking_id_parama: i32) -> QueryResult<(Option<i32>, Option<i32>)> {
+fn get_min_max_scores(conn: &mut PgConnection, ranking_id_param: i32) -> QueryResult<(Option<i32>, Option<i32>)> {
     use crate::schema::ranking_items::dsl::*;
 
     let min_score = ranking_items
-        .filter(ranking_id.eq(ranking_id_parama))
+        .filter(ranking_id.eq(ranking_id_param))
         .select(diesel::dsl::min(score))
         .first::<Option<i32>>(conn)?;
     let max_score = ranking_items
-        .filter(ranking_id.eq(ranking_id_parama))
+        .filter(ranking_id.eq(ranking_id_param))
         .select(diesel::dsl::max(score))
         .first::<Option<i32>>(conn)?;
 
     Ok((min_score, max_score))
+}
+
+pub fn get_explicit_duels(conn: &mut PgConnection, ranking_id_param: i32) -> QueryResult<i64> {
+    use crate::schema::duels::dsl::*;
+    duels
+        .filter(ranking_id.eq(ranking_id_param))
+        .filter(explicit.eq(true))
+        .count()
+        .get_result(conn)
 }
 
 

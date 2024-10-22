@@ -51,7 +51,6 @@ export default function WorkflowCreation() {
     }, [fetchLists]);
 
     async function saveRanking() {
-        console.log(newRanking)
         try {
             await postData<NewRanking, NewRanking>('rankings', newRanking).then(() => {
                 setNewRanking(default_ranking)

@@ -3,7 +3,7 @@ import {Button, Stack, Typography} from "@mui/material";
 import React, {useCallback, useState} from "react";
 import {deleteData, editData, fetchData} from "@/app/api";
 import Spotlight from "@/components/spotlight";
-import {Item, Lists, NewList} from "@/app/(default)/mylists/ListCreation";
+import {InputItem, Item, ListWithItemsId, NewList} from "@/app/(default)/mylists/ListCreation";
 import TemplateButton from "@/components/Template/TemplateButton";
 import {TemplateEditionItemCardOrChip, TemplateItemCardOrChip} from "@/components/Template/TemplateCard";
 import {List} from "@/app/(default)/workflow_creation/ChooseList";
@@ -22,7 +22,7 @@ export type ListProps = {
 type ListItems = {
     name: string,
     id: number,
-    items: Item[]
+    items: InputItem[]
 }
 
 
@@ -39,7 +39,7 @@ export default function ListSelection({
     const {lists, setLists} = useListsContext();
 
     const fetchItems = useCallback((list_id: number) => {
-        fetchData<Lists>('items/' + list_id)
+        fetchData<ListWithItemsId, Item[]>('items/' + list_id)
             .then(result => setCurrentItems(result))
             .catch(err => console.error(err.message));
     }, []);
@@ -113,7 +113,6 @@ export default function ListSelection({
         }
     }
 
-
     return (
         <Stack spacing={3} justifyContent='center' mb={4}>
             <Stack spacing={1} justifyContent='center'>
@@ -165,21 +164,58 @@ export default function ListSelection({
                         type="file"
                         accept=".json"
                         onChange={importList}/>
-                    <Button disabled={!editionMode} onClick={(e) => setEditedList(prevState => {
-                        return {
-                            ...prevState,
-                            items: [...prevState.items, {name: "", image: ""}]
-                        }
-                    })}>Add item</Button>
+                    <Button
+                        disabled={!editionMode}
+                        onClick={() => setEditedList(prevState => {
+                            return {
+                                ...prevState,
+                                items: [...prevState.items, {name: "", image: ""}]
+                            }
+                        })}
+                    >
+                        Add item
+                    </Button>
                 </Stack>
             </Stack>
-            {!!currentList.id && !creationMode && <ShowItems currentItems={currentItems} editionMode={editionMode}/>}
+            {!!currentList.id && !creationMode &&
+				<ShowItems fetchItems={fetchItems} currentItems={currentItems} editionMode={editionMode}/>}
         </Stack>
     );
 }
 
 
-function ShowItems({currentItems, editionMode}: { currentItems: Item[], editionMode: boolean }) {
+function ShowItems({fetchItems, currentItems, editionMode}: {
+    currentItems: Item[],
+    fetchItems: (lid_id: number) => void,
+    editionMode: boolean
+}) {
+    function editItemImage(event: React.ChangeEvent<HTMLInputElement>, item: Item, image: string) {
+        editData('item-edit/' + item.id, {name: item.name, image})
+            .then(() => {
+                if (item.list_id) {
+                    fetchItems(item.list_id)
+                }
+            })
+
+    }
+
+    const importImage = (event: React.ChangeEvent<HTMLInputElement>, el: Item) => {
+        const file = event.target.files?.[0];
+        const MAX_FILE_SIZE = 1024 * 1024;
+        if (file) {
+            if (file.size > MAX_FILE_SIZE) {
+                return;
+            }
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const newImage = reader.result as string;
+
+                editItemImage(event, el, newImage);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     return (
         <>
             <Stack spacing={1} justifyContent='center'>
@@ -187,9 +223,13 @@ function ShowItems({currentItems, editionMode}: { currentItems: Item[], editionM
                     <Spotlight
                         className="group mx-auto grid max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-6"
                     >
-                        {currentItems?.map((el) => (
+                        {currentItems?.map((el, index) => (
                             <div className="mx-auto max-w-3xl pb-12 text-center md:pb-20">
-                                {editionMode ? <TemplateEditionItemCardOrChip title={el.name} image={el.image}/> :
+                                {editionMode ?
+                                    <TemplateEditionItemCardOrChip imageOnClick={(e) => importImage(e, el)}
+                                                                   index={index}
+                                                                   title={el.name}
+                                                                   image={el.image}/> :
                                     <TemplateItemCardOrChip title={el.name} image={el.image}/>}
                             </div>
                         ))}

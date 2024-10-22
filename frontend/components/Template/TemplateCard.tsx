@@ -6,8 +6,10 @@ import TemplateInput from "@/components/Template/TemplateInput";
 interface CardProps {
     title: string;
     image: any;
+    index?: number;
     selected?: boolean;
     disabled?: boolean;
+    imageOnClick?: (e: any) => void;
     description?: string;
     onClick?: () => void;
     variant?: "duel" | "basic" | "item";
@@ -50,7 +52,6 @@ export default function TemplateCard({
                 {/* <div
                     onClick={(event) => {
                         event.stopPropagation(); // Empêche la propagation du clic au parent
-                        console.log("edit");
                     }}
                     className="absolute cursor-pointer right-3 bottom-12 flex h-8 w-8 items-center justify-center rounded-full border border-gray-700/50 bg-gray-800/65 text-gray-200 opacity-0 transition-opacity group-hover/card:opacity-100"
                     aria-hidden="true"
@@ -82,17 +83,28 @@ export default function TemplateCard({
 }
 
 export function TemplateEditionCard({
+                                        index,
                                         title,
                                         image,
+                                        imageOnClick,
                                     }: CardProps) {
+
     return (
-        <div className={item_image}
+        <div
+            className={item_image}
         >
             <div
                 className="relative z-20 h-full overflow-hidden rounded-[inherit] bg-gray-950 after:absolute after:bg-gradient-to-br after:from-gray-900/50 after:via-gray-800/25 after:to-gray-900/50"
             >
+                <input
+                    id={"image-" + index}
+                    className="hidden"
+                    type="file"
+                    accept="image/*"
+                    onChange={imageOnClick}/>
                 <Image
-                    className="inline-flex object-cover w-[350px] h-[200px]"
+                    onClick={() => document.getElementById('image-' + index)?.click()}
+                    className="inline-flex object-cover w-[350px] h-[200px] cursor-pointer"
                     src={image}
                     width={350}
                     height={200}
@@ -110,13 +122,19 @@ export function TemplateEditionCard({
 }
 
 export function TemplateEditionItemCardOrChip({
+                                                  index,
                                                   title,
                                                   image,
+                                                  imageOnClick,
                                               }: CardProps) {
     return (
         <>
             {image ?
-                <TemplateEditionCard variant="item" title={title} image={image}/> :
+                <TemplateEditionCard imageOnClick={imageOnClick}
+                                     index={index}
+                                     variant="item"
+                                     title={title}
+                                     image={image}/> :
                 <TemplateInput placeholder={title}/>
             }
         </>

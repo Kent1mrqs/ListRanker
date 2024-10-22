@@ -14,6 +14,19 @@ import {useListsContext} from "@/app/ListsProvider";
 import {LoadingButton} from "@/components/Template/TemplateButton";
 
 export interface Item {
+    list_id?: number;
+    id: number;
+    name: string;
+    image?: string;
+}
+
+export interface ListWithItemsId {
+    user_id: number | null;
+    name: string;
+    items: InputItem[];
+}
+
+export interface InputItem {
     name: string;
     image?: string;
 }
@@ -21,7 +34,7 @@ export interface Item {
 export interface NewList {
     user_id: number | null;
     name: string;
-    items: Item[];
+    items: InputItem[];
 }
 
 export interface ListDb {
@@ -69,7 +82,7 @@ export default function ListCreation() {
 
     function onClick() {
         if (isValidInput(nameList)) {
-            const object: Item[] = input
+            const object: InputItem[] = input
                 .split(separator)
                 .filter((item: string) => item && item.trim() !== "")
                 .map((el: any, index: number) => {
@@ -96,13 +109,11 @@ export default function ListCreation() {
         const MAX_FILE_SIZE = 1024 * 1024;
         if (file) {
             if (file.size > MAX_FILE_SIZE) {
-                console.log(file.size);
                 return;
             }
             const reader = new FileReader();
             reader.onloadend = () => {
                 const newImage = reader.result as string;
-                console.log("reader : ", reader);
 
                 setNewList((prevList: NewList) => {
                     const updatedItems = prevList.items.map((item, index) => {
@@ -126,7 +137,7 @@ export default function ListCreation() {
 
     const handleFileReset = (id: number) => {
         setNewList((prevList: NewList) => {
-            const updatedItems = prevList.items.map((item, index): Item => {
+            const updatedItems = prevList.items.map((item, index): InputItem => {
                 if (index === id) {
                     return {...item, image: ""};
                 }
@@ -138,7 +149,7 @@ export default function ListCreation() {
             };
         });
     };
-    console.log(newList.items)
+
     return (
         <Stack direction='row' spacing={5} justifyContent="center">
             <Stack spacing={1} alignItems="center">

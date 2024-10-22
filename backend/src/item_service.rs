@@ -1,5 +1,5 @@
-use crate::models::items_models::{Item, NewItem};
-use crate::schema::items;
+use crate::models::items_models::{Item, NewItem, NewItemApi};
+use crate::schema::items::dsl::items;
 use base64::Engine;
 use diesel::prelude::*;
 use diesel::result::Error;
@@ -8,7 +8,7 @@ use diesel::{PgConnection, QueryResult, RunQueryDsl};
 /// Inserts multiple new items into the database in bulk.
 /// Returns the number of successfully inserted items.
 pub fn bulk_insert_items(conn: &mut PgConnection, new_items: Vec<NewItem>) -> Result<usize, Error> {
-    match diesel::insert_into(items::table)
+    match diesel::insert_into(items)
         .values(&new_items)
         .execute(conn) {
         Ok(rows_inserted) => {
@@ -80,4 +80,14 @@ pub fn convert_to_base64(bytes: Vec<u8>, mime_type: &str) -> String {
 
     let base64_string = base64::engine::general_purpose::STANDARD.encode(&bytes);
     format!("data:{};base64,{}", mime_type, base64_string)
+}
+
+pub fn edit_item(conn: &mut PgConnection, item_id: i32, new_data: NewItemApi) -> QueryResult<usize> {
+    use crate::schema::items;
+    diesel::update(items::table.find(item_id))
+        .set((
+            items::name.eq(new_data.name),
+            items::image.eq(convert_image(new_data.image)),
+        ))
+        .execute(conn)
 }

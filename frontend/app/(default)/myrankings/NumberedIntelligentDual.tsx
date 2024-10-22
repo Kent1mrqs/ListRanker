@@ -67,8 +67,6 @@ function ShowRanking({currentRankingItems, resetDuel}: { currentRankingItems: Ra
 }
 
 function Duel({currentDual, resetDuel, chooseCard, ranking_id, duelsLeft}: DuelProps) {
-
-
     return (
         <Spotlight
             className="group mx-auto grid max-w-sm mt-3 items-start justify-center gap-6 lg:max-w-none lg:grid-cols-3 h-auto">

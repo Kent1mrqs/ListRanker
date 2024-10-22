@@ -19,6 +19,12 @@ pub struct NewItem {
     pub position_list: i32,
     pub image: Option<Vec<u8>>,
 }
+#[derive(Insertable, Serialize, Deserialize, Debug)]
+#[diesel(table_name = items)]
+pub struct NewEditItem {
+    pub name: String,
+    pub image: Option<Vec<u8>>,
+}
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct NewItemApi {

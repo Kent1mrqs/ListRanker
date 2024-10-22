@@ -1,4 +1,4 @@
-export const fetchData = async <T>(route: string): Promise<T> => {
+export const fetchData = async <T, R>(route: string): Promise<R> => {
     const url = "http://127.0.0.1:8080/" + route;
     console.info("fetch ", url)
     try {
@@ -6,7 +6,7 @@ export const fetchData = async <T>(route: string): Promise<T> => {
         if (!response.ok) {
             throw new Error('Error when fetching ' + route);
         }
-        const result = await response.json() as T;
+        const result = await response.json() as R;
         console.info("fetch get ", result)
         return result;
     } catch (error) {
