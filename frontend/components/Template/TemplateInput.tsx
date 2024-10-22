@@ -40,7 +40,7 @@ export default function TemplateInput({
                                           variant = 'blue'
                                       }: I) {
     return (
-        <div className="mb-4">
+        <div>
             <label htmlFor={id} className={variantsLabels[variant]}>
                 {label}
             </label>

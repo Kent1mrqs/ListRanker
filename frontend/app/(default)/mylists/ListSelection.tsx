@@ -123,12 +123,14 @@ export default function ListSelection({
                     {lists.map((li, index) => (
                         <>
                             {editionMode && li.list_id === currentList.id ?
-                                <TemplateInput placeholder={li.name} onChange={(e) => setEditedList(prevState => {
-                                    return {
-                                        ...prevState,
-                                        name: e.target.value
-                                    }
-                                })}/> :
+                                <TemplateInput
+                                    placeholder={li.name}
+                                    onChange={(e) => setEditedList(prevState => {
+                                        return {
+                                            ...prevState,
+                                            name: e.target.value
+                                        }
+                                    })}/> :
                                 <TemplateButton key={index}
                                                 text={li.name}
                                     //icon={<IconEdit/>}
@@ -148,9 +150,12 @@ export default function ListSelection({
                 </Spotlight>
                 <Stack direction="row" justifyContent="center" spacing={3}>
                     <Button disabled={!currentList.id}
-                            onClick={() => setEditionMode(!editionMode)}>Edit list</Button>
+                            onClick={() => {
+                                setEditedList({id: currentList.id, name: currentList.name, items: currentItems})
+                                setEditionMode(!editionMode)
+                            }}>Edit list</Button>
                     <Button disabled={!currentList.id} onClick={() => deleteList()}>Delete list</Button>
-                    <Button disabled={!editionMode || !currentList.id} onClick={() => saveEditedList()}>Save
+                    <Button disabled={!editionMode} onClick={() => saveEditedList()}>Save
                         list</Button>
                     <Button onClick={() => handleDownload()}>Download list</Button>
                     <Button onClick={() => document.getElementById('file-input')?.click()}>Import list</Button>
@@ -160,6 +165,12 @@ export default function ListSelection({
                         type="file"
                         accept=".json"
                         onChange={importList}/>
+                    <Button disabled={!editionMode} onClick={(e) => setEditedList(prevState => {
+                        return {
+                            ...prevState,
+                            items: [...prevState.items, {name: "", image: ""}]
+                        }
+                    })}>Add item</Button>
                 </Stack>
             </Stack>
             {!!currentList.id && !creationMode && <ShowItems currentItems={currentItems} editionMode={editionMode}/>}
