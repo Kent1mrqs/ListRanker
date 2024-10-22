@@ -43,7 +43,7 @@ pub async fn delete_item_by_id(path: web::Path<i32>) -> HttpResponse {
     }
 }
 
-pub async fn add_item(path: web::Path<i32>, new_item: web::Json<NewItemApi>) -> HttpResponse {
+pub async fn add_item(path: web::Path<i32>, _new_item: web::Json<NewItemApi>) -> HttpResponse {
     let list_id_param = path.into_inner();
     let mut conn = establish_connection();
 

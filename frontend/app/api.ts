@@ -1,4 +1,4 @@
-export const fetchData = async <T, R>(route: string): Promise<R> => {
+export const fetchData = async <R>(route: string): Promise<R> => {
     const url = "http://127.0.0.1:8080/" + route;
     console.info("fetch ", url)
     try {

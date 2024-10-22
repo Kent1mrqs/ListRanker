@@ -3,7 +3,7 @@ import {Button, Stack, Typography} from "@mui/material";
 import React, {useCallback, useState} from "react";
 import {deleteData, editData, fetchData, postData} from "@/app/api";
 import Spotlight from "@/components/spotlight";
-import {InputItem, Item, ListWithItemsId, NewList} from "@/app/(default)/mylists/ListCreation";
+import {InputItem, Item, NewList} from "@/app/(default)/mylists/ListCreation";
 import TemplateButton from "@/components/Template/TemplateButton";
 import {TemplateEditionCard, TemplateItemCardOrChip} from "@/components/Template/TemplateCard";
 import {List} from "@/app/(default)/workflow_creation/ChooseList";
@@ -39,7 +39,7 @@ export default function ListSelection({
     const {lists, setLists} = useListsContext();
 
     const fetchItems = useCallback((list_id: number) => {
-        fetchData<ListWithItemsId, Item[]>('items/' + list_id)
+        fetchData<Item[]>('items/' + list_id)
             .then(result => setCurrentItems(result))
             .catch(err => console.error(err.message));
     }, []);
@@ -236,7 +236,7 @@ function ShowItems({fetchItems, currentItems, editionMode}: {
                         {currentItems
                             .sort((a, b) => a.id > b.id ? 1 : -1)
                             .map((el, index) => (
-                                <div className="mx-auto max-w-3xl pb-12 text-center md:pb-20">
+                                <div className="mx-auto max-w-3xl text-center">
                                     {editionMode ?
                                         <TemplateEditionCard imageOnClick={(e) => importImage(e, el)}
                                                              onBlur={(e) => editItem(el, "name", e.target.value)}

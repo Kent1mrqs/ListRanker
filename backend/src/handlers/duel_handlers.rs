@@ -7,10 +7,10 @@ use actix_web::{web, HttpResponse};
 /// Returns a JSON response with the updated duel result.
 pub async fn handle_next_duel(path: web::Path<i32>, json_battle_result: web::Json<BattleResultApi>) -> HttpResponse {
     let mut conn = establish_connection();
-    let ranking_id = path.into_inner(); // Extract the ranking ID from the path
-    let winner = json_battle_result.into_inner(); // Get the battle information from the request body
+    let ranking_id = path.into_inner();
+    let battle_result = json_battle_result.into_inner();
 
-    match duel_service::process_next_duel(&mut conn, ranking_id, winner) {
+    match duel_service::process_next_duel(&mut conn, ranking_id, battle_result) {
         Ok(result) => HttpResponse::Ok().json(result),
         Err(e) => {
             eprintln!("Error during processing next duel: {:?}", e);
