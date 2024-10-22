@@ -44,11 +44,17 @@ fn get_total_score(conn: &mut PgConnection, ranking_id_param: i32) -> i64 {
     total_score
 }
 
-fn get_min_max_scores(conn: &mut PgConnection) -> QueryResult<(Option<i32>, Option<i32>)> {
+fn get_min_max_scores(conn: &mut PgConnection, ranking_id_parama: i32) -> QueryResult<(Option<i32>, Option<i32>)> {
     use crate::schema::ranking_items::dsl::*;
 
-    let min_score = ranking_items.select(diesel::dsl::min(score)).first::<Option<i32>>(conn)?;
-    let max_score = ranking_items.select(diesel::dsl::max(score)).first::<Option<i32>>(conn)?;
+    let min_score = ranking_items
+        .filter(ranking_id.eq(ranking_id_parama))
+        .select(diesel::dsl::min(score))
+        .first::<Option<i32>>(conn)?;
+    let max_score = ranking_items
+        .filter(ranking_id.eq(ranking_id_parama))
+        .select(diesel::dsl::max(score))
+        .first::<Option<i32>>(conn)?;
 
     Ok((min_score, max_score))
 }
@@ -82,44 +88,35 @@ fn _pick_unique_sequence_duel_candidates(max: i32, score_param: i32) -> (i32, i3
     (position_1 as i32, position_2 as i32)
 }
 
+fn get_items_with_value(conn: &mut PgConnection, ranking_id_param: i32, other_score: Option<i32>) -> Vec<i32> {
+    use crate::schema::items::dsl::id as items_id;
+    let items_result: Vec<i32> = if let Some(other_score) = other_score {
+        ranking_items
+            .filter(ranking_id.eq(ranking_id_param))
+            .filter(score.eq(other_score))
+            .inner_join(items.on(items_id.eq(crate::schema::ranking_items::item_id)))
+            .select(position_list)
+            .load(conn)
+            .unwrap_or_default()
+    } else {
+        Vec::new()
+    };
+    items_result
+}
+
 /// Selects two unique sequence candidates for a duel from a specified range.
 fn pick_min_max_duel_candidates(_max: i32, _score_param: i32, conn: &mut PgConnection, ranking_id_param: i32) -> (i32, i32) {
-    use crate::schema::ranking_items::dsl::*;
-    use crate::schema::items::dsl::id as items_id;
-
-    let (min_score, max_score) = match get_min_max_scores(conn) {
+    let (min_score, max_score) = match get_min_max_scores(conn, ranking_id_param) {
         Ok((min_score, max_score)) => {
-            println!("Scores récupérés : min_score = {:?}, max_score = {:?}", min_score, max_score);
             (min_score, max_score)
         }
-        Err(e) => {
-            println!("Erreur lors de la récupération des scores min et max: {:?}", e);
+        Err(_e) => {
             (None, None)
         }
     };
-    let min_items: Vec<i32> = if let Some(min_value) = min_score {
-        ranking_items
-            .filter(ranking_id.eq(ranking_id_param))
-            .filter(score.eq(min_value))
-            .inner_join(items.on(items_id.eq(item_id)))
-            .select(position_list)
-            .load(conn)
-            .unwrap_or_default()
-    } else {
-        Vec::new()
-    };
+    let min_items: Vec<i32> = get_items_with_value(conn, ranking_id_param, min_score);
+    let max_items: Vec<i32> = get_items_with_value(conn, ranking_id_param, max_score);
 
-    let max_items: Vec<i32> = if let Some(max_value) = max_score {
-        ranking_items
-            .filter(ranking_id.eq(ranking_id_param))
-            .filter(score.eq(max_value))
-            .inner_join(items.on(items_id.eq(item_id)))
-            .select(position_list)
-            .load(conn)
-            .unwrap_or_default()
-    } else {
-        Vec::new()
-    };
 
     if let (Some(min_item), Some(max_item)) = (min_items.first(), max_items.first()) {
         return (*min_item, *max_item);

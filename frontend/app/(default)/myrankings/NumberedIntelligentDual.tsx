@@ -58,7 +58,7 @@ function ShowRanking({currentRankingItems, resetDuel}: { currentRankingItems: Ra
             {currentRankingItems
                 .sort((a, b) => a.rank > b.rank ? 1 : -1)
                 .map((item) => (
-                    <Typography key={item.id}>{item.rank} : {item.name} ({item.score} points)</Typography>
+                    <Typography key={item.id}>{item.rank} : {item.name}</Typography>
                 ))}
             <TemplateButton text="Reset" onClick={resetDuel}/>
 
