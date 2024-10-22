@@ -2,6 +2,7 @@ import Image from "next/image";
 import TemplateChip from "@/components/Template/TemplateChip";
 import React from "react";
 import TemplateInput from "@/components/Template/TemplateInput";
+import IconDelete from "@/components/Icons/IconDelete";
 
 interface CardProps {
     title: string;
@@ -10,6 +11,7 @@ interface CardProps {
     selected?: boolean;
     disabled?: boolean;
     imageOnClick?: (e: any) => void;
+    deleteOnClick?: (e: any) => void;
     onBlur?: (e: any) => void;
     description?: string;
     onClick?: () => void;
@@ -88,6 +90,7 @@ export function TemplateEditionCard({
                                         title,
                                         image,
                                         imageOnClick,
+                                        deleteOnClick,
                                         onBlur,
                                     }: CardProps) {
 
@@ -98,6 +101,13 @@ export function TemplateEditionCard({
             <div
                 className="relative z-20 h-[300px] overflow-hidden rounded-[inherit] bg-gray-950 after:absolute after:bg-gradient-to-br after:from-gray-900/50 after:via-gray-800/25 after:to-gray-900/50"
             >
+                <div
+                    onClick={deleteOnClick}
+                    className="absolute cursor-pointer right-1 bottom-1 flex h-8 w-8 items-center justify-center rounded-full border border-gray-700/50 bg-gray-800/65 text-gray-200 opacity-0 transition-opacity group-hover/card:opacity-100"
+                    aria-hidden="true"
+                >
+                    <IconDelete/>
+                </div>
                 <input
                     id={"image-" + index}
                     className="hidden"
@@ -120,24 +130,6 @@ export function TemplateEditionCard({
             </div>
 
         </div>
-    )
-}
-
-export function TemplateEditionItemCardOrChip({
-                                                  index,
-                                                  title,
-                                                  image,
-                                                  imageOnClick,
-                                                  onBlur,
-                                              }: CardProps) {
-    return (
-        <>
-            <TemplateEditionCard imageOnClick={imageOnClick}
-                                 index={index}
-                                 title={title}
-                                 onBlur={onBlur}
-                                 image={image}/>
-        </>
     )
 }
 

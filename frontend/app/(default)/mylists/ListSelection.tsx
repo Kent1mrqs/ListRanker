@@ -1,11 +1,11 @@
 "use client";
 import {Button, Stack, Typography} from "@mui/material";
 import React, {useCallback, useState} from "react";
-import {deleteData, editData, fetchData} from "@/app/api";
+import {deleteData, editData, fetchData, postData} from "@/app/api";
 import Spotlight from "@/components/spotlight";
 import {InputItem, Item, ListWithItemsId, NewList} from "@/app/(default)/mylists/ListCreation";
 import TemplateButton from "@/components/Template/TemplateButton";
-import {TemplateEditionItemCardOrChip, TemplateItemCardOrChip} from "@/components/Template/TemplateCard";
+import {TemplateEditionCard, TemplateItemCardOrChip} from "@/components/Template/TemplateCard";
 import {List} from "@/app/(default)/workflow_creation/ChooseList";
 import {useUserContext} from "@/app/UserProvider";
 import {useListsContext} from "@/app/ListsProvider";
@@ -113,6 +113,11 @@ export default function ListSelection({
         }
     }
 
+    function addItem() {
+        postData("item-create/" + currentList.id, {name: "", image: ""})
+            .then(() => fetchItems(currentList.id))
+    }
+
     return (
         <Stack spacing={3} justifyContent='center' mb={4}>
             <Stack spacing={1} justifyContent='center'>
@@ -166,12 +171,7 @@ export default function ListSelection({
                         onChange={importList}/>
                     <Button
                         disabled={!editionMode}
-                        onClick={() => setEditedList(prevState => {
-                            return {
-                                ...prevState,
-                                items: [...prevState.items, {name: "", image: ""}]
-                            }
-                        })}
+                        onClick={addItem}
                     >
                         Add item
                     </Button>
@@ -191,6 +191,16 @@ function ShowItems({fetchItems, currentItems, editionMode}: {
 }) {
     function editItem(item: Item, key: string, value: string) {
         editData('item-edit/' + item.id, {...item, [key]: value})
+            .then(() => {
+                if (item.list_id) {
+                    fetchItems(item.list_id)
+                }
+            })
+
+    }
+
+    function deleteItem(item: Item) {
+        deleteData('item-delete/' + item.id)
             .then(() => {
                 if (item.list_id) {
                     fetchItems(item.list_id)
@@ -228,11 +238,12 @@ function ShowItems({fetchItems, currentItems, editionMode}: {
                             .map((el, index) => (
                                 <div className="mx-auto max-w-3xl pb-12 text-center md:pb-20">
                                     {editionMode ?
-                                        <TemplateEditionItemCardOrChip imageOnClick={(e) => importImage(e, el)}
-                                                                       onBlur={(e) => editItem(el, "name", e.target.value)}
-                                                                       index={index}
-                                                                       title={el.name}
-                                                                       image={el.image}/> :
+                                        <TemplateEditionCard imageOnClick={(e) => importImage(e, el)}
+                                                             onBlur={(e) => editItem(el, "name", e.target.value)}
+                                                             index={index}
+                                                             title={el.name}
+                                                             deleteOnClick={() => deleteItem(el)}
+                                                             image={el.image}/> :
                                         <TemplateItemCardOrChip title={el.name} image={el.image}/>}
                                 </div>
                             ))}

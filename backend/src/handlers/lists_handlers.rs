@@ -27,7 +27,7 @@ pub async fn create_list(new_list: web::Json<NewListApi>) -> HttpResponse {
         user_id: new_list.user_id,
         name: new_list.name.clone(),
     };
-    eprintln!("{:?}", new_list);
+
     match list_service::register_new_list(&mut conn, list_data, new_list.items.clone()) {
         Ok(created_list) => HttpResponse::Ok().json(created_list),
         Err(e) => {

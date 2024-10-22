@@ -1,5 +1,6 @@
 use crate::models::items_models::{Item, NewItem, NewItemApi};
 use crate::schema::items::dsl::items;
+use crate::schema::items::{id, list_id};
 use base64::Engine;
 use diesel::prelude::*;
 use diesel::result::Error;
@@ -20,6 +21,25 @@ pub fn bulk_insert_items(conn: &mut PgConnection, new_items: Vec<NewItem>) -> Re
             Err(err)
         }
     }
+}
+
+pub fn add_item_to_list(conn: &mut PgConnection, list_id_param: i32) -> Result<usize, Error> {
+    let new_position_list: i64 = items
+        .filter(list_id.eq(list_id_param))
+        .count()
+        .get_result(conn)
+        .unwrap_or(0);
+
+    let item_data = NewItem {
+        list_id: list_id_param,
+        name: "".to_string(),
+        position_list: (new_position_list + 1) as i32,
+        image: convert_image("".to_string()),
+    };
+    let item = diesel::insert_into(items)
+        .values(&item_data)
+        .execute(conn)?;
+    Ok(item)
 }
 
 /// Retrieves all items associated with the specified list ID from the database.
@@ -89,5 +109,9 @@ pub fn edit_item(conn: &mut PgConnection, item_id: i32, new_data: NewItemApi) ->
             items::name.eq(new_data.name),
             items::image.eq(convert_image(new_data.image)),
         ))
+        .execute(conn)
+}
+pub fn delete_item(conn: &mut PgConnection, item_id: i32) -> QueryResult<usize> {
+    diesel::delete(items.filter(id.eq(item_id)))
         .execute(conn)
 }
