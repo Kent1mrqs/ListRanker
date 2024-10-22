@@ -189,8 +189,8 @@ function ShowItems({fetchItems, currentItems, editionMode}: {
     fetchItems: (lid_id: number) => void,
     editionMode: boolean
 }) {
-    function editItemImage(event: React.ChangeEvent<HTMLInputElement>, item: Item, image: string) {
-        editData('item-edit/' + item.id, {name: item.name, image})
+    function editItem(item: Item, key: string, value: string) {
+        editData('item-edit/' + item.id, {...item, [key]: value})
             .then(() => {
                 if (item.list_id) {
                     fetchItems(item.list_id)
@@ -210,7 +210,7 @@ function ShowItems({fetchItems, currentItems, editionMode}: {
             reader.onloadend = () => {
                 const newImage = reader.result as string;
 
-                editItemImage(event, el, newImage);
+                editItem(el, "image", newImage);
             };
             reader.readAsDataURL(file);
         }
@@ -223,16 +223,19 @@ function ShowItems({fetchItems, currentItems, editionMode}: {
                     <Spotlight
                         className="group mx-auto grid max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-6"
                     >
-                        {currentItems?.map((el, index) => (
-                            <div className="mx-auto max-w-3xl pb-12 text-center md:pb-20">
-                                {editionMode ?
-                                    <TemplateEditionItemCardOrChip imageOnClick={(e) => importImage(e, el)}
-                                                                   index={index}
-                                                                   title={el.name}
-                                                                   image={el.image}/> :
-                                    <TemplateItemCardOrChip title={el.name} image={el.image}/>}
-                            </div>
-                        ))}
+                        {currentItems
+                            .sort((a, b) => a.id > b.id ? 1 : -1)
+                            .map((el, index) => (
+                                <div className="mx-auto max-w-3xl pb-12 text-center md:pb-20">
+                                    {editionMode ?
+                                        <TemplateEditionItemCardOrChip imageOnClick={(e) => importImage(e, el)}
+                                                                       onBlur={(e) => editItem(el, "name", e.target.value)}
+                                                                       index={index}
+                                                                       title={el.name}
+                                                                       image={el.image}/> :
+                                        <TemplateItemCardOrChip title={el.name} image={el.image}/>}
+                                </div>
+                            ))}
                     </Spotlight> : <Typography>Empty list</Typography>}
             </Stack>
         </>

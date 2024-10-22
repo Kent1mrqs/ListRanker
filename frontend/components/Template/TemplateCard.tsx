@@ -10,6 +10,7 @@ interface CardProps {
     selected?: boolean;
     disabled?: boolean;
     imageOnClick?: (e: any) => void;
+    onBlur?: (e: any) => void;
     description?: string;
     onClick?: () => void;
     variant?: "duel" | "basic" | "item";
@@ -47,7 +48,7 @@ export default function TemplateCard({
             className={cardVariants[variant]}
         >
             <div
-                className="relative z-20 h-full overflow-hidden rounded-[inherit] bg-gray-950 after:absolute after:bg-gradient-to-br after:from-gray-900/50 after:via-gray-800/25 after:to-gray-900/50"
+                className="relative z-20 h-[300px] overflow-hidden rounded-[inherit] bg-gray-950 after:absolute after:bg-gradient-to-br after:from-gray-900/50 after:via-gray-800/25 after:to-gray-900/50"
             >
                 {/* <div
                     onClick={(event) => {
@@ -87,6 +88,7 @@ export function TemplateEditionCard({
                                         title,
                                         image,
                                         imageOnClick,
+                                        onBlur,
                                     }: CardProps) {
 
     return (
@@ -94,7 +96,7 @@ export function TemplateEditionCard({
             className={item_image}
         >
             <div
-                className="relative z-20 h-full overflow-hidden rounded-[inherit] bg-gray-950 after:absolute after:bg-gradient-to-br after:from-gray-900/50 after:via-gray-800/25 after:to-gray-900/50"
+                className="relative z-20 h-[300px] overflow-hidden rounded-[inherit] bg-gray-950 after:absolute after:bg-gradient-to-br after:from-gray-900/50 after:via-gray-800/25 after:to-gray-900/50"
             >
                 <input
                     id={"image-" + index}
@@ -105,14 +107,14 @@ export function TemplateEditionCard({
                 <Image
                     onClick={() => document.getElementById('image-' + index)?.click()}
                     className="inline-flex object-cover w-[350px] h-[200px] cursor-pointer"
-                    src={image}
+                    src={image ?? 'b'}
                     width={350}
                     height={200}
                     alt={title}
                 />
                 <div className="p-6">
                     <div className="mb-3">
-                        <TemplateInput placeholder={title}/>
+                        <TemplateInput placeholder={title} onBlur={onBlur}/>
                     </div>
                 </div>
             </div>
@@ -126,17 +128,15 @@ export function TemplateEditionItemCardOrChip({
                                                   title,
                                                   image,
                                                   imageOnClick,
+                                                  onBlur,
                                               }: CardProps) {
     return (
         <>
-            {image ?
-                <TemplateEditionCard imageOnClick={imageOnClick}
-                                     index={index}
-                                     variant="item"
-                                     title={title}
-                                     image={image}/> :
-                <TemplateInput placeholder={title}/>
-            }
+            <TemplateEditionCard imageOnClick={imageOnClick}
+                                 index={index}
+                                 title={title}
+                                 onBlur={onBlur}
+                                 image={image}/>
         </>
     )
 }
