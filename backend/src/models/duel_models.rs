@@ -24,10 +24,18 @@ pub struct ItemDuel {
 
 #[derive(Insertable, Deserialize, Clone)]
 #[diesel(table_name = duels)]
-pub struct BattleResult {
+pub struct BattleResultApi {
     pub ranking_id: i32,
     pub winner: i32,
     pub loser: i32,
+}
+#[derive(Insertable, Deserialize, Clone)]
+#[diesel(table_name = duels)]
+pub struct BattleResultDb {
+    pub ranking_id: i32,
+    pub winner: i32,
+    pub loser: i32,
+    pub explicit: bool,
 }
 
 #[allow(dead_code)]

@@ -1,5 +1,5 @@
 use crate::item_service::convert_to_base64;
-use crate::models::duel_models::{BattleResult, DuelResult, ItemDuel, NextDuelData};
+use crate::models::duel_models::{BattleResultApi, BattleResultDb, DuelResult, ItemDuel, NextDuelData};
 use crate::models::ranking_items_models::RankingItemWithNameAndImage;
 use crate::ranking_item_service::{fetch_ranking_items_with_names, set_item_ranks};
 use crate::schema::duels::dsl::duels;
@@ -147,7 +147,7 @@ fn get_items_beaten_by_loser(conn: &mut PgConnection, ranking_id_param: i32, los
 }
 
 /// Determines the next duel or concludes the battle based on the given result.
-pub fn process_next_duel(conn: &mut PgConnection, ranking_id_param: i32, battle_result: BattleResult) -> Result<DuelResult, Box<dyn std::error::Error>> {
+pub fn process_next_duel(conn: &mut PgConnection, ranking_id_param: i32, battle_result: BattleResultApi) -> Result<DuelResult, Box<dyn std::error::Error>> {
     if !has_duel_occurred(conn, battle_result.winner, battle_result.loser, ranking_id_param) & !has_duel_occurred(conn, battle_result.loser, battle_result.winner, ranking_id_param) {
         record_battle_winner(conn, battle_result)?;
     } else {
@@ -297,7 +297,7 @@ fn get_item_id_by_position(conn: &mut PgConnection, ranking_id_param: i32, posit
 }
 
 /// Records the winner of a battle by inserting the battle result and updating the winner's score.
-pub fn record_battle_winner(conn: &mut PgConnection, battle_result: BattleResult) -> QueryResult<usize> {
+pub fn record_battle_winner(conn: &mut PgConnection, battle_result: BattleResultApi) -> QueryResult<usize> {
     use crate::schema::ranking_items::{item_id, score};
     let winners: Vec<i32> = get_items_who_beat_winner(conn, battle_result.ranking_id, battle_result.winner)?;
     println!(
@@ -314,7 +314,12 @@ pub fn record_battle_winner(conn: &mut PgConnection, battle_result: BattleResult
     let mut duel_results = Vec::new();
     let mut count_winner = 0;
     let mut count_loser = 0;
-    duel_results.push(battle_result.clone());
+    duel_results.push(BattleResultDb {
+        ranking_id: battle_result.ranking_id,
+        winner: battle_result.winner,
+        loser: battle_result.loser,
+        explicit: true,
+    });
 
     for w in &winners {
         println!(
@@ -322,10 +327,11 @@ pub fn record_battle_winner(conn: &mut PgConnection, battle_result: BattleResult
             *w, battle_result.loser
         );
         if !has_duel_occurred(conn, battle_result.loser, *w, battle_result.ranking_id) {
-            duel_results.push(BattleResult {
+            duel_results.push(BattleResultDb {
                 ranking_id: battle_result.ranking_id,
                 winner: *w,
                 loser: battle_result.loser,
+                explicit: false,
             });
             count_winner = count_winner + 1
         }
@@ -337,10 +343,11 @@ pub fn record_battle_winner(conn: &mut PgConnection, battle_result: BattleResult
             battle_result.winner, *l
         );
         if !has_duel_occurred(conn, *l, battle_result.winner, battle_result.ranking_id) {
-            duel_results.push(BattleResult {
+            duel_results.push(BattleResultDb {
                 ranking_id: battle_result.ranking_id,
                 loser: *l,
                 winner: battle_result.winner,
+                explicit: false,
             });
             count_loser = count_loser + 1
         }

@@ -6,6 +6,7 @@ diesel::table! {
         ranking_id -> Int4,
         loser -> Int4,
         winner -> Int4,
+        explicit -> Nullable<Bool>,
     }
 }
 
