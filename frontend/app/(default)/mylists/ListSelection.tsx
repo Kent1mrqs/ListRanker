@@ -94,8 +94,8 @@ export default function ListSelection({
                     const jsonData: NewList = JSON.parse(result);
                     saveList({...jsonData, user_id: userId}, userId, setLists);
                 } catch (error) {
-                    console.error("Erreur lors de l'analyse du JSON :", error);
-                    alert("Le fichier sélectionné n'est pas un JSON valide.");
+                    console.error("Error when analysing json", error);
+                    alert("Selected file is not a valid json");
                 }
             }
         };

@@ -1,5 +1,5 @@
 [package]
-name = "rankinglist"
+name = "list_ranker"
 version = "0.1.0"
 edition = "2021"
 
@@ -19,3 +19,7 @@ env_logger = "0.11.5"
 
 [build-dependencies]
 libpq = "0.9"
+
+[[bin]]
+name = "list_ranker"
+path = "src/main.rs"
