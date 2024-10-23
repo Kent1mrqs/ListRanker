@@ -21,3 +21,15 @@ pub struct LoginResponse {
     pub(crate) id: i32,
     pub(crate) username: String,
 }
+#[derive(Serialize)]
+pub struct LoginWithToken {
+    pub(crate) id: i32,
+    pub(crate) username: String,
+    pub(crate) token: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Claims {
+    pub(crate) sub: String,
+    pub(crate) exp: usize,
+}
