@@ -49,6 +49,7 @@ export default function RankingName({newRanking, saveRanking, setNewRanking}: Sa
 
     return (
         <TemplatePage
+            id="step4"
             title="Step 4 : Ranking Name"
             description="Choose a name for your ranking."
         >
