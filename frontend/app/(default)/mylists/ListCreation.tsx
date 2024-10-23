@@ -1,6 +1,6 @@
 "use client";
 import {Button, Stack, Typography} from "@mui/material";
-import React, {useState} from "react";
+import React, {ChangeEvent, useState} from "react";
 import {postData} from "@/app/api";
 import TemplateInput from "@/components/Template/TemplateInput";
 import TemplateTextArea from "@/components/Template/TemplateTextArea";
@@ -105,8 +105,34 @@ export default function ListCreation() {
             fetchLists(userId, setLists)
             showNotification("New list created", "success")
         });
-
     }
+
+    const addImagesAsItems = async (event: ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files) {
+            const fileArray = Array.from(event.target.files);
+            console.log(fileArray);
+            const fileDataPromises = fileArray.map(async (file) => {
+                const base64 = await convertToBase64(file);
+                return {
+                    name: file.name.split('.')[0].replaceAll('_', ' '),
+                    image: base64,
+                };
+            });
+
+            const filesData = await Promise.all(fileDataPromises);
+            setNewList({...newList, name: nameList, items: filesData});
+        }
+    };
+
+    // Helper function to convert file to base64
+    const convertToBase64 = (file: File): Promise<string> => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = (error) => reject(error);
+        });
+    };
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, id: number) => {
         const file = event.target.files?.[0];
@@ -180,6 +206,12 @@ export default function ListCreation() {
                     <option value={';'}>;</option>
                     <option value={' '}>espace</option>
                 </TemplateSelect>
+                <input
+                    className="btn-sm bg-gradient-to-t from-indigo-600 to-indigo-500 bg-[length:100%_100%] bg-[bottom] py-[5px] text-white shadow-[inset_0px_1px_0px_0px_theme(colors.white/.16)] hover:bg-[length:100%_150%] max-w-[200px] w-full"
+                    type="file"
+                    multiple={true}
+                    accept="image/*"
+                    onChange={addImagesAsItems}/>
                 <Button disabled={!isValidInput(nameList)} onClick={onClick}>Validate</Button>
             </Stack>
             <Stack spacing={1}>
