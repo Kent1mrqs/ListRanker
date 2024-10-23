@@ -11,6 +11,7 @@ import {useUserContext} from "@/app/UserProvider";
 import {useListsContext} from "@/app/ListsProvider";
 import {fetchLists, saveList} from "@/app/(default)/mylists/ListServices";
 import TemplateInput from "@/components/Template/TemplateInput";
+import {useNotification} from "@/app/NotificationProvider";
 
 export type ListProps = {
     currentList: List;
@@ -37,11 +38,15 @@ export default function ListSelection({
     const [editionMode, setEditionMode] = useState<boolean>(false)
     const [editedList, setEditedList] = useState<ListItems>({name: "", id: 0, items: []})
     const {lists, setLists} = useListsContext();
+    const {showNotification} = useNotification();
 
     const fetchItems = useCallback((list_id: number) => {
         fetchData<Item[]>('items/' + list_id)
             .then(result => setCurrentItems(result))
-            .catch(err => console.error(err.message));
+            .catch(err => {
+                showNotification("Error when fetching items : " + err.message, "error")
+                console.error(err.message)
+            });
     }, []);
 
     const handleDownload = () => {
@@ -68,7 +73,10 @@ export default function ListSelection({
                 fetchLists(userId, setLists)
                 setCurrentItems([])
                 setCurrentList({name: '', id: 0})
+                showNotification("List deleted", "success")
             })
+            .catch((e) => showNotification('Error : ' + e.message, "error"))
+
     }
 
     async function saveEditedList() {
@@ -76,7 +84,9 @@ export default function ListSelection({
             .then(() => {
                 setEditionMode(false)
                 fetchLists(userId, setLists)
+                showNotification("List edited", "success")
             })
+            .catch((e) => showNotification('Error : ' + e.message, "error"))
     }
 
 
@@ -96,6 +106,7 @@ export default function ListSelection({
                 } catch (error) {
                     console.error("Error when analysing json", error);
                     alert("Selected file is not a valid json");
+                    showNotification('Error', "error")
                 }
             }
         };

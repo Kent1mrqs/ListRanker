@@ -12,6 +12,7 @@ import TemplateChip from "@/components/Template/TemplateChip";
 import {fetchLists} from "@/app/(default)/mylists/ListServices";
 import {useListsContext} from "@/app/ListsProvider";
 import {LoadingButton} from "@/components/Template/TemplateButton";
+import {useNotification} from "@/app/NotificationProvider";
 
 export interface Item {
     list_id?: number;
@@ -67,6 +68,7 @@ const blue = "btn-sm bg-gradient-to-t from-indigo-600 to-indigo-500 bg-[length:1
 export default function ListCreation() {
     const {userId} = useUserContext();
     const {setLists} = useListsContext();
+    const {showNotification} = useNotification();
 
     const default_list: NewList = {
         user_id: userId,
@@ -100,6 +102,7 @@ export default function ListCreation() {
             setLoading(false)
             setNewList(default_list)
             fetchLists(userId, setLists)
+            showNotification("New list created", "success")
         });
 
     }
