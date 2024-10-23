@@ -1,6 +1,8 @@
-use crate::models::users_models::{Claims, LoginWithToken, NewUser, User};
+use crate::models::users_models::{Claims, LoginWithToken, NewUserApi, NewUserDb, User};
 use crate::schema::users::dsl::users;
 use crate::schema::users::{id, username};
+use actix_web::dev::{Service, ServiceResponse};
+use actix_web::{dev::ServiceRequest, Error, HttpMessage};
 use bcrypt::{hash, verify, DEFAULT_COST};
 use diesel::prelude::*;
 use diesel::QueryResult;
@@ -15,7 +17,7 @@ pub fn fetch_all_users(conn: &mut PgConnection) -> QueryResult<Vec<User>> {
 }
 
 /// Creates a new user in the database and returns the login response containing the user's ID and username.
-pub fn register_new_user(conn: &mut PgConnection, new_user: NewUser) -> Result<LoginWithToken, diesel::result::Error> {
+pub fn register_new_user(conn: &mut PgConnection, new_user: NewUserApi) -> Result<LoginWithToken, diesel::result::Error> {
     dotenv().ok();
     let secret_key = env::var("SECRET_KEY").expect("SECRET_KEY must be set");
 
@@ -31,9 +33,9 @@ pub fn register_new_user(conn: &mut PgConnection, new_user: NewUser) -> Result<L
         ));
     }
 
-    let hashed_password = hash(&new_user.password_hash, DEFAULT_COST).expect("Failed to hash password");
+    let hashed_password = hash(&new_user.password, DEFAULT_COST).expect("Failed to hash password");
 
-    let new_user_to_insert = NewUser {
+    let new_user_to_insert = NewUserDb {
         username: new_user.username.clone(),
         password_hash: hashed_password,
     };
@@ -52,7 +54,7 @@ pub fn register_new_user(conn: &mut PgConnection, new_user: NewUser) -> Result<L
     })
 }
 
-pub fn login_user(conn: &mut PgConnection, credentials: NewUser) -> Result<LoginWithToken, diesel::result::Error> {
+pub fn login_user(conn: &mut PgConnection, credentials: NewUserApi) -> Result<LoginWithToken, diesel::result::Error> {
     dotenv().ok();
     let secret_key = env::var("SECRET_KEY").expect("SECRET_KEY must be set");
 
@@ -65,7 +67,7 @@ pub fn login_user(conn: &mut PgConnection, credentials: NewUser) -> Result<Login
         Err(_) => return Err(diesel::result::Error::NotFound),
     };
 
-    if verify(&credentials.password_hash, &user_in_db.password_hash).unwrap_or(false) {
+    if verify(&credentials.password, &user_in_db.password_hash).unwrap_or(false) {
         let token = generate_jwt(&user_in_db.id.to_string(), &secret_key).expect("Failed to generate token");
 
         let response = LoginWithToken {
@@ -98,7 +100,7 @@ fn generate_jwt(user_id: &str, secret_key: &str) -> Result<String, jsonwebtoken:
 }
 
 
-fn _validate_jwt(token: &str, secret_key: &str) -> Result<Claims, jsonwebtoken::errors::Error> {
+fn validate_jwt(token: &str, secret_key: String) -> Result<Claims, jsonwebtoken::errors::Error> {
     let token_data = decode::<Claims>(
         token,
         &DecodingKey::from_secret(secret_key.as_ref()),
@@ -106,3 +108,36 @@ fn _validate_jwt(token: &str, secret_key: &str) -> Result<Claims, jsonwebtoken::
     )?;
     Ok(token_data.claims)
 }
+
+
+pub async fn jwt_middleware<S>(
+    req: ServiceRequest,
+    srv: &S,
+) -> Result<ServiceResponse, Error>
+where
+    S: Service<ServiceRequest, Response=ServiceResponse, Error=Error> + 'static,
+{
+    let auth_header = req.headers().get("Authorization");
+    if let Some(auth_header) = auth_header {
+        if let Ok(auth_str) = auth_header.to_str() {
+            if auth_str.starts_with("Bearer ") {
+                let token = auth_str[7..].trim();
+                let secret_key = std::env::var("SECRET_KEY").expect("SECRET_KEY must be set");
+
+                match validate_jwt(token, secret_key) {
+                    Ok(claims) => {
+                        req.extensions_mut().insert(claims);
+                        return Ok(srv.call(req).await?);
+                    }
+                    Err(_) => {
+                        return Err(actix_web::error::ErrorUnauthorized("Invalid token"));
+                    }
+                }
+            }
+        }
+    }
+    Err(actix_web::error::ErrorUnauthorized("Invalid or missing token"))
+}
+
+
+
