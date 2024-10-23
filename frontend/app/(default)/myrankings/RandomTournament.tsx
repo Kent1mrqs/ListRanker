@@ -6,6 +6,7 @@ import {fetchData, postData} from "@/app/api";
 import {RankingItem} from "@/app/(default)/myrankings/ChooseRanking";
 import TemplateButton from "@/components/Template/TemplateButton";
 import {TemplateDuelCard} from "@/components/Template/TemplateCard";
+import {useNotification} from "@/app/NotificationProvider";
 
 export interface Item {
     id: number;
@@ -121,6 +122,8 @@ export default function RandomTournament({
     const [currentDual, setCurrentDual] = useState<Item[]>(default_duel)
     const [duelOver, setDuelOver] = useState<Boolean>(false)
     const [duelsLeft, setDuelsLeft] = useState<number>(currentRankingItems.length * (currentRankingItems.length - 1) / 2)
+    const {showNotification} = useNotification();
+
     const fetchRankingItems = useCallback(() => {
         fetchData<RankingItem[]>('ranking-items/' + ranking_id)
             .then(result => setCurrentRankingItems(result))
@@ -166,6 +169,7 @@ export default function RandomTournament({
                 }
             });
         } catch (e) {
+            showNotification("error", "error")
             console.error(e)
         }
     }
@@ -173,6 +177,7 @@ export default function RandomTournament({
     function resetDuel() {
         postData<{}, String>("duels-reset/" + ranking_id, {})
             .then(() => {
+                showNotification("Duel reset", "success")
                 fetchDuelInit()
                 setDuelOver(false)
             })

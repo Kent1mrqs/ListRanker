@@ -8,6 +8,7 @@ import RankingName from "@/app/(default)/workflow_creation/RankingName";
 import {useUserContext} from "@/app/UserProvider";
 import {fetchLists} from "@/app/(default)/mylists/ListServices";
 import {useListsContext} from "@/app/ListsProvider";
+import {useNotification} from "@/app/NotificationProvider";
 
 export interface NewRanking {
     creation_method: string;
@@ -37,6 +38,7 @@ export type RankingProps = {
 
 export default function WorkflowCreation() {
     const {setLists} = useListsContext();
+    const {showNotification} = useNotification();
     const {userId} = useUserContext();
     const default_ranking: NewRanking = {
         user_id: userId,
@@ -53,13 +55,14 @@ export default function WorkflowCreation() {
     async function saveRanking() {
         try {
             await postData<NewRanking, NewRanking>('rankings', newRanking).then(() => {
+                showNotification("Ranking created", "success")
                 setNewRanking(default_ranking)
             });
         } catch (error) {
             if (error instanceof Error) {
-                console.error(error.message);
+                showNotification(error.message, "error")
             } else {
-                console.error('An unknown error occurred');
+                showNotification('An unknown error occurred', "error")
             }
         }
     }

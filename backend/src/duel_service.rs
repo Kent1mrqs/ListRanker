@@ -327,7 +327,7 @@ pub fn record_battle_winner(conn: &mut PgConnection, battle_result: BattleResult
             count_winner = count_winner + 1
         }
     }
-    println!("count_winner : {}", count_winner);
+    
     for l in &losers {
         println!(
             "> Adding implicit duel result: Winner ID: {}, Loser ID: {}",
@@ -343,7 +343,7 @@ pub fn record_battle_winner(conn: &mut PgConnection, battle_result: BattleResult
             count_loser = count_loser + 1
         }
     }
-    println!("count_loser : {}", count_loser);
+
     conn.transaction::<_, diesel::result::Error, _>(|transaction_conn| {
         diesel::update(ranking_items)
             .filter(item_id.eq(battle_result.winner))
