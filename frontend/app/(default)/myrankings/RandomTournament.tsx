@@ -58,7 +58,7 @@ function ShowRanking({currentRankingItems, resetDuel}: { currentRankingItems: Ra
             {currentRankingItems
                 .sort((a, b) => a.rank > b.rank ? 1 : -1)
                 .map((item) => (
-                    <Typography key={item.id}>{item.rank} : {item.name}</Typography>
+                    <Typography key={item.id}>{item.rank} : {item.name} ({item.score} points)</Typography>
                 ))}
             <TemplateButton text="Reset" onClick={resetDuel}/>
 
@@ -66,7 +66,15 @@ function ShowRanking({currentRankingItems, resetDuel}: { currentRankingItems: Ra
     )
 }
 
+function ShowTournamentPreview() {
+    return (
+        <></>
+    )
+}
+
 function Duel({currentDual, resetDuel, chooseCard, ranking_id, duelsLeft}: DuelProps) {
+
+
     return (
         <Spotlight
             className="group mx-auto grid max-w-sm mt-3 items-start justify-center gap-6 lg:max-w-none lg:grid-cols-3 h-auto">
@@ -104,11 +112,11 @@ function Duel({currentDual, resetDuel, chooseCard, ranking_id, duelsLeft}: DuelP
     )
 }
 
-export default function NumberedIntelligentDual({
-                                                    ranking_id,
-                                                    setCurrentRankingItems,
-                                                    currentRankingItems
-                                                }: ComponentProps) {
+export default function RandomTournament({
+                                             ranking_id,
+                                             setCurrentRankingItems,
+                                             currentRankingItems
+                                         }: ComponentProps) {
 
     const [currentDual, setCurrentDual] = useState<Item[]>(default_duel)
     const [duelOver, setDuelOver] = useState<Boolean>(false)
@@ -172,6 +180,7 @@ export default function NumberedIntelligentDual({
 
     return (
         <Stack spacing={1} justifyContent='center'>
+            <ShowTournamentPreview/>
             {duelOver ?
                 <ShowRanking
                     resetDuel={resetDuel}

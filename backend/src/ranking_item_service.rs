@@ -1,4 +1,5 @@
-use crate::models::ranking_items_models::{NewRankingItem, NewRankings, RankingItem, RankingItemWithName};
+use crate::models::ranking_items_models::{NewRankingItem, NewRankings, RankingItem, RankingItemWithNameAndImage};
+use crate::schema::items::image;
 use crate::schema::ranking_items;
 use diesel::prelude::*;
 use diesel::result::Error;
@@ -21,23 +22,24 @@ pub fn insert_ranking_items_bulk(conn: &mut PgConnection, ranking_items: Vec<New
 /// This function fetches ranking items for the given ranking ID, joining with the items table
 /// to include item names. It returns a vector of RankingItemWithName structs or an error if the
 /// operation fails.
-pub fn fetch_ranking_items_with_names(conn: &mut PgConnection, ranking_id_param: i32) -> QueryResult<Vec<RankingItemWithName>> {
+pub fn fetch_ranking_items_with_names(conn: &mut PgConnection, ranking_id_param: i32) -> QueryResult<Vec<RankingItemWithNameAndImage>> {
     use crate::schema::ranking_items::dsl::*;
     use crate::schema::items::dsl::{id as item_id_col, items as items_table, name as item_name_col};
 
     ranking_items
         .filter(ranking_id.eq(ranking_id_param))
         .inner_join(items_table.on(item_id_col.eq(item_id)))
-        .select((ranking_items::all_columns(), item_name_col))
-        .load::<(RankingItem, String)>(conn)
-        .map(|results| results.into_iter().map(|(ranking_item, item_name)| {
-            RankingItemWithName {
+        .select((ranking_items::all_columns(), item_name_col, image))
+        .load::<(RankingItem, String, Option<Vec<u8>>)>(conn)
+        .map(|results| results.into_iter().map(|(ranking_item, item_name, item_image)| {
+            RankingItemWithNameAndImage {
                 id: ranking_item.id,
                 ranking_id: ranking_item.ranking_id,
                 item_id: ranking_item.item_id,
                 rank: ranking_item.rank,
-                name: item_name,
                 score: ranking_item.score,
+                name: item_name,
+                image: item_image,
             }
         }).collect())
 }
@@ -50,12 +52,14 @@ pub fn update_ranks(conn: &mut PgConnection, new_rankings: Vec<NewRankings>) -> 
     for ranking in &new_rankings {
         // Fetch the current item and its current rank
         let current_item: RankingItem = ranking_items::table
+            .select(RankingItem::as_select())
             .find(ranking.id)
             .first(conn)?;
 
         // Fetch the target item based on the new rank
         let target_item: RankingItem = ranking_items::table
             .filter(ranking_items::rank.eq(ranking.new_rank))
+            .select(RankingItem::as_select())
             .first(conn)?;
 
         // Swap ranks: Set target item's rank to current item's rank
@@ -68,7 +72,7 @@ pub fn update_ranks(conn: &mut PgConnection, new_rankings: Vec<NewRankings>) -> 
             .set(ranking_items::rank.eq(ranking.new_rank))
             .execute(conn)?;
     }
-    Ok(new_rankings.len()) // Return the count of updated rankings
+    Ok(new_rankings.len())
 }
 
 /// Updates the ranks of items in the ranking_items table based on the provided new ranks.

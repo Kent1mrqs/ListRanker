@@ -18,6 +18,12 @@ pub struct NewListApi {
     pub items: Vec<NewItemApi>,
 }
 
+#[derive(Deserialize, Serialize, Debug)]
+pub struct EditList {
+    pub name: String,
+    //pub items: Vec<NewItemApi>,
+}
+
 #[derive(Insertable, Deserialize, Serialize, Debug)]
 #[diesel(table_name = lists)]
 pub struct NewListDb {

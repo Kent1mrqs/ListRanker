@@ -3,6 +3,7 @@ import Spotlight from "@/components/spotlight";
 import TemplateCard from "@/components/Template/TemplateCard";
 import TournoiImg from "@/public/images/tournoi.png";
 import TierList from "@/public/images/tier_list.png";
+import Podium from "@/public/images/podium.webp";
 import TemplatePage from "@/components/Template/TemplatePage";
 import {NewRanking, RankingProps} from "@/app/(default)/workflow_creation/WorkflowCreation";
 
@@ -23,8 +24,8 @@ const rankingCard = [
         disabled: true
     },
     {
-        title: 'NumberedManualExchange',
-        image: TierList,
+        title: 'Classique',
+        image: Podium,
         description: '',
         key: 'numbered'
     },

@@ -1,11 +1,12 @@
 "use client";
 import React from "react";
 import {fetchData} from "@/app/api";
-import {Ranking, Rankings} from "@/app/(default)/mylists/ListCreation";
+import {Ranking} from "@/app/(default)/mylists/ListCreation";
 import Spotlight from "@/components/spotlight";
 import TemplateButton from "@/components/Template/TemplateButton";
 import {useRouter} from "next/navigation";
 import {useUserContext} from "@/app/UserProvider";
+import {useRankingsContext} from "@/app/RankingsProvider";
 
 export interface RankingItem {
     id: number,
@@ -22,7 +23,6 @@ export interface EditRanking {
 }
 
 export interface ChooseRankingProps {
-    rankings: Rankings,
     currentRanking: Ranking,
     setCurrentRanking: (currentRanking: Ranking) => void,
     setCurrentRankingItems: (currentRankingItems: RankingItem[]) => void,
@@ -30,7 +30,6 @@ export interface ChooseRankingProps {
 
 
 export default function ChooseRanking({
-                                          rankings,
                                           currentRanking,
                                           setCurrentRanking,
                                           setCurrentRankingItems,
@@ -38,6 +37,7 @@ export default function ChooseRanking({
 
     const router = useRouter();
     const {userId} = useUserContext();
+    const {rankings} = useRankingsContext();
     const default_ranking: Ranking = {
         id: 0,
         user_id: userId,

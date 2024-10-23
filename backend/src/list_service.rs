@@ -1,6 +1,6 @@
-use crate::item_service::bulk_insert_items;
+use crate::item_service::{bulk_insert_items, convert_image};
 use crate::models::items_models::{NewItem, NewItemApi};
-use crate::models::lists_models::{List, NewListDb};
+use crate::models::lists_models::{EditList, List, NewListDb};
 use diesel::prelude::*;
 use diesel::QueryResult;
 
@@ -33,6 +33,7 @@ pub fn register_new_list(conn: &mut PgConnection, new_list: NewListDb, items: Ve
             list_id: new_list_id,
             name: item.name.clone(),
             position_list: index as i32,
+            image: convert_image(item.image.clone()),
         })
         .collect();
 
@@ -47,11 +48,24 @@ pub fn delete_list(conn: &mut PgConnection, list_id: i32) -> QueryResult<usize> 
     use crate::schema::items::dsl::{items, list_id as item_list_id};
     use crate::schema::lists::dsl::{id, lists};
 
-    // Delete all items associated with the specified list ID
-    diesel::delete(items.filter(item_list_id.eq(list_id)))
-        .execute(conn)?;
+    conn.transaction::<_, diesel::result::Error, _>(|conn| {
+        // Delete all items associated with the specified list ID
+        diesel::delete(items.filter(item_list_id.eq(list_id)))
+            .execute(conn)?;
 
-    // Delete the list itself
-    diesel::delete(lists.filter(id.eq(list_id)))
-        .execute(conn)
+        // Delete the list itself
+        diesel::delete(lists.filter(id.eq(list_id)))
+            .execute(conn)
+    })
+}
+
+pub fn edit_list(conn: &mut PgConnection, list_id: i32, data: EditList) -> QueryResult<usize> {
+    use crate::schema::lists::dsl::{id, lists, name};
+    conn.transaction::<_, diesel::result::Error, _>(|transaction_conn| {
+        diesel::update(lists.filter(id.eq(list_id)))
+            .set(name.eq(data.name))
+            .execute(transaction_conn)?;
+        //edit_items(transaction_conn, data.items)?;
+        Ok(1)
+    })
 }

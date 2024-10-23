@@ -1,7 +1,7 @@
 use crate::db;
 use crate::db::establish_connection;
 use crate::list_service;
-use crate::models::lists_models::{NewListApi, NewListDb};
+use crate::models::lists_models::{EditList, NewListApi, NewListDb};
 use actix_web::{web, HttpResponse};
 
 /// Retrieves all lists associated with the specified user ID and returns them as a JSON response.
@@ -44,10 +44,25 @@ pub async fn remove_list(path: web::Path<i32>) -> HttpResponse {
     let mut conn = establish_connection();
 
     match list_service::delete_list(&mut conn, list_id) {
-        Ok(_) => HttpResponse::Ok().body("List removed successfully"),
+        Ok(result) => HttpResponse::Ok().json(result),
         Err(e) => {
             println!("Error deleting the list: {:?}", e);
             HttpResponse::InternalServerError().body("Error removing list")
+        }
+    }
+}
+
+/// Edit the specified list and returns a success message as a JSON response.
+pub async fn edit_list_handler(path: web::Path<i32>, edited_list: web::Json<EditList>) -> HttpResponse {
+    let list_id = path.into_inner();
+
+    let mut conn = establish_connection();
+
+    match list_service::edit_list(&mut conn, list_id, edited_list.into_inner()) {
+        Ok(result) => HttpResponse::Ok().json(result),
+        Err(e) => {
+            println!("Error editing the list: {:?}", e);
+            HttpResponse::InternalServerError().body("Error editing list")
         }
     }
 }

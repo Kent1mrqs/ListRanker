@@ -7,8 +7,7 @@ export const metadata = {
 };
 
 
-export default function List() {
-
+export default function MyListsPage() {
     return (
         <TemplatePage title='My lists' description=''>
             <MyLists/>

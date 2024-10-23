@@ -21,13 +21,14 @@ pub struct NewRankingItem {
 }
 
 #[derive(Queryable, Serialize, Clone, Debug)]
-pub struct RankingItemWithName {
+pub struct RankingItemWithNameAndImage {
     pub(crate) id: i32,
     pub(crate) ranking_id: i32,
     pub(crate) item_id: i32,
     pub(crate) rank: i32,
     pub(crate) name: String,
     pub(crate) score: i32,
+    pub(crate) image: Option<Vec<u8>>,
 }
 #[derive(Deserialize, Serialize, Debug)]
 pub struct NewRankings {

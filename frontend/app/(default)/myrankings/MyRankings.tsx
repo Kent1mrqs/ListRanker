@@ -7,9 +7,11 @@ import {Ranking, Rankings} from "@/app/(default)/mylists/ListCreation";
 import {useUserContext} from "@/app/UserProvider";
 import {fetchData, postData} from "@/app/api";
 import NumberedIntelligentDual from "@/app/(default)/myrankings/NumberedIntelligentDual";
+import {useRankingsContext} from "@/app/RankingsProvider";
 
 export default function MyRankings() {
     const {userId} = useUserContext();
+    const {setRankings} = useRankingsContext();
     const default_ranking: Ranking = {
         id: 0,
         user_id: userId,
@@ -18,7 +20,6 @@ export default function MyRankings() {
         creation_method: "manual_exchange",
         list_id: 0
     }
-    const [rankings, setRankings] = useState<Rankings>([]);
     const [currentRanking, setCurrentRanking] = useState<Ranking>(default_ranking)
     const [currentRankingItems, setCurrentRankingItems] = useState<RankingItem[]>([])
     const fetchRankings = useCallback(() => {
@@ -53,7 +54,6 @@ export default function MyRankings() {
             description=" "
         >
             <ChooseRanking
-                rankings={rankings}
                 setCurrentRankingItems={setCurrentRankingItems}
                 currentRanking={currentRanking}
                 setCurrentRanking={setCurrentRanking}

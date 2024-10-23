@@ -6,6 +6,7 @@ diesel::table! {
         ranking_id -> Int4,
         loser -> Int4,
         winner -> Int4,
+        explicit -> Nullable<Bool>,
     }
 }
 
@@ -16,6 +17,7 @@ diesel::table! {
         #[max_length = 255]
         name -> Varchar,
         position_list -> Int4,
+        image -> Nullable<Bytea>,
     }
 }
 

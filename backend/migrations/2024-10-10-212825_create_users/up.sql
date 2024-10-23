@@ -18,6 +18,7 @@ CREATE TABLE items
     id            SERIAL PRIMARY KEY,
     list_id       INT          NOT NULL,
     position_list INT          NOT NULL,
+    image         BYTEA,
     name          VARCHAR(255) NOT NULL,
     FOREIGN KEY (list_id) REFERENCES lists (id)
 );

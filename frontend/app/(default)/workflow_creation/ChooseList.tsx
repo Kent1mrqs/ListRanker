@@ -1,29 +1,26 @@
 "use client";
 import TemplatePage from "@/components/Template/TemplatePage";
 import {NewRanking, RankingProps} from "@/app/(default)/workflow_creation/WorkflowCreation";
-import ListSelection from "@/app/(default)/workflow_creation/ListSelection";
-import ListCreation, {Lists} from "@/app/(default)/mylists/ListCreation";
-import {useCallback, useState} from "react";
-import {fetchData} from "@/app/api";
-import {useUserContext} from "@/app/UserProvider";
+import ListSelection from "@/app/(default)/mylists/ListSelection";
+import ListCreation from "@/app/(default)/mylists/ListCreation";
+import {useState} from "react";
+
+export interface List {
+    name: string;
+    id: number;
+}
 
 export default function ChooseList({setNewRanking}: RankingProps) {
-    (null);
-    const {userId} = useUserContext();
-    const [currentListId, setCurrentListId] = useState<number>(0)
-    const [lists, setLists] = useState<Lists>([]);
-    const fetchLists = useCallback(() => {
-        fetchData<Lists>('lists/' + userId)
-            .then(result => setLists(result))
-            .catch(err => console.error(err.message));
-    }, []);
+    const [currentList, setCurrentList] = useState<List>({name: '', id: 0})
+    const [creationMode, setCreationMode] = useState<boolean>(false)
 
-    function SelectList(id: number) {
-        setCurrentListId(id);
+
+    function SelectList(list: List) {
+        setCurrentList(list);
         setNewRanking((prevValue: NewRanking) => {
             return {
                 ...prevValue,
-                list_id: id,
+                list_id: list.id,
             }
         })
     }
@@ -33,11 +30,11 @@ export default function ChooseList({setNewRanking}: RankingProps) {
             title="Step 1 : Choose a list"
             description="Select a list to base your ranking on. Choose from existing options or create a new list."
         >
-            <ListSelection lists={lists}
-                           fetchLists={fetchLists}
-                           currentListId={currentListId}
-                           setCurrentListId={SelectList}/>
-            {currentListId === -1 && <ListCreation fetchLists={fetchLists}/>}
+            <ListSelection creationMode={creationMode}
+                           setCreationMode={setCreationMode}
+                           currentList={currentList}
+                           setCurrentList={SelectList}/>
+            {creationMode && <ListCreation/>}
         </TemplatePage>
     );
 }

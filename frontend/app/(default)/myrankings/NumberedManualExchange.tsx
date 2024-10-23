@@ -29,7 +29,7 @@ export default function NumberedManualExchange({
     function exchangeRanks(id: number, new_rank: number) {
         const target = currentRankingItems.filter(item => item.rank === new_rank)[0]
         const self = currentRankingItems.filter(item => item.id === id)[0]
-        console.log(target)
+
         const new_target = {...target, rank: self.rank}
         const new_self = {...self, rank: target.rank}
         const updatedRankingItems = currentRankingItems.map(item => {

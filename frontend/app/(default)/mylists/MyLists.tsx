@@ -1,27 +1,29 @@
 "use client";
-import ListCreation, {Lists} from "@/app/(default)/mylists/ListCreation";
-import ListSelection from "@/app/(default)/workflow_creation/ListSelection";
-import {useCallback, useState} from "react";
-import {fetchData} from "@/app/api";
+import ListCreation from "@/app/(default)/mylists/ListCreation";
+import ListSelection from "@/app/(default)/mylists/ListSelection";
+import {useEffect, useState} from "react";
 import {useUserContext} from "@/app/UserProvider";
+import {List} from "@/app/(default)/workflow_creation/ChooseList";
+import {useListsContext} from "@/app/ListsProvider";
+import {fetchLists} from "@/app/(default)/mylists/ListServices";
 
 export default function MyLists() {
     const {userId} = useUserContext();
-    const [currentListId, setCurrentListId] = useState<number>(0)
-    const [lists, setLists] = useState<Lists>([]);
-    const fetchLists = useCallback(() => {
-        fetchData<Lists>('lists/' + userId)
-            .then(result => setLists(result))
-            .catch(err => console.error(err.message));
-    }, []);
+    const [currentList, setCurrentList] = useState<List>({name: "", id: 0})
+    const [creationMode, setCreationMode] = useState<boolean>(false)
+    const {setLists} = useListsContext();
+
+    useEffect(() => {
+        fetchLists(userId, setLists);
+    }, [fetchLists]);
 
     return (
         <>
-            <ListSelection lists={lists}
-                           fetchLists={fetchLists}
-                           currentListId={currentListId}
-                           setCurrentListId={setCurrentListId}/>
-            {currentListId === -1 && <ListCreation fetchLists={fetchLists}/>}
+            <ListSelection creationMode={creationMode}
+                           setCreationMode={setCreationMode}
+                           currentList={currentList}
+                           setCurrentList={setCurrentList}/>
+            {creationMode && <ListCreation/>}
         </>
     );
 }
