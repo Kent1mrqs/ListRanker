@@ -1,3 +1,5 @@
+use crate::item_service::convert_to_base64;
+use crate::models::ranking_items_models::RankingItemWithNameAndImage;
 use crate::schema::duels;
 use diesel::Insertable;
 use serde_derive::{Deserialize, Serialize};
@@ -15,7 +17,7 @@ pub enum DuelResult {
 }
 
 
-#[derive(Serialize)]
+#[derive(Serialize, Clone, Debug)]
 pub struct ItemDuel {
     pub id: i32,
     pub name: String,
@@ -42,4 +44,17 @@ pub struct BattleResultDb {
 pub struct ScoreId {
     pub id: i32,
     pub score: i32,
+}
+
+impl From<RankingItemWithNameAndImage> for ItemDuel {
+    fn from(item: RankingItemWithNameAndImage) -> Self {
+        ItemDuel {
+            id: item.item_id,
+            name: item.name,
+            image: match item.image {
+                Some(img) => convert_to_base64(img, "image/png"), // Directly convert the Vec<u8> to base64
+                None => String::new(),
+            },
+        }
+    }
 }
