@@ -4,11 +4,11 @@ use crate::ranking_item_service::{fetch_ranking_items_with_names, set_item_ranks
 use crate::schema::duels::dsl::duels;
 use crate::schema::ranking_items::dsl::ranking_items;
 use crate::schema::ranking_items::{ranking_id, score};
-use diesel::dsl::count_star;
 use diesel::prelude::*;
 use diesel::result::Error;
 use rand::seq::SliceRandom;
 use rand::thread_rng;
+use std::time::Instant;
 
 /// Calculates the number of duels left by checking the total number of items
 /// in the ranking and comparing the possible maximum score to the current total score.
@@ -74,8 +74,6 @@ fn pick_unique_random_duel_candidates(conn: &mut PgConnection, ranking_id_param:
     match filtered_items {
         Ok(items) => {
             let mut rng = thread_rng();
-            //println!("filtered items {:?}", items.clone()[0]);
-
             let mut shuffled_items = items.clone();
             shuffled_items.shuffle(&mut rng);
 
@@ -241,22 +239,17 @@ pub fn has_duel_occurred(conn: &mut PgConnection, item_1_id: i32, item_2_id: i32
 /// Retrieves two items from a ranking list based on the given ranking ID and algorithm.
 /// It ensures that the selected items haven't already faced each other in a duel.
 pub fn pick_duel_candidates(conn: &mut PgConnection, ranking_id_param: i32, algo: fn(&mut PgConnection, i32) -> (ItemDuel, ItemDuel)) -> Result<Vec<ItemDuel>, Box<dyn std::error::Error>> {
-    use crate::schema::ranking_items::ranking_id;
+    let start = Instant::now();
 
     println!("\n---- Picking duel candidates for ranking ID: {} ----", ranking_id_param);
 
-    let list_size: i64 = ranking_items
-        .filter(ranking_id.eq(ranking_id_param))
-        .select(count_star())
-        .first(conn)?;
+    let duration = start.elapsed();
 
-    if list_size < 2 {
-        return Err("Not enough items for a duel.".into());
-    }
-    let items_list: Vec<RankingItemWithNameAndImage> = fetch_ranking_items_with_names(conn, ranking_id_param)?;
-    //println!("{:?}", items_list[0]);
+    println!("Execution time of pick_duel_candidates 1: {:?}", duration);
     let (mut result_1, mut result_2) = algo(conn, ranking_id_param);
-
+    let duration = start.elapsed();
+    // TODO: Optimize pick_min_max_duel_candidates
+    println!("Execution time of pick_duel_candidates 2: {:?}", duration);
     while has_duel_occurred(conn, result_1.id, result_2.id, ranking_id_param)
         || has_duel_occurred(conn, result_2.id, result_1.id, ranking_id_param)
     {
@@ -272,7 +265,7 @@ pub fn pick_duel_candidates(conn: &mut PgConnection, ranking_id_param: i32, algo
         result_1 = new_result_1;
         result_2 = new_result_2;
     }
-    println!("imageeee : {}", result_1.image);
+
     let item_1 = ItemDuel {
         id: result_1.id.clone(),
         name: result_1.name.clone(),

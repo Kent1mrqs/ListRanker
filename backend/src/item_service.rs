@@ -109,7 +109,7 @@ pub fn edit_item(conn: &mut PgConnection, item_id: i32, new_data: NewItemApi) ->
 }
 pub fn delete_item(conn: &mut PgConnection, item_id: i32) -> QueryResult<usize> {
     diesel::delete(items.filter(id.eq(item_id)))
-        .execute(conn);
+        .execute(conn)
 
     // TODO: DELETE FROM RANKING_ITEMS AND DUELS
 }
