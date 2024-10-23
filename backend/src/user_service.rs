@@ -1,12 +1,12 @@
 use crate::models::users_models::{Claims, LoginWithToken, NewUser, User};
 use crate::schema::users::dsl::users;
 use crate::schema::users::{id, username};
+use bcrypt::{hash, verify, DEFAULT_COST};
 use diesel::prelude::*;
 use diesel::QueryResult;
-use std::env;
-
 use dotenv::dotenv;
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
+use std::env;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 /// Retrieves all users from the database.
@@ -19,13 +19,32 @@ pub fn register_new_user(conn: &mut PgConnection, new_user: NewUser) -> Result<L
     dotenv().ok();
     let secret_key = env::var("SECRET_KEY").expect("SECRET_KEY must be set");
 
+    let existing_user = users
+        .filter(username.eq(&new_user.username))
+        .first::<User>(conn)
+        .optional()?;
+
+    if existing_user.is_some() {
+        return Err(diesel::result::Error::DatabaseError(
+            diesel::result::DatabaseErrorKind::UniqueViolation,
+            Box::new("Username already exists".to_string()),
+        ));
+    }
+
+    let hashed_password = hash(&new_user.password_hash, DEFAULT_COST).expect("Failed to hash password");
+
+    let new_user_to_insert = NewUser {
+        username: new_user.username.clone(),
+        password_hash: hashed_password,
+    };
+
     let inserted_user: (i32, String) = diesel::insert_into(users)
-        .values(&new_user)
+        .values(&new_user_to_insert)
         .returning((id, username))
         .get_result(conn)?;
 
     let token = generate_jwt(&inserted_user.0.to_string(), &secret_key).expect("Failed to generate token");
-    println!("{}", token);
+
     Ok(LoginWithToken {
         id: inserted_user.0,
         username: inserted_user.1,
@@ -46,7 +65,7 @@ pub fn login_user(conn: &mut PgConnection, credentials: NewUser) -> Result<Login
         Err(_) => return Err(diesel::result::Error::NotFound),
     };
 
-    if credentials.password_hash == user_in_db.password_hash {
+    if verify(&credentials.password_hash, &user_in_db.password_hash).unwrap_or(false) {
         let token = generate_jwt(&user_in_db.id.to_string(), &secret_key).expect("Failed to generate token");
 
         let response = LoginWithToken {
