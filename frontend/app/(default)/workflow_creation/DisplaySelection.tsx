@@ -1,7 +1,7 @@
 "use client";
 import Spotlight from "@/components/spotlight";
 import TemplateCard from "@/components/Template/TemplateCard";
-import TournoiImg from "@/public/images/tournoi.png";
+import TournoiImg from "@/public/images/Tournoi.jpg";
 import TierList from "@/public/images/tier_list.png";
 import Podium from "@/public/images/podium.webp";
 import TemplatePage from "@/components/Template/TemplatePage";
@@ -31,14 +31,14 @@ const rankingCard = [
     },
     {
         title: 'Pyramid',
-        image: TierList,
+        image: "",
         description: '',
         key: 'pyramid',
         disabled: true
     },
     {
         title: 'Points',
-        image: TierList,
+        image: "",
         description: '',
         key: 'points',
         disabled: true

@@ -13,6 +13,7 @@ interface CardProps {
     imageOnClick?: (e: any) => void;
     deleteOnClick?: (e: any) => void;
     onBlur?: (e: any) => void;
+    heightImageMax?: string;
     description?: string;
     onClick?: () => void;
     variant?: "duel" | "basic" | "item";
@@ -29,6 +30,7 @@ export default function TemplateCard({
                                          image,
                                          description = "",
                                          onClick,
+                                         heightImageMax = 'h-[200px]',
                                          disabled = false,
                                          selected = false,
                                          variant = "basic",
@@ -52,17 +54,8 @@ export default function TemplateCard({
             <div
                 className={`relative z-20 ${variant === 'item' ? 'h-[300px]' : 'h-full'} overflow-hidden rounded-[inherit] bg-gray-950 after:absolute after:bg-gradient-to-br after:from-gray-900/50 after:via-gray-800/25 after:to-gray-900/50`}
             >
-                {/* <div
-                    onClick={(event) => {
-                        event.stopPropagation(); // Empêche la propagation du clic au parent
-                    }}
-                    className="absolute cursor-pointer right-3 bottom-12 flex h-8 w-8 items-center justify-center rounded-full border border-gray-700/50 bg-gray-800/65 text-gray-200 opacity-0 transition-opacity group-hover/card:opacity-100"
-                    aria-hidden="true"
-                >
-                    <IconEdit/>
-                </div>*/}
                 <Image
-                    className={`inline-flex object-cover w-[350px] ${variant === 'item' && 'h-[200px]'}`}
+                    className={`inline-flex object-cover w-[350px] ${heightImageMax}`}
                     src={image}
                     width={350}
                     height={200}
