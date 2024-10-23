@@ -29,9 +29,13 @@ pub fn add_item_to_list(conn: &mut PgConnection, list_id_param: i32) -> Result<u
         name: "".to_string(),
         image: convert_image("".to_string()),
     };
+
     let item = diesel::insert_into(items)
         .values(&item_data)
         .execute(conn)?;
+
+    // TODO: For all rankings with list_id=list_id_param, add ranking_item
+
     Ok(item)
 }
 
@@ -105,5 +109,7 @@ pub fn edit_item(conn: &mut PgConnection, item_id: i32, new_data: NewItemApi) ->
 }
 pub fn delete_item(conn: &mut PgConnection, item_id: i32) -> QueryResult<usize> {
     diesel::delete(items.filter(id.eq(item_id)))
-        .execute(conn)
+        .execute(conn);
+
+    // TODO: DELETE FROM RANKING_ITEMS AND DUELS
 }

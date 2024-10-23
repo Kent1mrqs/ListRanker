@@ -1,5 +1,4 @@
-use crate::item_service::convert_to_base64;
-use crate::models::duel_models::{BattleResultApi, BattleResultDb, DuelResult, ItemDuel, ItemDuelWithNameAndImage, NextDuelData};
+use crate::models::duel_models::{BattleResultApi, BattleResultDb, DuelResult, ItemDuel, NextDuelData};
 use crate::models::ranking_items_models::RankingItemWithNameAndImage;
 use crate::ranking_item_service::{fetch_ranking_items_with_names, set_item_ranks};
 use crate::schema::duels::dsl::duels;
@@ -70,22 +69,27 @@ pub fn _get_explicit_duels(conn: &mut PgConnection, ranking_id_param: i32) -> Qu
 
 
 /// Selects two unique random candidates for a duel from a specified range.
-fn pick_unique_random_duel_candidates(conn: &mut PgConnection, ranking_id_param: i32) -> (ItemDuelWithNameAndImage, ItemDuelWithNameAndImage) {
-    let mut filtered_items: QueryResult<Vec<RankingItemWithNameAndImage>> = fetch_ranking_items_with_names(conn, ranking_id_param);
-    let ranking_items_result = match filtered_items {
-        Ok(items) => items,
-        Err(e) => panic!("Failed to fetch ranking items: {:?}", e),
-    };
+fn pick_unique_random_duel_candidates(conn: &mut PgConnection, ranking_id_param: i32) -> (ItemDuel, ItemDuel) {
+    let filtered_items: QueryResult<Vec<RankingItemWithNameAndImage>> = fetch_ranking_items_with_names(conn, ranking_id_param);
+    match filtered_items {
+        Ok(items) => {
+            let mut rng = thread_rng();
+            //println!("filtered items {:?}", items.clone()[0]);
 
-    let mut shuffled_items = ranking_items_result.clone();
-    let mut rng = thread_rng();
-    shuffled_items.shuffle(&mut rng);
+            let mut shuffled_items = items.clone();
+            shuffled_items.shuffle(&mut rng);
 
-    let selected_duels = (
-        shuffled_items[0].clone().into(),
-        shuffled_items[1].clone().into(),
-    );
-    selected_duels
+            let selected_duels: Vec<ItemDuel> = shuffled_items.into_iter()
+                .take(2)
+                .map(ItemDuel::from)
+                .collect();
+            (selected_duels[0].clone(), selected_duels[1].clone())
+        }
+        Err(e) => {
+            eprintln!("Failed to fetch items: {:?}", e);
+            panic!("No items found")
+        }
+    }
 }
 
 /// Selects two unique sequence candidates for a duel from a specified range.
@@ -103,14 +107,14 @@ fn _pick_unique_sequence_duel_candidates(max: i32, score_param: i32) -> (i32, i3
     (position_1 as i32, position_2 as i32)
 }
 
-fn get_items_with_value(conn: &mut PgConnection, ranking_id_param: i32, other_score: Option<i32>) -> Vec<ItemDuelWithNameAndImage> {
+fn get_items_with_value(conn: &mut PgConnection, ranking_id_param: i32, other_score: Option<i32>) -> Vec<ItemDuel> {
     if let Some(other_score) = other_score {
         let items_result: QueryResult<Vec<RankingItemWithNameAndImage>> = fetch_ranking_items_with_names(conn, ranking_id_param);
         match items_result {
             Ok(items) => {
                 items.into_iter()
                     .filter(|item| item.score == other_score)
-                    .map(|item| item.into())
+                    .map(ItemDuel::from)
                     .collect()
             }
             Err(e) => {
@@ -123,8 +127,9 @@ fn get_items_with_value(conn: &mut PgConnection, ranking_id_param: i32, other_sc
     }
 }
 
+
 /// Selects two unique sequence candidates for a duel from a specified range.
-fn pick_min_max_duel_candidates(conn: &mut PgConnection, ranking_id_param: i32) -> (ItemDuelWithNameAndImage, ItemDuelWithNameAndImage) {
+fn pick_min_max_duel_candidates(conn: &mut PgConnection, ranking_id_param: i32) -> (ItemDuel, ItemDuel) {
     let (min_score, max_score) = match get_min_max_scores(conn, ranking_id_param) {
         Ok((min_score, max_score)) => {
             (min_score, max_score)
@@ -133,8 +138,8 @@ fn pick_min_max_duel_candidates(conn: &mut PgConnection, ranking_id_param: i32) 
             (None, None)
         }
     };
-    let min_items: Vec<ItemDuelWithNameAndImage> = get_items_with_value(conn, ranking_id_param, min_score);
-    let max_items: Vec<ItemDuelWithNameAndImage> = get_items_with_value(conn, ranking_id_param, max_score);
+    let min_items: Vec<ItemDuel> = get_items_with_value(conn, ranking_id_param, min_score);
+    let max_items: Vec<ItemDuel> = get_items_with_value(conn, ranking_id_param, max_score);
     let min_item = min_items.first().cloned().ok_or(Error::NotFound);
     let max_item = max_items.first().cloned().ok_or(Error::NotFound);
 
@@ -235,7 +240,7 @@ pub fn has_duel_occurred(conn: &mut PgConnection, item_1_id: i32, item_2_id: i32
 
 /// Retrieves two items from a ranking list based on the given ranking ID and algorithm.
 /// It ensures that the selected items haven't already faced each other in a duel.
-pub fn pick_duel_candidates(conn: &mut PgConnection, ranking_id_param: i32, algo: fn(&mut PgConnection, i32) -> (ItemDuelWithNameAndImage, ItemDuelWithNameAndImage)) -> Result<Vec<ItemDuel>, Box<dyn std::error::Error>> {
+pub fn pick_duel_candidates(conn: &mut PgConnection, ranking_id_param: i32, algo: fn(&mut PgConnection, i32) -> (ItemDuel, ItemDuel)) -> Result<Vec<ItemDuel>, Box<dyn std::error::Error>> {
     use crate::schema::ranking_items::ranking_id;
 
     println!("\n---- Picking duel candidates for ranking ID: {} ----", ranking_id_param);
@@ -248,14 +253,15 @@ pub fn pick_duel_candidates(conn: &mut PgConnection, ranking_id_param: i32, algo
     if list_size < 2 {
         return Err("Not enough items for a duel.".into());
     }
-
+    let items_list: Vec<RankingItemWithNameAndImage> = fetch_ranking_items_with_names(conn, ranking_id_param)?;
+    //println!("{:?}", items_list[0]);
     let (mut result_1, mut result_2) = algo(conn, ranking_id_param);
 
     while has_duel_occurred(conn, result_1.id, result_2.id, ranking_id_param)
         || has_duel_occurred(conn, result_2.id, result_1.id, ranking_id_param)
     {
         println!(
-            "Duel has already occurred between items {} and {}. Picking new candidates...",
+            "Duel has already occurred between items {:?} and {:?}. Picking new candidates...",
             result_1.id, result_2.id
         );
         let (new_result_1, new_result_2) = pick_unique_random_duel_candidates(conn, ranking_id_param);
@@ -266,22 +272,16 @@ pub fn pick_duel_candidates(conn: &mut PgConnection, ranking_id_param: i32, algo
         result_1 = new_result_1;
         result_2 = new_result_2;
     }
-
+    println!("imageeee : {}", result_1.image);
     let item_1 = ItemDuel {
         id: result_1.id.clone(),
         name: result_1.name.clone(),
-        image: result_1
-            .image
-            .clone()
-            .map_or_else(|| "".to_string(), |bytes| convert_to_base64(bytes, "image/png")),
+        image: result_1.image.clone(),
     };
     let item_2 = ItemDuel {
         id: result_2.id.clone(),
         name: result_2.name.clone(),
-        image: result_2
-            .image
-            .clone()
-            .map_or_else(|| "".to_string(), |bytes| convert_to_base64(bytes, "image/png")),
+        image: result_2.image.clone(),
     };
 
     println!(
