@@ -8,10 +8,12 @@ import {useUserContext} from "@/app/UserProvider";
 import {fetchData, postData} from "@/app/api";
 import NumberedIntelligentDual from "@/app/(default)/myrankings/NumberedIntelligentDual";
 import {useRankingsContext} from "@/app/RankingsProvider";
+import {useNotification} from "@/app/NotificationProvider";
 
 export default function MyRankings() {
     const {userId} = useUserContext();
     const {setRankings} = useRankingsContext();
+    const {showNotification} = useNotification();
     const default_ranking: Ranking = {
         id: 0,
         user_id: userId,
@@ -25,7 +27,10 @@ export default function MyRankings() {
     const fetchRankings = useCallback(() => {
         fetchData<Rankings>('rankings/' + userId)
             .then(result => setRankings(result))
-            .catch(err => console.error(err.message));
+            .catch(err => {
+                showNotification(err.message, "error")
+                console.error(err.message)
+            });
     }, []);
     useEffect(() => {
         fetchRankings();
@@ -36,13 +41,17 @@ export default function MyRankings() {
 
         try {
             await postData<EditRanking[], EditRanking[]>('ranking-items', editRanking).then(() => {
+                showNotification("Ranking created", "success")
+
                 setEditRanking([]);
                 fetchRankings();
             });
         } catch (error) {
             if (error instanceof Error) {
+                showNotification(error.message, "error")
                 console.error(error.message);
             } else {
+                showNotification('An unknown error occurred', "error")
                 console.error('An unknown error occurred');
             }
         }

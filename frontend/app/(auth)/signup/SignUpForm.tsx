@@ -4,6 +4,7 @@ import {useState} from "react";
 import SignForm from "@/app/(auth)/SignForm";
 import {useUserContext} from "@/app/UserProvider";
 import {useRouter} from "next/navigation";
+import {useNotification} from "@/app/NotificationProvider";
 
 export const metadata = {
     title: "Sign Up - Open PRO",
@@ -30,6 +31,7 @@ export default function SignUpForm() {
     const router = useRouter();
     const [newUser, setNewUser] = useState<NewUser>(default_user)
     const {setUserId} = useUserContext();
+    const {showNotification} = useNotification();
 
     async function onClick() {
         if (validId(newUser.username, newUser.password_hash)) {
@@ -37,16 +39,20 @@ export default function SignUpForm() {
                 await postData<NewUser, NewUser>('register', newUser).then((e) => {
                     setUserId(e.id)
                     localStorage.setItem("userId", String(e.id));
+                    showNotification("Register success", "success")
                     router.push("/myrankings");
                 });
             } catch (error) {
                 if (error instanceof Error) {
+                    showNotification(error.message, "error")
                     console.error(error.message);
                 } else {
+                    showNotification('An unknown error occurred', "error")
                     console.error('An unknown error occurred');
                 }
             }
         } else {
+            showNotification("unvalid", "error")
             console.error("unvalid")
         }
     }

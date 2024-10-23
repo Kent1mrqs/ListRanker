@@ -92,6 +92,7 @@ export default function ListCreation() {
                 });
             setNewList({...newList, name: nameList, items: object});
         } else {
+            showNotification('invalid input', "error")
             console.error('invalid input')
         }
     }

@@ -4,10 +4,9 @@ export const fetchData = async <R>(route: string): Promise<R> => {
     try {
         const response = await fetch(url);
         if (!response.ok) {
-            throw new Error('Error when fetching ' + route);
+            throw new Error(String(response.status));
         }
         const result = await response.json() as R;
-        console.info("fetch get ", result)
         return result;
     } catch (error) {
         if (error instanceof Error) {
@@ -30,7 +29,7 @@ export const postData = async <T, R>(route: string, data: T): Promise<R> => {
             body: JSON.stringify(data),
         });
         if (!response.ok) {
-            throw new Error('Error when posting ' + route);
+            throw new Error(String(response.status));
         }
         const result = await response.json() as R;
         console.info("post response : ", response)
@@ -54,7 +53,7 @@ export const deleteData = async <T>(route: string): Promise<T> => {
             }
         });
         if (!response.ok) {
-            throw new Error('Error when posting ' + route);
+            throw new Error(String(response.status));
         }
         const result = await response.json() as T;
         console.info("post response : ", response)
@@ -78,10 +77,9 @@ export const editData = async <T>(route: string, data: T): Promise<T> => {
             body: JSON.stringify(data),
         });
         if (!response.ok) {
-            throw new Error('Error when editing ' + route);
+            throw new Error(String(response.status));
         }
         const result = await response.json() as T;
-        console.info("put response : ", response)
         return result;
     } catch (error) {
         if (error instanceof Error) {

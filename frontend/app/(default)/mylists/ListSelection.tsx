@@ -64,6 +64,8 @@ export default function ListSelection({
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        showNotification(currentList.name + " list downloaded", "success")
+
     };
 
 
@@ -93,6 +95,7 @@ export default function ListSelection({
     const importList = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (!file) {
+            showNotification('No file', "error")
             return;
         }
 
@@ -102,10 +105,9 @@ export default function ListSelection({
             if (typeof result === 'string') {
                 try {
                     const jsonData: NewList = JSON.parse(result);
+                    showNotification('List imported', "success")
                     saveList({...jsonData, user_id: userId}, userId, setLists);
                 } catch (error) {
-                    console.error("Error when analysing json", error);
-                    alert("Selected file is not a valid json");
                     showNotification('Error', "error")
                 }
             }
@@ -126,7 +128,10 @@ export default function ListSelection({
 
     function addItem() {
         postData("item-create/" + currentList.id, {name: "", image: ""})
-            .then(() => fetchItems(currentList.id))
+            .then(() => {
+                showNotification('Item created', "success")
+                fetchItems(currentList.id)
+            })
     }
 
     return (
@@ -200,9 +205,13 @@ function ShowItems({fetchItems, currentItems, editionMode}: {
     fetchItems: (lid_id: number) => void,
     editionMode: boolean
 }) {
+    const {showNotification} = useNotification();
+
     function editItem(item: Item, key: string, value: string) {
         editData('item-edit/' + item.id, {...item, [key]: value})
             .then(() => {
+                showNotification("Item edited", "success")
+
                 if (item.list_id) {
                     fetchItems(item.list_id)
                 }
@@ -213,6 +222,7 @@ function ShowItems({fetchItems, currentItems, editionMode}: {
     function deleteItem(item: Item) {
         deleteData('item-delete/' + item.id)
             .then(() => {
+                showNotification("Item " + item.name + " deleted from list", "success")
                 if (item.list_id) {
                     fetchItems(item.list_id)
                 }

@@ -4,6 +4,12 @@ import Toast from "@/components/ui/toast";
 import IconSuccess from "@/components/Icons/IconSuccess";
 import IconError from "@/components/Icons/IconError";
 
+type Notification = {
+    id: number;
+    message: string;
+    type: string;
+};
+
 type NotificationContextType = {
     showNotification: (message: string, message_type: string) => void;
 };
@@ -19,28 +25,34 @@ export const useNotification = () => {
 };
 
 const NotificationProvider: React.FC<{ children: ReactNode }> = ({children}) => {
-    const [message, setMessage] = useState<string | null>(null);
-    const [icon, setIcon] = useState<string | null>("success");
-
+    const [notifications, setNotifications] = useState<Notification[]>([]);
 
     const showNotification = (msg: string, message_type: string) => {
-        setMessage(msg);
-        setIcon(message_type);
+        const id = Date.now();
+        setNotifications((prev) => [...prev, {id, message: msg, type: message_type}]);
+
         setTimeout(() => {
-            setMessage(null);
+            setNotifications((prev) => prev.filter((notification) => notification.id !== id));
         }, 3000);
+    };
+
+    const removeNotification = (id: number) => {
+        setNotifications((prev) => prev.filter((notification) => notification.id !== id));
     };
 
     return (
         <NotificationContext.Provider value={{showNotification}}>
             {children}
-            {message && (
-                <div className="fixed bottom-4 right-4">
-                    <Toast message={message}
-                           icon={icon === "success" ? <IconSuccess/> : <IconError/>}
-                           onClose={() => setMessage(null)}/>
-                </div>
-            )}
+            <div className="fixed bottom-4 right-4 space-y-2">
+                {notifications.map((notification) => (
+                    <Toast
+                        key={notification.id}
+                        message={notification.message}
+                        icon={notification.type === "success" ? <IconSuccess/> : <IconError/>}
+                        onClose={() => removeNotification(notification.id)}
+                    />
+                ))}
+            </div>
         </NotificationContext.Provider>
     );
 };
