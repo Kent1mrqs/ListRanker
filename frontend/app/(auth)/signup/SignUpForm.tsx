@@ -30,7 +30,7 @@ const default_user = {
 }
 
 export function validId(username: string, password: string) {
-    return username.length > 3 && password.length > 5;
+    return username.length > 2 && password.length > 2;
 }
 
 export default function SignUpForm() {
@@ -47,7 +47,7 @@ export default function SignUpForm() {
                     localStorage.setItem("userId", String(e.id));
                     localStorage.setItem("jwt", String(e.token));
                     showNotification("Register success", "success")
-                    router.push("/myrankings");
+                    router.push("/");
                 });
             } catch (error) {
                 if (error instanceof Error) {

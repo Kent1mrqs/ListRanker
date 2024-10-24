@@ -33,7 +33,7 @@ export default function SignInForm() {
                     showNotification("Login success", "success")
                     localStorage.setItem("userId", String(e.id));
                     localStorage.setItem("jwt", String(e.token));
-                    router.push("/myrankings");
+                    router.push("/");
                 });
             } catch (error) {
                 if (error instanceof Error) {
