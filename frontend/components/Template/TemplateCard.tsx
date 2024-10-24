@@ -117,7 +117,7 @@ export function TemplateEditionCard({
                 />
                 <div className="p-6">
                     <div className="mb-3">
-                        <TemplateInput placeholder={title} onBlur={onBlur}/>
+                        <TemplateInput value={title} onBlur={onBlur}/>
                     </div>
                 </div>
             </div>

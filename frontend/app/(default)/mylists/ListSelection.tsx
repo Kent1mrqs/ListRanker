@@ -13,6 +13,7 @@ import {fetchLists, saveList} from "@/app/(default)/mylists/ListServices";
 import TemplateInput from "@/components/Template/TemplateInput";
 import {useNotification} from "@/app/NotificationProvider";
 import {smoothScrollToElement} from "@/app/utils";
+import {useRouter} from "next/navigation";
 
 export type ListProps = {
     currentList: List;
@@ -40,6 +41,7 @@ export default function ListSelection({
     const [editedList, setEditedList] = useState<ListItems>({name: "", id: 0, items: []})
     const {lists, setLists} = useListsContext();
     const {showNotification} = useNotification();
+    const router = useRouter();
 
     const fetchItems = useCallback((list_id: number, redirect?: boolean) => {
         fetchData<Item[]>('items/' + list_id)
@@ -88,10 +90,14 @@ export default function ListSelection({
     }
 
     function newList() {
-        setCurrentItems([])
-        setCurrentList({name: '', id: 0})
-        setEditionMode(false)
-        setCreationMode(true)
+        if (window.location.pathname !== '/mylists') {
+            router.push('/mylists')
+        } else {
+            setCurrentItems([])
+            setCurrentList({name: '', id: 0})
+            setEditionMode(false)
+            setCreationMode(true)
+        }
     }
 
     async function saveEditedList() {
@@ -175,8 +181,15 @@ export default function ListSelection({
                                     variant='outlined'
                                     onClick={newList}
                     />
+                    <Button onClick={() => document.getElementById('file-input')?.click()}>Import list</Button>
+                    <input
+                        id="file-input"
+                        className="hidden"
+                        type="file"
+                        accept=".json"
+                        onChange={importList}/>
                 </Spotlight>
-                {!creationMode && <ShowActionButtons
+                {!creationMode && window.location.pathname === '/mylists' && <ShowActionButtons
 					setEditedList={setEditedList}
 					currentList={currentList}
 					saveEditedList={saveEditedList}
@@ -231,14 +244,8 @@ function ShowActionButtons({
             <Button disabled={!currentList.id} onClick={deleteList}>Delete list</Button>
             <Button disabled={!editionMode} onClick={saveEditedList}>Save
                 list</Button>
-            <Button onClick={handleDownload}>Download list</Button>
-            <Button onClick={() => document.getElementById('file-input')?.click()}>Import list</Button>
-            <input
-                id="file-input"
-                className="hidden"
-                type="file"
-                accept=".json"
-                onChange={importList}/>
+            <Button disabled={!currentList.id} onClick={handleDownload}>Download list</Button>
+
             <Button
                 disabled={!editionMode}
                 onClick={addItem}
