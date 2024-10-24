@@ -2,7 +2,6 @@
 import TemplatePage from "@/components/Template/TemplatePage";
 import {NewRanking, RankingProps} from "@/app/(default)/workflow_creation/WorkflowCreation";
 import ListSelection from "@/app/(default)/mylists/ListSelection";
-import ListCreation from "@/app/(default)/mylists/ListCreation";
 import {useState} from "react";
 
 export interface List {
@@ -35,7 +34,6 @@ export default function ChooseList({setNewRanking}: RankingProps) {
                            setCreationMode={setCreationMode}
                            currentList={currentList}
                            setCurrentList={SelectList}/>
-            {creationMode && <ListCreation/>}
         </TemplatePage>
     );
 }

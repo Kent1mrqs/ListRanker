@@ -66,10 +66,8 @@ export default function ListCreation() {
         items: []
     };
 
-    const [nameList, setNameList] = useState('');
     const [newList, setNewList] = useState<NewList>(default_list);
     const [loading, setLoading] = useState<boolean>(false);
-
 
     async function saveList() {
         setLoading(true)
@@ -94,7 +92,7 @@ export default function ListCreation() {
             });
 
             const filesData = await Promise.all(fileDataPromises);
-            setNewList({...newList, name: nameList, items: [...newList.items, ...filesData]});
+            setNewList({...newList, items: [...newList.items, ...filesData]});
         }
     };
 
@@ -184,7 +182,7 @@ export default function ListCreation() {
                     variant="blue"
                     placeholder='ex: Kdrama...'
                     label='Nouvelle liste'
-                    onChange={e => setNameList(e.target.value)}
+                    onBlur={e => setNewList({...newList, name: e.target.value})}
                 />
                 <Button onClick={() => document.getElementById('add-items')?.click()}>Import images</Button>
                 <input
@@ -219,7 +217,7 @@ export default function ListCreation() {
                         image={''}
                     />*/}
                 </Spotlight>
-                <Button disabled={!nameList || loading} onClick={saveList}>Save</Button>
+                <Button disabled={!newList.name || loading} onClick={saveList}>Save</Button>
             </Stack>
         </Stack>
     );
