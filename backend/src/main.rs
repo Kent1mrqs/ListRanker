@@ -130,6 +130,16 @@ async fn main() -> std::io::Result<()> {
                     .route(web::post().to(handlers::duel_handlers::handle_reset_duel)),
             )
             .service(
+                web::resource("/tournament-init/{ranking_id}")
+                    .wrap(JwtMiddleware::new(secret_key.clone()))
+                    .route(web::get().to(handlers::duel_handlers::generate_tournament)),
+            )
+            .service(
+                web::resource("/tournament-next/{ranking_id}")
+                    .wrap(JwtMiddleware::new(secret_key.clone()))
+                    .route(web::post().to(handlers::duel_handlers::next_round)),
+            )
+            .service(
                 web::scope("/app")
                     .route("/index.html", web::get().to(index)),
             )

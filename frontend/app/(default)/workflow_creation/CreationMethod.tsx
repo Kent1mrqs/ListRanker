@@ -19,7 +19,6 @@ const rankingCard = [
         image: TierList,
         description: 'Generate a tournament and find your champion !',
         key: 'tournament',
-        disabled: true
     },
     {
         title: 'Dual match',
@@ -54,7 +53,7 @@ export default function CreationMethod({newRanking, setNewRanking}: RankingProps
                     <TemplateCard
                         selected={newRanking.creation_method === card.key}
                         key={i}
-                        disabled={card.disabled}
+                        //   disabled={card.disabled}
                         title={card.title}
                         image={card.image}
                         description={card.description}

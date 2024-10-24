@@ -38,6 +38,42 @@ pub async fn handle_init_duel(path: web::Path<i32>) -> HttpResponse {
     }
 }
 
+pub async fn generate_tournament(path: web::Path<i32>) -> HttpResponse {
+    let mut conn = establish_connection();
+    let ranking_id = path.into_inner();
+
+    println!("Starting tournament initialization for ranking ID: {}", ranking_id);
+
+    match duel_service::init_tournament(&mut conn, ranking_id) {
+        Ok(result) => {
+            println!("Tournament initialization successful for ranking ID: {}", ranking_id);
+            HttpResponse::Ok().json(result)
+        }
+        Err(e) => {
+            eprintln!("Error while initializing tournament for ranking ID {}: {:?}", ranking_id, e);
+            HttpResponse::InternalServerError().body("Error initializing tournament")
+        }
+    }
+}
+pub async fn next_round(path: web::Path<i32>, data: web::Json<Vec<i32>>) -> HttpResponse {
+    let mut conn = establish_connection();
+    let ranking_id = path.into_inner();
+
+    println!("Next round for ranking ID: {}", ranking_id);
+
+    match duel_service::next_round(&mut conn, ranking_id, data.into_inner()) {
+        Ok(result) => {
+            println!("Next round successful for ranking ID: {}", ranking_id);
+            HttpResponse::Ok().json(result)
+        }
+        Err(e) => {
+            eprintln!("Error while next round for ranking ID {}: {:?}", ranking_id, e);
+            HttpResponse::InternalServerError().body("Error initializing tournament")
+        }
+    }
+}
+
+
 pub async fn handle_reset_duel(path: web::Path<i32>) -> HttpResponse {
     let mut conn = establish_connection();
     let ranking_id = path.into_inner();

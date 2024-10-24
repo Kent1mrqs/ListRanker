@@ -3,7 +3,7 @@ use crate::models::ranking_items_models::RankingItemWithNameAndImage;
 use crate::ranking_item_service::{fetch_ranking_items_with_names, set_item_ranks};
 use crate::schema::duels::dsl::duels;
 use crate::schema::ranking_items::dsl::ranking_items;
-use crate::schema::ranking_items::{ranking_id, score};
+use crate::schema::ranking_items::{item_id, ranking_id, score};
 use diesel::prelude::*;
 use diesel::result::Error;
 use rand::seq::SliceRandom;
@@ -67,7 +67,6 @@ pub fn _get_explicit_duels(conn: &mut PgConnection, ranking_id_param: i32) -> Qu
         .get_result(conn)
 }
 
-
 /// Selects two unique random candidates for a duel from a specified range.
 fn pick_unique_random_duel_candidates(conn: &mut PgConnection, ranking_id_param: i32) -> (ItemDuel, ItemDuel) {
     let filtered_items: QueryResult<Vec<RankingItemWithNameAndImage>> = fetch_ranking_items_with_names(conn, ranking_id_param);
@@ -124,7 +123,6 @@ fn get_items_with_value(conn: &mut PgConnection, ranking_id_param: i32, other_sc
         Vec::new()
     }
 }
-
 
 /// Selects two unique sequence candidates for a duel from a specified range.
 fn pick_min_max_duel_candidates(conn: &mut PgConnection, ranking_id_param: i32) -> (ItemDuel, ItemDuel) {
@@ -197,7 +195,6 @@ pub fn initialize_duel(conn: &mut PgConnection, ranking_id_param: i32) -> Result
 fn resolve_duel_state(conn: &mut PgConnection, ranking_id_param: i32) -> Result<DuelResult, Box<dyn std::error::Error>> {
     let duels_left = number_duels_left(conn, ranking_id_param);
 
-    // Check if there are no more duels left
     if duels_left <= 0 {
         let update_result = update_ranking(conn, ranking_id_param);
         match update_result {
@@ -327,7 +324,7 @@ pub fn record_battle_winner(conn: &mut PgConnection, battle_result: BattleResult
             count_winner = count_winner + 1
         }
     }
-    
+
     for l in &losers {
         println!(
             "> Adding implicit duel result: Winner ID: {}, Loser ID: {}",
@@ -437,4 +434,96 @@ pub fn reset_duel(conn: &mut PgConnection, ranking_id_param: i32) -> QueryResult
             }
         }
     })
+}
+
+pub fn generate_tournament(conn: &mut PgConnection, ranking_id_param: i32) -> Vec<(ItemDuel, ItemDuel)> {
+    let mut rng = thread_rng();
+    let items_result: QueryResult<Vec<RankingItemWithNameAndImage>> = fetch_ranking_items_with_names(conn, ranking_id_param);
+
+    match items_result {
+        Ok(items) => {
+            let filtered_items: Vec<ItemDuel> = items.into_iter()
+                .map(ItemDuel::from)
+                .collect();
+
+            let mut shuffled_items = filtered_items.clone();
+            shuffled_items.shuffle(&mut rng);
+
+            create_pairs(shuffled_items)
+        }
+        Err(e) => {
+            eprintln!("Failed to fetch items: {:?}", e);
+            Vec::new()
+        }
+    }
+}
+
+pub fn init_tournament(conn: &mut PgConnection, ranking_id_param: i32) -> Result<Vec<(ItemDuel, ItemDuel)>, Box<dyn std::error::Error>> {
+    let tournament = generate_tournament(conn, ranking_id_param);
+    println!("{:?}", tournament);
+    let _number_duels_max = number_duels_max_tournament(conn, ranking_id_param);
+    Ok(tournament)
+    //diesel::update(ranking_items)
+    //    .filter(ranking_id.eq(ranking_id_param))
+    //    .set(pool.eq())
+}
+
+pub fn next_round(conn: &mut PgConnection, ranking_id_param: i32, data: Vec<i32>) -> Result<Vec<(ItemDuel, ItemDuel)>, Box<dyn std::error::Error>> {
+    use crate::schema::ranking_items::dsl::rank;
+    let position = 2 * data.len() as i32;
+    //  let _number_duels_max = number_duels_max_tournament(conn, ranking_id_param)?;
+
+    for id_param in data {
+        diesel::update(ranking_items)
+            .filter(item_id.eq(id_param))
+            .set(rank.eq(position))
+            .execute(conn)?;
+    }
+    let filtered_items: QueryResult<Vec<RankingItemWithNameAndImage>> = fetch_ranking_items_with_names(conn, ranking_id_param);
+
+
+    match filtered_items {
+        Ok(items) => {
+            if items.len() == 1 {
+                println!("over");
+                Ok(Vec::new())
+            } else {
+                println!("next pair");
+                let pairs = create_pairs(
+                    items
+                        .into_iter()
+                        //  .filter(|item| item.rank == 0)
+                        .map(ItemDuel::from)
+                        .collect()
+                );
+                println!("{:?}", pairs);
+                Ok(pairs)
+            }
+        }
+        Err(e) => {
+            eprintln!("Failedd to fetch items: {:?}", e);
+            Ok(Vec::new())
+        }
+    }
+}
+
+
+fn create_pairs<T: Clone>(array: Vec<T>) -> Vec<(T, T)> {
+    array
+        .chunks_exact(2)
+        .map(|chunk| (chunk[0].clone(), chunk[1].clone()))
+        .collect()
+}
+
+
+fn number_duels_max_tournament(conn: &mut PgConnection, ranking_id_param: i32) -> i64 {
+    let number_items: i64 = ranking_items
+        .filter(ranking_id.eq(ranking_id_param))
+        .count()
+        .get_result(conn)
+        .unwrap_or(0);
+
+    let number_duels_max = number_items * (number_items + 2) / 8;
+
+    number_duels_max
 }

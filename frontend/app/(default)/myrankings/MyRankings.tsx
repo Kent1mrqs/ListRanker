@@ -83,6 +83,14 @@ export default function MyRankings() {
 					ranking_id={currentRanking.id}
 					setCurrentRankingItems={setCurrentRankingItems}
 				/>}
+            {currentRanking.ranking_type === 'tournament' &&
+                currentRanking.creation_method === "intelligent_dual" &&
+                currentRankingItems[0] &&
+				<NumberedIntelligentDual
+					currentRankingItems={currentRankingItems}
+					ranking_id={currentRanking.id}
+					setCurrentRankingItems={setCurrentRankingItems}
+				/>}
         </TemplatePage>
     );
 }
