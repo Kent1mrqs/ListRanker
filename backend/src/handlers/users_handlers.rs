@@ -8,7 +8,7 @@ pub async fn fetch_all_users() -> HttpResponse {
     let mut conn = establish_connection();
 
     match user_service::fetch_all_users(&mut conn) {
-        Ok(users) => HttpResponse::Ok().json(users), // Return users as JSON if successful
+        Ok(users) => HttpResponse::Ok().json(users),
         Err(e) => {
             eprintln!("Error fetching users: {:?}", e);
             HttpResponse::InternalServerError().body("Error fetching users")
