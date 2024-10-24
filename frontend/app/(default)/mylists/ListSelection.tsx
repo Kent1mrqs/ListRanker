@@ -87,6 +87,13 @@ export default function ListSelection({
 
     }
 
+    function newList() {
+        setCurrentItems([])
+        setCurrentList({name: '', id: 0})
+        setEditionMode(false)
+        setCreationMode(true)
+    }
+
     async function saveEditedList() {
         editData("list-edit/" + currentList.id, editedList)
             .then(() => {
@@ -166,41 +173,80 @@ export default function ListSelection({
                     ))}
                     <TemplateButton text='New list'
                                     variant='outlined'
-                                    onClick={() => {
-                                        setEditionMode(false)
-                                        setCreationMode(true)
-                                    }}
+                                    onClick={newList}
                     />
                 </Spotlight>
-                <Stack direction="row" justifyContent="center" spacing={3}>
-                    <Button disabled={!currentList.id}
-                            onClick={() => {
-                                setEditedList({id: currentList.id, name: currentList.name, items: currentItems})
-                                setEditionMode(!editionMode)
-                            }}>Edit list</Button>
-                    <Button disabled={!currentList.id} onClick={() => deleteList()}>Delete list</Button>
-                    <Button disabled={!editionMode} onClick={() => saveEditedList()}>Save
-                        list</Button>
-                    <Button onClick={() => handleDownload()}>Download list</Button>
-                    <Button onClick={() => document.getElementById('file-input')?.click()}>Import list</Button>
-                    <input
-                        id="file-input"
-                        className="hidden"
-                        type="file"
-                        accept=".json"
-                        onChange={importList}/>
-                    <Button
-                        disabled={!editionMode}
-                        onClick={addItem}
-                    >
-                        Add item
-                    </Button>
-                </Stack>
+                {!creationMode && <ShowActionButtons
+					setEditedList={setEditedList}
+					currentList={currentList}
+					saveEditedList={saveEditedList}
+					deleteList={deleteList}
+					importList={importList}
+					addItem={addItem}
+					currentItems={currentItems}
+					editionMode={editionMode}
+					setEditionMode={setEditionMode}
+					handleDownload={handleDownload}
+				/>}
             </Stack>
             {!!currentList.id && !creationMode &&
 				<ShowItems fetchItems={fetchItems} currentItems={currentItems} editionMode={editionMode}/>}
         </Stack>
     );
+}
+
+type ActionProps = {
+    currentList: List,
+    setEditedList: (list: ListItems) => void,
+    setEditionMode: (bool: boolean) => void,
+    editionMode: boolean,
+    deleteList: () => void,
+    saveEditedList: () => void,
+    importList: (event: React.ChangeEvent<HTMLInputElement>) => void,
+    addItem: () => void,
+    currentItems: Item[],
+    handleDownload: () => void
+}
+
+function ShowActionButtons({
+                               currentList,
+                               setEditedList,
+                               setEditionMode,
+                               editionMode,
+                               deleteList,
+                               saveEditedList,
+                               importList,
+                               addItem,
+                               currentItems,
+                               handleDownload
+                           }: ActionProps
+) {
+    return (
+        <Stack direction="row" justifyContent="center" spacing={3}>
+            <Button disabled={!currentList.id}
+                    onClick={() => {
+                        setEditedList({id: currentList.id, name: currentList.name, items: currentItems})
+                        setEditionMode(!editionMode)
+                    }}>Edit list</Button>
+            <Button disabled={!currentList.id} onClick={deleteList}>Delete list</Button>
+            <Button disabled={!editionMode} onClick={saveEditedList}>Save
+                list</Button>
+            <Button onClick={handleDownload}>Download list</Button>
+            <Button onClick={() => document.getElementById('file-input')?.click()}>Import list</Button>
+            <input
+                id="file-input"
+                className="hidden"
+                type="file"
+                accept=".json"
+                onChange={importList}/>
+            <Button
+                disabled={!editionMode}
+                onClick={addItem}
+            >
+                Add item
+            </Button>
+        </Stack>
+    )
 }
 
 
