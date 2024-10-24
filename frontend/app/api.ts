@@ -1,8 +1,13 @@
 export const fetchData = async <R>(route: string): Promise<R> => {
     const url = "http://127.0.0.1:8080/" + route;
+    const token = localStorage.getItem('jwt');
     console.info("fetch ", url)
     try {
-        const response = await fetch(url);
+        const response = await fetch(url, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
         if (!response.ok) {
             throw new Error(String(response.status));
         }
@@ -19,12 +24,14 @@ export const fetchData = async <R>(route: string): Promise<R> => {
 
 export const postData = async <T, R>(route: string, data: T): Promise<R> => {
     const url = "http://127.0.0.1:8080/" + route;
+    const token = localStorage.getItem('jwt');
     console.info("post ", url, " data : ", data)
     try {
         const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(data),
         });
@@ -45,11 +52,13 @@ export const postData = async <T, R>(route: string, data: T): Promise<R> => {
 
 export const deleteData = async <T>(route: string): Promise<T> => {
     const url = "http://127.0.0.1:8080/" + route;
+    const token = localStorage.getItem('jwt');
     try {
         const response = await fetch(url, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             }
         });
         if (!response.ok) {
@@ -68,11 +77,13 @@ export const deleteData = async <T>(route: string): Promise<T> => {
 };
 export const editData = async <T>(route: string, data: T): Promise<T> => {
     const url = "http://127.0.0.1:8080/" + route;
+    const token = localStorage.getItem('jwt');
     try {
         const response = await fetch(url, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(data),
         });

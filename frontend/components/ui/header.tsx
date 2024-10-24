@@ -14,6 +14,7 @@ export default function Header() {
 
     function logout() {
         localStorage.removeItem("userId");
+        localStorage.removeItem("jwt");
         setUserId(null)
         router.push("/signin");
     }

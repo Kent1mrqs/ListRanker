@@ -11,7 +11,7 @@ pub struct User {
 
 #[derive(Insertable, Deserialize, Serialize, Debug)]
 #[diesel(table_name = users)]
-pub struct NewUser {
+pub struct NewUserDb {
     pub username: String,
     pub password_hash: String,
 }
@@ -20,4 +20,22 @@ pub struct NewUser {
 pub struct LoginResponse {
     pub(crate) id: i32,
     pub(crate) username: String,
+}
+#[derive(Serialize)]
+pub struct LoginWithToken {
+    pub(crate) id: i32,
+    pub(crate) username: String,
+    pub(crate) token: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Claims {
+    pub(crate) sub: String,
+    pub(crate) exp: usize,
+}
+
+#[derive(Deserialize)]
+pub struct NewUserApi {
+    pub username: String,
+    pub password: String,
 }
