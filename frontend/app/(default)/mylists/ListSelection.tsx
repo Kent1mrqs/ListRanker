@@ -32,7 +32,7 @@ export default function ListSelection({
                                           setCurrentList
                                       }: ListProps) {
     const {userId} = useUserContext();
-    const [creationMode, setCreationMode] = useState<boolean>(false)
+    const [creationMode, setCreationMode] = useState<boolean>(true)
     const [currentItems, setCurrentItems] = useState<Item[]>([])
     const [editionMode, setEditionMode] = useState<boolean>(false)
     const [editedList, setEditedList] = useState<ListItems>({name: "", id: 0, items: []})
@@ -201,7 +201,7 @@ export default function ListSelection({
             </Stack>
             {!!currentList.id && !creationMode &&
 				<ShowItems fetchItems={fetchItems} currentItems={currentItems} editionMode={editionMode}/>}
-            {creationMode && <ListCreation/>}
+            {creationMode && window.location.pathname === '/mylists' && <ListCreation/>}
         </Stack>
     );
 }
