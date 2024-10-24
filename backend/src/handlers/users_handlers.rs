@@ -1,9 +1,7 @@
 use crate::db::establish_connection;
-use crate::models::users_models::{LoginResponse, NewUser, User};
+use crate::models::users_models::NewUserApi;
 use crate::user_service;
 use actix_web::{web, HttpResponse, Responder};
-use diesel::prelude::*;
-use diesel::RunQueryDsl;
 
 /// Retrieves all users from the database and returns them as a JSON response.
 pub async fn fetch_all_users() -> HttpResponse {
@@ -21,12 +19,12 @@ pub async fn fetch_all_users() -> HttpResponse {
 
 /// Handles user registration by saving a new user in the database.
 /// Returns a JSON response with the registered user information or an error message.
-pub async fn register_user(new_user: web::Json<NewUser>) -> HttpResponse {
+pub async fn register_user(new_user: web::Json<NewUserApi>) -> HttpResponse {
     let mut conn = establish_connection();
 
-    let user_data = NewUser {
+    let user_data = NewUserApi {
         username: new_user.username.clone(),
-        password_hash: new_user.password_hash.clone(),
+        password: new_user.password.clone(),
     };
 
     match user_service::register_new_user(&mut conn, user_data) {
@@ -40,28 +38,11 @@ pub async fn register_user(new_user: web::Json<NewUser>) -> HttpResponse {
 
 /// Handles user login by verifying credentials and returning a login response.
 /// Returns a JSON response with user information or an unauthorized error message.
-pub async fn login_user(credentials: web::Json<NewUser>) -> impl Responder {
-    use crate::schema::users::dsl::*;
+pub async fn login_user(credentials: web::Json<NewUserApi>) -> impl Responder {
     let mut conn = establish_connection();
 
-    // Fetch user from the database by username
-    let user_in_db_result = users
-        .filter(username.eq(&credentials.username))
-        .first::<User>(&mut conn);
-
-    match user_in_db_result {
-        Ok(user_in_db) => {
-            if credentials.password_hash == user_in_db.password_hash {
-                let response = LoginResponse {
-                    id: user_in_db.id,
-                    username: user_in_db.username,
-                };
-                HttpResponse::Ok().json(response)
-            } else {
-                eprintln!("Invalid credentials for username: {}", credentials.username);
-                HttpResponse::Unauthorized().body("Invalid credentials")
-            }
-        }
+    match user_service::login_user(&mut conn, credentials.into_inner()) {
+        Ok(user) => HttpResponse::Ok().json(user),
         Err(_) => HttpResponse::Unauthorized().body("User not found"),
     }
 }

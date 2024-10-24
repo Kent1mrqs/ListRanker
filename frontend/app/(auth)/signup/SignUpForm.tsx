@@ -14,13 +14,19 @@ export const metadata = {
 export interface NewUser {
     id: number,
     username: string,
-    password_hash: string,
+    password: string,
+}
+
+export interface NewUserWithToken {
+    id: number,
+    username: string,
+    token: string,
 }
 
 const default_user = {
     id: 0,
     username: '',
-    password_hash: ''
+    password: ''
 }
 
 export function validId(username: string, password: string) {
@@ -34,11 +40,12 @@ export default function SignUpForm() {
     const {showNotification} = useNotification();
 
     async function onClick() {
-        if (validId(newUser.username, newUser.password_hash)) {
+        if (validId(newUser.username, newUser.password)) {
             try {
-                await postData<NewUser, NewUser>('register', newUser).then((e) => {
+                await postData<NewUser, NewUserWithToken>('register', newUser).then((e) => {
                     setUserId(e.id)
                     localStorage.setItem("userId", String(e.id));
+                    localStorage.setItem("jwt", String(e.token));
                     showNotification("Register success", "success")
                     router.push("/myrankings");
                 });
@@ -79,7 +86,7 @@ export default function SignUpForm() {
                           onChange: (e) => setNewUser(prevState => {
                               return {
                                   ...prevState,
-                                  password_hash: e.target.value
+                                  password: e.target.value
                               }
                           })
                       }

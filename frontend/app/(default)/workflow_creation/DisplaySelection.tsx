@@ -6,6 +6,7 @@ import TierList from "@/public/images/tier_list.png";
 import Podium from "@/public/images/podium.webp";
 import TemplatePage from "@/components/Template/TemplatePage";
 import {NewRanking, RankingProps} from "@/app/(default)/workflow_creation/WorkflowCreation";
+import {smoothScrollToElement} from "@/app/utils";
 
 
 const rankingCard = [
@@ -47,9 +48,19 @@ const rankingCard = [
 
 export default function DisplaySelection({newRanking, setNewRanking}: RankingProps) {
 
+    function onClick(card: any) {
+        smoothScrollToElement('step3');
+        setNewRanking((prevValue: NewRanking) => {
+            return {
+                ...prevValue,
+                ranking_type: card.key,
+            }
+        })
+    }
 
     return (
         <TemplatePage
+            id="step2"
             title="Step 2 : Display Selection"
             description="Select how you want your ranking to be displayed."
         >
@@ -59,12 +70,7 @@ export default function DisplaySelection({newRanking, setNewRanking}: RankingPro
                     <TemplateCard
                         disabled={card.disabled}
                         selected={newRanking.ranking_type === card.key}
-                        onClick={() => setNewRanking((prevValue: NewRanking) => {
-                            return {
-                                ...prevValue,
-                                ranking_type: card.key,
-                            }
-                        })}
+                        onClick={() => onClick(card)}
                         key={i}
                         title={card.title}
                         image={card.image}

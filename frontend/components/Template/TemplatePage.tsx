@@ -9,15 +9,16 @@ export const metadata = {
 };
 
 type StylesProps = {
+    id?: string;
     title: string;
     description: string;
     children: React.ReactNode;
 };
 
-export default function TemplatePage({title, description, children}: StylesProps) {
+export default function TemplatePage({id, title, description, children}: StylesProps) {
 
     return (
-        <section>
+        <section id={id}>
             <div className="mx-auto max-w-6xl px-4 sm:px-6">
                 <div className="pb-12 md:pb-20">
                     <TemplateTitle

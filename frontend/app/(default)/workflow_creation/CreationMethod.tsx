@@ -5,6 +5,7 @@ import TemplateCard from "@/components/Template/TemplateCard";
 import TournoiImg from "@/public/images/Tournoi.jpg";
 import DuelsImg from "@/public/images/Duels.webp";
 import {NewRanking, RankingProps} from "@/app/(default)/workflow_creation/WorkflowCreation";
+import {smoothScrollToElement} from "@/app/utils";
 
 const rankingCard = [
     {
@@ -29,8 +30,21 @@ const rankingCard = [
 ]
 
 export default function CreationMethod({newRanking, setNewRanking}: RankingProps) {
+
+    function onClick(card: any) {
+        smoothScrollToElement('step4');
+        setNewRanking((prevValue: NewRanking) => {
+            return {
+                ...prevValue,
+                creation_method: card.key,
+            }
+        })
+
+    }
+
     return (
         <TemplatePage
+            id="step3"
             title="Step 3 : Creation Method"
             description="Select a ranking method."
         >
@@ -44,12 +58,7 @@ export default function CreationMethod({newRanking, setNewRanking}: RankingProps
                         title={card.title}
                         image={card.image}
                         description={card.description}
-                        onClick={() => setNewRanking((prevValue: NewRanking) => {
-                            return {
-                                ...prevValue,
-                                creation_method: card.key,
-                            }
-                        })}
+                        onClick={() => onClick(card)}
                     />
                 ))}
             </Spotlight>

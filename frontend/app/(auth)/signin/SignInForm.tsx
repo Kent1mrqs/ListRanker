@@ -4,7 +4,7 @@ import {useState} from "react";
 import SignForm from "@/app/(auth)/SignForm";
 import {useUserContext} from "@/app/UserProvider";
 import {useRouter} from "next/navigation";
-import {validId} from "@/app/(auth)/signup/SignUpForm";
+import {NewUser, NewUserWithToken, validId} from "@/app/(auth)/signup/SignUpForm";
 import {useNotification} from "@/app/NotificationProvider";
 
 export const metadata = {
@@ -12,16 +12,10 @@ export const metadata = {
     description: "Page description",
 };
 
-export interface NewUser {
-    id: number;
-    username: string,
-    password_hash: string,
-}
-
 const default_user = {
     id: 0,
     username: '',
-    password_hash: ''
+    password: ''
 }
 
 export default function SignInForm() {
@@ -32,12 +26,13 @@ export default function SignInForm() {
     const {showNotification} = useNotification();
 
     async function onClick() {
-        if (validId(user.username, user.password_hash)) {
+        if (validId(user.username, user.password)) {
             try {
-                await postData<NewUser, NewUser>('login', user).then((e) => {
+                await postData<NewUser, NewUserWithToken>('login', user).then((e) => {
                     setUserId(e.id)
                     showNotification("Login success", "success")
                     localStorage.setItem("userId", String(e.id));
+                    localStorage.setItem("jwt", String(e.token));
                     router.push("/myrankings");
                 });
             } catch (error) {
@@ -77,7 +72,7 @@ export default function SignInForm() {
                           onChange: (e) => setUser(prevState => {
                               return {
                                   ...prevState,
-                                  password_hash: e.target.value
+                                  password: e.target.value
                               }
                           })
                       }
