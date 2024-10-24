@@ -3,7 +3,7 @@ import {Button, Stack, Typography} from "@mui/material";
 import React, {useCallback, useState} from "react";
 import {deleteData, editData, fetchData, postData} from "@/app/api";
 import Spotlight from "@/components/spotlight";
-import {InputItem, Item, NewList} from "@/app/(default)/mylists/ListCreation";
+import ListCreation, {InputItem, Item, NewList} from "@/app/(default)/mylists/ListCreation";
 import TemplateButton from "@/components/Template/TemplateButton";
 import {TemplateEditionCard, TemplateItemCardOrChip} from "@/components/Template/TemplateCard";
 import {List} from "@/app/(default)/workflow_creation/ChooseList";
@@ -18,8 +18,6 @@ import {useRouter} from "next/navigation";
 export type ListProps = {
     currentList: List;
     setCurrentList: (list: List) => void;
-    creationMode: boolean;
-    setCreationMode: (bool: boolean) => void;
 };
 
 type ListItems = {
@@ -30,12 +28,11 @@ type ListItems = {
 
 
 export default function ListSelection({
-                                          setCreationMode,
-                                          creationMode,
                                           currentList,
                                           setCurrentList
                                       }: ListProps) {
     const {userId} = useUserContext();
+    const [creationMode, setCreationMode] = useState<boolean>(false)
     const [currentItems, setCurrentItems] = useState<Item[]>([])
     const [editionMode, setEditionMode] = useState<boolean>(false)
     const [editedList, setEditedList] = useState<ListItems>({name: "", id: 0, items: []})
@@ -204,6 +201,7 @@ export default function ListSelection({
             </Stack>
             {!!currentList.id && !creationMode &&
 				<ShowItems fetchItems={fetchItems} currentItems={currentItems} editionMode={editionMode}/>}
+            {creationMode && <ListCreation/>}
         </Stack>
     );
 }

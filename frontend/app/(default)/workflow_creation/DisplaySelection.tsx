@@ -2,7 +2,9 @@
 import Spotlight from "@/components/spotlight";
 import TemplateCard from "@/components/Template/TemplateCard";
 import TournoiImg from "@/public/images/Tournoi.jpg";
-import TierList from "@/public/images/tier_list.png";
+import TierList from "@/public/images/TierList.webp";
+import PyramidTierList from "@/public/images/PyramidTierList.jpg";
+import PointsRanking from "@/public/images/PointsRanking.jpg";
 import Podium from "@/public/images/podium.webp";
 import TemplatePage from "@/components/Template/TemplatePage";
 import {NewRanking, RankingProps} from "@/app/(default)/workflow_creation/WorkflowCreation";
@@ -32,14 +34,14 @@ const rankingCard = [
     },
     {
         title: 'Pyramid',
-        image: "",
+        image: PyramidTierList,
         description: '',
         key: 'pyramid',
         disabled: true
     },
     {
         title: 'Points',
-        image: "",
+        image: PointsRanking,
         description: '',
         key: 'points',
         disabled: true

@@ -4,13 +4,14 @@ import Spotlight from "@/components/spotlight";
 import TemplateCard from "@/components/Template/TemplateCard";
 import TournoiImg from "@/public/images/Tournoi.jpg";
 import DuelsImg from "@/public/images/Duels.webp";
+import ManualExchange from "@/public/images/ManualExchange.png";
 import {NewRanking, RankingProps} from "@/app/(default)/workflow_creation/WorkflowCreation";
 import {smoothScrollToElement} from "@/app/utils";
 
 const rankingCard = [
     {
         title: 'Manual',
-        image: "",
+        image: ManualExchange,
         description: 'Make your ranking entirely by yourself',
         key: 'manual'
     },

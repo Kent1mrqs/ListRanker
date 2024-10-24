@@ -11,8 +11,6 @@ export interface List {
 
 export default function ChooseList({setNewRanking}: RankingProps) {
     const [currentList, setCurrentList] = useState<List>({name: '', id: 0})
-    const [creationMode, setCreationMode] = useState<boolean>(false)
-
 
     function SelectList(list: List) {
         setCurrentList(list);
@@ -30,9 +28,7 @@ export default function ChooseList({setNewRanking}: RankingProps) {
             title="Step 1 : Choose a list"
             description="Select a list to base your ranking on. Choose from existing options or create a new list."
         >
-            <ListSelection creationMode={creationMode}
-                           setCreationMode={setCreationMode}
-                           currentList={currentList}
+            <ListSelection currentList={currentList}
                            setCurrentList={SelectList}/>
         </TemplatePage>
     );
