@@ -83,7 +83,7 @@ fn generate_jwt(user_id: &str, secret_key: &str) -> Result<String, jsonwebtoken:
     let expiration = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
-        .as_secs() + 3600; // 1 heure
+        .as_secs() + 3600;
 
     let claims = Claims {
         sub: user_id.to_owned(),

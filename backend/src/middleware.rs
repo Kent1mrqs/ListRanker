@@ -17,36 +17,6 @@ impl JwtMiddleware {
     }
 }
 
-pub async fn _jwt_middleware<S>(
-    req: ServiceRequest,
-    srv: &S,
-) -> Result<ServiceResponse, Error>
-where
-    S: Service<ServiceRequest, Response=ServiceResponse, Error=Error> + 'static,
-{
-    let auth_header = req.headers().get("Authorization");
-    if let Some(auth_header) = auth_header {
-        if let Ok(auth_str) = auth_header.to_str() {
-            if auth_str.starts_with("Bearer ") {
-                let token = auth_str[7..].trim();
-                let secret_key = std::env::var("SECRET_KEY").expect("SECRET_KEY must be set");
-
-                match crate::user_service::validate_jwt(token, secret_key) {
-                    Ok(claims) => {
-                        req.extensions_mut().insert(claims);
-                        return Ok(srv.call(req).await?);
-                    }
-                    Err(_) => {
-                        return Err(actix_web::error::ErrorUnauthorized("Invalid token"));
-                    }
-                }
-            }
-        }
-    }
-    Err(actix_web::error::ErrorUnauthorized("Invalid or missing token"))
-}
-
-
 impl<S, B> Transform<S, ServiceRequest> for JwtMiddleware
 where
     S: Service<ServiceRequest, Response=ServiceResponse<B>, Error=Error> + 'static,

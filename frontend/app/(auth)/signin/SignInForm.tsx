@@ -72,7 +72,7 @@ export default function SignInForm() {
                           onChange: (e) => setUser(prevState => {
                               return {
                                   ...prevState,
-                                  password_hash: e.target.value
+                                  password: e.target.value
                               }
                           })
                       }
