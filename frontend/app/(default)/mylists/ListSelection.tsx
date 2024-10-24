@@ -159,8 +159,6 @@ export default function ListSelection({
                                     })}/> :
                                 <TemplateButton key={index}
                                                 text={li.name}
-                                    //icon={<IconEdit/>}
-                                    // onClickIcon={() => setEditionMode(!editionMode)}
                                                 selected={li.list_id === currentList.id}
                                                 onClick={() => selectList({name: li.name, id: li.list_id})}
                                 />}

@@ -52,7 +52,7 @@ impl From<RankingItemWithNameAndImage> for ItemDuel {
             id: item.item_id,
             name: item.name,
             image: match item.image {
-                Some(img) => convert_to_base64(img, "image/png"), // Directly convert the Vec<u8> to base64
+                Some(img) => convert_to_base64(img, "image/png"),
                 None => String::new(),
             },
         }

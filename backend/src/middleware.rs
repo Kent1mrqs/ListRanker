@@ -10,7 +10,6 @@ pub struct JwtMiddleware {
     secret_key: String,
 }
 
-// Implémentation de la structure
 impl JwtMiddleware {
     pub fn new(secret_key: String) -> Self {
         JwtMiddleware { secret_key }
@@ -58,19 +57,15 @@ where
         let auth_header = req.headers().get("Authorization").cloned();
         let secret_key = self.secret_key.clone();
 
-        // Analyser l'en-tête Authorization avant de passer `req` au service.
         if let Some(auth_header) = auth_header {
             if let Ok(auth_str) = auth_header.to_str() {
                 if auth_str.starts_with("Bearer ") {
                     let token = auth_str[7..].trim();
 
-                    // Valider le JWT avant de procéder
                     match validate_jwt(token, secret_key) {
                         Ok(claims) => {
-                            // Insérer les claims dans les extensions de la requête
                             req.extensions_mut().insert(claims);
 
-                            // Appeler le service avec la requête modifiée
                             let fut = self.service.call(req);
                             return Box::pin(async move {
                                 let res = fut.await?;
@@ -87,7 +82,6 @@ where
             }
         }
 
-        // Si le token est manquant ou invalide, retourner une erreur Unauthorized
         Box::pin(async {
             Err(actix_web::error::ErrorUnauthorized("Invalid or missing token"))
         })

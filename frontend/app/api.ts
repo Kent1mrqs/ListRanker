@@ -8,7 +8,7 @@ const handleAuth = (): string | null => {
         return null;
     }
     const payload = JSON.parse(atob(token.split('.')[1]));
-    const exp = payload.exp * 1000; // Convertir en millisecondes
+    const exp = payload.exp * 1000;
     if (Date.now() >= exp && window.location.pathname !== '/signin' && window.location.pathname !== '/signup') {
         localStorage.removeItem("userId");
         window.location.href = '/signin';
@@ -30,7 +30,7 @@ const createFetchOptions = (method: string, token: string | null, data?: any): R
     return options;
 };
 
-const apiRequest = async <T, R>(method: string, route: string, data?: T): Promise<R | undefined> => {
+const apiRequest = async <T, R>(method: string, route: string, data?: T): Promise<R> => {
     const url = `http://127.0.0.1:8080/${route}`;
     const token = handleAuth();
 
@@ -48,18 +48,18 @@ const apiRequest = async <T, R>(method: string, route: string, data?: T): Promis
     }
 };
 
-export const fetchData = async <R>(route: string): Promise<R | undefined> => {
+export const fetchData = async <R>(route: string): Promise<R> => {
     return apiRequest<undefined, R>('GET', route);
 };
 
-export const postData = async <T, R>(route: string, data: T): Promise<R | undefined> => {
+export const postData = async <T, R>(route: string, data: T): Promise<R> => {
     return apiRequest<T, R>('POST', route, data);
 };
 
-export const deleteData = async <R>(route: string): Promise<R | undefined> => {
+export const deleteData = async <R>(route: string): Promise<R> => {
     return apiRequest<undefined, R>('DELETE', route);
 };
 
-export const editData = async <T, R>(route: string, data: T): Promise<R | undefined> => {
+export const editData = async <T, R>(route: string, data: T): Promise<R> => {
     return apiRequest<T, R>('PUT', route, data);
 };

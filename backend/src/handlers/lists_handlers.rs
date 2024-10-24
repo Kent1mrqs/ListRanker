@@ -22,7 +22,6 @@ pub async fn fetch_user_lists(path: web::Path<i32>) -> HttpResponse {
 pub async fn create_list(new_list: web::Json<NewListApi>) -> HttpResponse {
     let mut conn = establish_connection();
 
-    // Constructing the NewListDb object from the incoming request
     let list_data = NewListDb {
         user_id: new_list.user_id,
         name: new_list.name.clone(),
