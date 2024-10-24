@@ -1,8 +1,6 @@
 use crate::models::users_models::{Claims, LoginWithToken, NewUserApi, NewUserDb, User};
 use crate::schema::users::dsl::users;
 use crate::schema::users::{id, username};
-use actix_web::dev::{Service, ServiceResponse};
-use actix_web::{dev::ServiceRequest, Error, HttpMessage};
 use bcrypt::{hash, verify, DEFAULT_COST};
 use diesel::prelude::*;
 use diesel::QueryResult;
@@ -100,7 +98,7 @@ fn generate_jwt(user_id: &str, secret_key: &str) -> Result<String, jsonwebtoken:
 }
 
 
-fn validate_jwt(token: &str, secret_key: String) -> Result<Claims, jsonwebtoken::errors::Error> {
+pub(crate) fn validate_jwt(token: &str, secret_key: String) -> Result<Claims, jsonwebtoken::errors::Error> {
     let token_data = decode::<Claims>(
         token,
         &DecodingKey::from_secret(secret_key.as_ref()),
@@ -108,36 +106,5 @@ fn validate_jwt(token: &str, secret_key: String) -> Result<Claims, jsonwebtoken:
     )?;
     Ok(token_data.claims)
 }
-
-
-pub async fn jwt_middleware<S>(
-    req: ServiceRequest,
-    srv: &S,
-) -> Result<ServiceResponse, Error>
-where
-    S: Service<ServiceRequest, Response=ServiceResponse, Error=Error> + 'static,
-{
-    let auth_header = req.headers().get("Authorization");
-    if let Some(auth_header) = auth_header {
-        if let Ok(auth_str) = auth_header.to_str() {
-            if auth_str.starts_with("Bearer ") {
-                let token = auth_str[7..].trim();
-                let secret_key = std::env::var("SECRET_KEY").expect("SECRET_KEY must be set");
-
-                match validate_jwt(token, secret_key) {
-                    Ok(claims) => {
-                        req.extensions_mut().insert(claims);
-                        return Ok(srv.call(req).await?);
-                    }
-                    Err(_) => {
-                        return Err(actix_web::error::ErrorUnauthorized("Invalid token"));
-                    }
-                }
-            }
-        }
-    }
-    Err(actix_web::error::ErrorUnauthorized("Invalid or missing token"))
-}
-
 
 
