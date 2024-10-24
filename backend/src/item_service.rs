@@ -1,4 +1,5 @@
 use crate::models::items_models::{Item, NewItem, NewItemApi};
+use crate::models::ranking_items_models::NewRankingItem;
 use crate::schema::items::dsl::items;
 use crate::schema::items::id;
 use base64::Engine;
@@ -24,19 +25,40 @@ pub fn bulk_insert_items(conn: &mut PgConnection, new_items: Vec<NewItem>) -> Re
 }
 
 pub fn add_item_to_list(conn: &mut PgConnection, list_id_param: i32) -> Result<usize, Error> {
+    use crate::schema::ranking_items::dsl::ranking_items;
+    use crate::schema::rankings::dsl::{id as ranking_id_param, list_id, rankings};
     let item_data = NewItem {
         list_id: list_id_param,
         name: "".to_string(),
         image: convert_image("".to_string()),
     };
 
-    let item = diesel::insert_into(items)
+    let inserted_item_id = diesel::insert_into(items)
         .values(&item_data)
+        .returning(id)
+        .get_result(conn)?;
+
+    let ranking_ids: Vec<i32> = rankings
+        .filter(list_id.eq(list_id_param))
+        .select(ranking_id_param)
+        .load(conn)?;
+
+    let mut ranking_items_vec = Vec::new();
+    for ranking_id in ranking_ids {
+        let ranking_item = NewRankingItem {
+            score: 0,
+            rank: 1000,
+            ranking_id,
+            item_id: inserted_item_id,
+        };
+        ranking_items_vec.push(ranking_item);
+    }
+
+    diesel::insert_into(ranking_items)
+        .values(&ranking_items_vec)
         .execute(conn)?;
 
-    // TODO: For all rankings with list_id=list_id_param, add ranking_item
-
-    Ok(item)
+    Ok(ranking_items_vec.len())
 }
 
 /// Retrieves all items associated with the specified list ID from the database.

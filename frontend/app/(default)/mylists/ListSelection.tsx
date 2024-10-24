@@ -12,6 +12,7 @@ import {useListsContext} from "@/app/ListsProvider";
 import {fetchLists, saveList} from "@/app/(default)/mylists/ListServices";
 import TemplateInput from "@/components/Template/TemplateInput";
 import {useNotification} from "@/app/NotificationProvider";
+import {smoothScrollToElement} from "@/app/utils";
 
 export type ListProps = {
     currentList: List;
@@ -40,9 +41,14 @@ export default function ListSelection({
     const {lists, setLists} = useListsContext();
     const {showNotification} = useNotification();
 
-    const fetchItems = useCallback((list_id: number) => {
+    const fetchItems = useCallback((list_id: number, redirect?: boolean) => {
         fetchData<Item[]>('items/' + list_id)
-            .then(result => setCurrentItems(result))
+            .then(result => {
+                if (redirect) {
+                    smoothScrollToElement("step2")
+                }
+                setCurrentItems(result)
+            })
             .catch(err => {
                 showNotification("Error when fetching items : " + err.message, "error")
                 console.error(err.message)
@@ -122,7 +128,7 @@ export default function ListSelection({
             setCurrentList({name: "", id: 0})
         } else {
             setCurrentList(list)
-            fetchItems(list.id)
+            fetchItems(list.id, true)
         }
     }
 
