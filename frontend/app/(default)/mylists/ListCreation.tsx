@@ -9,6 +9,7 @@ import {TemplateEditionCard} from "@/components/Template/TemplateCard";
 import {fetchLists} from "@/app/(default)/mylists/ListServices";
 import {useListsContext} from "@/app/ListsProvider";
 import {useNotification} from "@/app/NotificationProvider";
+import TemplateTextArea from "@/components/Template/TemplateTextArea";
 
 export interface Item {
     list_id?: number;
@@ -94,6 +95,16 @@ export default function ListCreation() {
             const filesData = await Promise.all(fileDataPromises);
             setNewList({...newList, items: [...newList.items, ...filesData]});
         }
+    };
+    const addTextAsItems = (event: ChangeEvent<HTMLTextAreaElement>) => {
+        const items = event.target.value
+            .split('\n')
+            .filter((item: string) => item && item.trim() !== "")
+            .map((el: any) => {
+                return {name: el, image: ""};
+            });
+        event.target.value = ''
+        setNewList({...newList, items: [...newList.items, ...items]});
     };
 
     function editItem(id: number, e: React.ChangeEvent<HTMLInputElement>) {
@@ -184,6 +195,12 @@ export default function ListCreation() {
                     label='Nouvelle liste'
                     onBlur={e => setNewList({...newList, name: e.target.value})}
                 />
+                <TemplateTextArea
+                    id='list_items'
+                    placeholder='Vincenzo...'
+                    rows={4}
+                    onBlur={addTextAsItems}
+                />
                 <Button onClick={() => document.getElementById('add-items')?.click()}>Import images</Button>
                 <input
                     id="add-items"
@@ -217,7 +234,7 @@ export default function ListCreation() {
                         image={''}
                     />*/}
                 </Spotlight>
-                <Button disabled={!newList.name || loading} onClick={saveList}>Save</Button>
+                <Button disabled={loading} onClick={saveList}>Save</Button>
             </Stack>
         </Stack>
     );
