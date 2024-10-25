@@ -42,7 +42,7 @@ export interface Ranking {
     user_id: number | null;
     name: string;
     ranking_type: "numbered" | "tier_list";
-    creation_method: "manual" | "intelligent_dual";
+    creation_method: "manual" | "duels";
     list_id: number;
 }
 

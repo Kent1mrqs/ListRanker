@@ -76,7 +76,7 @@ export default function MyRankings() {
 					setCurrentRankingItems={setCurrentRankingItems}
 				/>}
             {currentRanking.ranking_type === 'numbered' &&
-                currentRanking.creation_method === "intelligent_dual" &&
+                currentRanking.creation_method === "duels" &&
                 currentRankingItems[0] &&
 				<NumberedIntelligentDual
 					currentRankingItems={currentRankingItems}
