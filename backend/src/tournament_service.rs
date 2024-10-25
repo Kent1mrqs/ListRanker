@@ -1,5 +1,6 @@
 use crate::models::duel_models::ItemDuel;
 use crate::models::ranking_items_models::RankingItemWithNameAndImage;
+use crate::models::tournament_models::NextTournamentData;
 use crate::ranking_item_service::fetch_ranking_items_with_names;
 use crate::schema::ranking_items::dsl::ranking_items;
 use crate::schema::ranking_items::{item_id, rank, ranking_id, score};
@@ -25,7 +26,7 @@ pub fn reset_tournament(conn: &mut PgConnection, ranking_id_param: i32) -> Query
     }
 }
 
-pub fn generate_round(conn: &mut PgConnection, ranking_id_param: i32) -> Result<Vec<(ItemDuel, ItemDuel)>, Box<dyn std::error::Error>> {
+pub fn generate_round(conn: &mut PgConnection, ranking_id_param: i32) -> Result<NextTournamentData, Box<dyn std::error::Error>> {
     let mut rng = thread_rng();
     let items_result: QueryResult<Vec<RankingItemWithNameAndImage>> = fetch_ranking_items_with_names(conn, ranking_id_param);
     let items_left = number_items_left_in_tournament(conn, ranking_id_param);
@@ -59,7 +60,12 @@ pub fn generate_round(conn: &mut PgConnection, ranking_id_param: i32) -> Result<
                 .map(ItemDuel::from)
                 .collect();
 
-            Ok(create_pairs(new_items))
+            let data = NextTournamentData {
+                duels_left: number_duels_left_in_tournament(conn, ranking_id_param),
+                next_duel: create_pairs(new_items),
+            };
+
+            Ok(data)
         }
         Err(e) => {
             eprintln!("Failed to fetch items: {:?}", e);
@@ -68,7 +74,7 @@ pub fn generate_round(conn: &mut PgConnection, ranking_id_param: i32) -> Result<
     }
 }
 
-pub fn process_round(conn: &mut PgConnection, ranking_id_param: i32, data: Vec<i32>) -> Result<Vec<(ItemDuel, ItemDuel)>, Box<dyn std::error::Error>> {
+pub fn process_round(conn: &mut PgConnection, ranking_id_param: i32, data: Vec<i32>) -> Result<NextTournamentData, Box<dyn std::error::Error>> {
     use crate::schema::ranking_items::dsl::rank;
     let position = 2 * data.len() as i32; // Calculate position
 
@@ -111,6 +117,11 @@ fn number_items_left_in_tournament(conn: &mut PgConnection, ranking_id_param: i3
         .unwrap_or(0);
 
     number_items
+}
+fn number_duels_left_in_tournament(conn: &mut PgConnection, ranking_id_param: i32) -> i64 {
+    let number_items_left = number_items_left_in_tournament(conn, ranking_id_param) as f64;
+    let number_duels_left = number_items_left * (number_items_left + 2.0) as f64 / 8.0;
+    number_duels_left.ceil() as i64
 }
 
 fn number_total_items_in_tournament(conn: &mut PgConnection, ranking_id_param: i32) -> i64 {

@@ -48,6 +48,11 @@ function ShowTournamentPreview({currentRound}: { currentRound: Round }) {
 type DuelItem = Item[]
 type Round = DuelItem[]
 
+interface RoundResponse {
+    next_duel: Round,
+    duels_left: number,
+}
+
 const default_duel = [{name: "", id: 0, image: ""}, {name: "", id: 0, image: ""}]
 const default_round = [default_duel]
 
@@ -76,30 +81,20 @@ export default function RandomTournament({
     }, []);
 
     function chooseCard(result: BattleResult) {
+        setDuelsLeft(prevState => prevState - 1)
         setLosers((prevLosers) => {
             const newLosers = [...prevLosers, result.loser];
-            console.log('losers', newLosers.length);
-            console.log('round', currentRound.length);
-
             if (newLosers.length === currentRound.length) {
                 sendRoundResult(newLosers);
             } else {
                 setCurrentDuel(currentRound[newLosers.length]);
-                console.log('new duel between: ', currentRound[newLosers.length]);
             }
-
             if (currentRound.length === 2) {
                 endTournament();
-                console.log("end tournament");
             }
-
             return newLosers;
         });
     }
-
-    console.log('losers : ', losers)
-
-    console.log(currentRound.length)
 
     function endTournament() {
         fetchRankingItems()
@@ -116,16 +111,17 @@ export default function RandomTournament({
     }
 
     const fetchTournamentInit = useCallback(() => {
-        fetchData<Round>('tournament-init/' + ranking_id)
+        fetchData<RoundResponse>('tournament-init/' + ranking_id)
             .then(response => {
                 //    if (!response.NextDuelData) {
                 //        endBattle()
                 //    } else {
                 console.log('received', response)
-                setTournament(response)
+                setTournament(response.next_duel)
                 setLosers([])
-                setCurrentRound(response)
-                setCurrentDuel(response[0])
+                setCurrentRound(response.next_duel)
+                setDuelsLeft(response.duels_left)
+                setCurrentDuel(response.next_duel[0])
                 //setDuelsLeft(response)
                 //    }
             });
@@ -138,10 +134,11 @@ export default function RandomTournament({
     async function sendRoundResult(data_result: number[]) {
         console.log('next round')
         try {
-            await postData<number[], Round>('tournament-next/' + ranking_id, data_result).then((response: Round) => {
-                setCurrentRound(response);
+            await postData<number[], RoundResponse>('tournament-next/' + ranking_id, data_result).then((response: RoundResponse) => {
+                setCurrentRound(response.next_duel);
                 console.log('response', response);
-                setCurrentDuel(response[0])
+                setCurrentDuel(response.next_duel[0])
+                setDuelsLeft(response.duels_left)
                 setLosers([]);
             });
         } catch (e) {
@@ -163,7 +160,7 @@ export default function RandomTournament({
                 currentDuel[0] &&
 				<Duel currentDual={currentDuel}
 				      resetDuel={resetTournament}
-				      duelsLeft={0}
+				      duelsLeft={duelsLeft}
 				      chooseCard={chooseCard}
 				      ranking_id={ranking_id}
 				/>}
