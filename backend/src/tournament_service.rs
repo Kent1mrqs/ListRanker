@@ -1,12 +1,13 @@
 use crate::models::duel_models::ItemDuel;
 use crate::models::ranking_items_models::RankingItemWithNameAndImage;
-use crate::models::tournament_models::NextTournamentData;
+use crate::models::tournament_models::{NextRoundData, TournamentResult};
 use crate::ranking_item_service::fetch_ranking_items_with_names;
 use crate::schema::ranking_items::dsl::ranking_items;
 use crate::schema::ranking_items::{item_id, rank, ranking_id, score};
 use diesel::prelude::*;
 use rand::seq::SliceRandom;
 use rand::thread_rng;
+use std::error::Error;
 
 pub fn reset_tournament(conn: &mut PgConnection, ranking_id_param: i32) -> QueryResult<usize> {
     let update_result = diesel::update(ranking_items)
@@ -26,22 +27,25 @@ pub fn reset_tournament(conn: &mut PgConnection, ranking_id_param: i32) -> Query
     }
 }
 
-pub fn generate_round(conn: &mut PgConnection, ranking_id_param: i32) -> Result<NextTournamentData, Box<dyn std::error::Error>> {
+pub fn generate_round(conn: &mut PgConnection, ranking_id_param: i32) -> Result<TournamentResult, Box<dyn std::error::Error>> {
     let mut rng = thread_rng();
     let items_result: QueryResult<Vec<RankingItemWithNameAndImage>> = fetch_ranking_items_with_names(conn, ranking_id_param);
     let items_left = number_items_left_in_tournament(conn, ranking_id_param);
     let total_items = number_total_items_in_tournament(conn, ranking_id_param);
-    println!("generate round");
+
     if items_left == 1 {
         diesel::update(ranking_items)
             .filter(rank.eq(0))
             .set(rank.eq(1))
             .execute(conn)?;
+
+        return Ok(TournamentResult::Finished("fin".to_string()));
     }
+
     match items_result {
         Ok(items) => {
             let mut filtered_items: Vec<RankingItemWithNameAndImage> = items.into_iter()
-                .filter(|item| item.rank == 0) // Utiliser une fonction Rust pour filtrer les items
+                .filter(|item| item.rank == 0)
                 .collect();
 
             if items_left == total_items {
@@ -60,12 +64,12 @@ pub fn generate_round(conn: &mut PgConnection, ranking_id_param: i32) -> Result<
                 .map(ItemDuel::from)
                 .collect();
 
-            let data = NextTournamentData {
+            let data = NextRoundData {
                 duels_left: number_duels_left_in_tournament(conn, ranking_id_param),
                 next_duel: create_pairs(new_items),
             };
 
-            Ok(data)
+            Ok(TournamentResult::NextRoundData(data))
         }
         Err(e) => {
             eprintln!("Failed to fetch items: {:?}", e);
@@ -74,17 +78,16 @@ pub fn generate_round(conn: &mut PgConnection, ranking_id_param: i32) -> Result<
     }
 }
 
-pub fn process_round(conn: &mut PgConnection, ranking_id_param: i32, data: Vec<i32>) -> Result<NextTournamentData, Box<dyn std::error::Error>> {
+pub fn process_round(conn: &mut PgConnection, ranking_id_param: i32, data: Vec<i32>) -> Result<TournamentResult, Box<dyn Error>> {
     use crate::schema::ranking_items::dsl::rank;
     let position = 2 * data.len() as i32; // Calculate position
-
+    println!("{}", position);
     for id_param in data {
         diesel::update(ranking_items)
             .filter(item_id.eq(id_param))
             .set(rank.eq(position))
             .execute(conn)?;
     }
-
     generate_round(conn, ranking_id_param)
 }
 
