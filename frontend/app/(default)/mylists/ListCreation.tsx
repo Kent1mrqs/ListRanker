@@ -1,30 +1,21 @@
 "use client";
 import {Button, Stack, Typography} from "@mui/material";
-import React, {useState} from "react";
+import React, {ChangeEvent, useState} from "react";
 import {postData} from "@/app/api";
 import TemplateInput from "@/components/Template/TemplateInput";
-import TemplateTextArea from "@/components/Template/TemplateTextArea";
-import TemplateSelect from "@/components/Template/TemplateSelect";
 import {useUserContext} from "@/app/UserProvider";
 import Spotlight from "@/components/spotlight";
-import TemplateCard from "@/components/Template/TemplateCard";
-import TemplateChip from "@/components/Template/TemplateChip";
+import {TemplateEditionCard} from "@/components/Template/TemplateCard";
 import {fetchLists} from "@/app/(default)/mylists/ListServices";
 import {useListsContext} from "@/app/ListsProvider";
-import {LoadingButton} from "@/components/Template/TemplateButton";
 import {useNotification} from "@/app/NotificationProvider";
+import TemplateTextArea from "@/components/Template/TemplateTextArea";
 
 export interface Item {
     list_id?: number;
     id: number;
     name: string;
     image?: string;
-}
-
-export interface ListWithItemsId {
-    user_id: number | null;
-    name: string;
-    items: InputItem[];
 }
 
 export interface InputItem {
@@ -51,7 +42,7 @@ export interface Ranking {
     user_id: number | null;
     name: string;
     ranking_type: "numbered" | "tier_list";
-    creation_method: "manual_exchange" | "intelligent_dual";
+    creation_method: "manual" | "intelligent_dual";
     list_id: number;
 }
 
@@ -76,26 +67,8 @@ export default function ListCreation() {
         items: []
     };
 
-    const [nameList, setNameList] = useState('');
-    const [input, setInput] = useState('');
     const [newList, setNewList] = useState<NewList>(default_list);
     const [loading, setLoading] = useState<boolean>(false);
-    const [separator, setSeparator] = useState('\n');
-
-    function onClick() {
-        if (isValidInput(nameList)) {
-            const object: InputItem[] = input
-                .split(separator)
-                .filter((item: string) => item && item.trim() !== "")
-                .map((el: any, index: number) => {
-                    return {name: el, image: newList?.items?.[index]?.image ?? ""};
-                });
-            setNewList({...newList, name: nameList, items: object});
-        } else {
-            showNotification('invalid input', "error")
-            console.error('invalid input')
-        }
-    }
 
     async function saveList() {
         setLoading(true)
@@ -105,10 +78,68 @@ export default function ListCreation() {
             fetchLists(userId, setLists)
             showNotification("New list created", "success")
         });
-
     }
 
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, id: number) => {
+    const addImagesAsItems = async (event: ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files) {
+            const fileArray = Array.from(event.target.files);
+            console.log(fileArray);
+            const fileDataPromises = fileArray.map(async (file) => {
+                const base64 = await convertToBase64(file);
+                return {
+                    name: file.name.split('.')[0].replaceAll('_', ' '),
+                    image: base64,
+                };
+            });
+
+            const filesData = await Promise.all(fileDataPromises);
+            setNewList({...newList, items: [...newList.items, ...filesData]});
+        }
+    };
+    const addTextAsItems = (event: ChangeEvent<HTMLTextAreaElement>) => {
+        const items = event.target.value
+            .split('\n')
+            .filter((item: string) => item && item.trim() !== "")
+            .map((el: any) => {
+                return {name: el, image: ""};
+            });
+        event.target.value = ''
+        setNewList({...newList, items: [...newList.items, ...items]});
+    };
+
+    function editItem(id: number, e: React.ChangeEvent<HTMLInputElement>) {
+        const newName = e.target.value
+        setNewList((prevList: NewList) => {
+            const updatedItems = prevList.items.map((item, index) => {
+                if (index === id) {
+                    return {...item, name: newName};
+                }
+                return item;
+            });
+
+            return {
+                ...prevList,
+                items: updatedItems,
+            };
+        });
+    }
+
+    function removeItem(index: number) {
+        const items = newList.items
+        items.splice(index, 1)
+        setNewList({...newList, items})
+    }
+
+    const convertToBase64 = (file: File): Promise<string> => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = (error) => reject(error);
+        });
+    };
+
+    const importImage = (event: React.ChangeEvent<HTMLInputElement>, id: number) => {
         const file = event.target.files?.[0];
         const MAX_FILE_SIZE = 1024 * 1024;
         if (file) {
@@ -162,56 +193,48 @@ export default function ListCreation() {
                     variant="blue"
                     placeholder='ex: Kdrama...'
                     label='Nouvelle liste'
-                    onChange={e => setNameList(e.target.value)}
+                    onBlur={e => setNewList({...newList, name: e.target.value})}
                 />
                 <TemplateTextArea
                     id='list_items'
                     placeholder='Vincenzo...'
                     rows={4}
-                    onChange={e => setInput(e.target.value)}
+                    onBlur={addTextAsItems}
                 />
-                <TemplateSelect
-                    onChange={event => setSeparator(event.target.value as string)}
-                    id='e'
-                    label='Separator : '
-                >
-                    <option value={'\n'}>Saut de ligne</option>
-                    <option value={','}>,</option>
-                    <option value={';'}>;</option>
-                    <option value={' '}>espace</option>
-                </TemplateSelect>
-                <Button disabled={!isValidInput(nameList)} onClick={onClick}>Validate</Button>
+                <Button onClick={() => document.getElementById('add-items')?.click()}>Import images</Button>
+                <input
+                    id="add-items"
+                    className="hidden"
+                    multiple={true}
+                    type="file"
+                    accept="image/*"
+                    onChange={addImagesAsItems}/>
             </Stack>
             <Stack spacing={1}>
                 <Typography>items de la liste {newList.name}: </Typography>
                 <Spotlight
-                    className="group mx-auto grid justify-center max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-3"
+                    className="group mx-auto grid justify-center max-w-sm items-start gap-6 lg:max-w-none lg:grid-cols-5"
                 >
                     {
                         newList.items.map((el, index) => (
                             <Stack direction="row" spacing={3} key={"stack" + index}>
-                                {
-                                    el.image ?
-                                        <TemplateCard title={el.name} image={el.image}/> :
-                                        <TemplateChip>
-                                            {el.name}
-                                        </TemplateChip>
-                                }
-                                <div>
-                                    <input
-                                        className="btn-sm bg-gradient-to-t from-indigo-600 to-indigo-500 bg-[length:100%_100%] bg-[bottom] py-[5px] text-white shadow-[inset_0px_1px_0px_0px_theme(colors.white/.16)] hover:bg-[length:100%_150%] max-w-[200px] w-full"
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={(e) => handleFileChange(e, index)}/>
-                                    {el.image && <Button onClick={() => handleFileReset(index)}>
-										Remove
-									</Button>}
-                                </div>
+                                <TemplateEditionCard imageOnClick={(e) => importImage(e, index)}
+                                                     onBlur={(e) => editItem(index, e)}
+                                                     index={index}
+                                                     title={el.name}
+                                                     deleteOnClick={() => removeItem(index)}
+                                                     image={el.image}
+                                />
                             </Stack>
                         ))
                     }
+                    {/* <TemplateEditionCard
+                        onBlur={(e) => addItem(e)}
+                        title={''}
+                        image={''}
+                    />*/}
                 </Spotlight>
-                {loading ? <LoadingButton/> : <Button onClick={saveList}>Save</Button>}
+                <Button disabled={loading} onClick={saveList}>Save</Button>
             </Stack>
         </Stack>
     );
