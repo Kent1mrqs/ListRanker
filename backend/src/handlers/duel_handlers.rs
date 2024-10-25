@@ -38,6 +38,7 @@ pub async fn handle_init_duel(path: web::Path<i32>) -> HttpResponse {
     }
 }
 
+
 pub async fn handle_reset_duel(path: web::Path<i32>) -> HttpResponse {
     let mut conn = establish_connection();
     let ranking_id = path.into_inner();

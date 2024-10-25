@@ -28,6 +28,7 @@ CREATE TABLE rankings
     user_id         INT          NOT NULL,
     name            VARCHAR(255) NOT NULL,
     list_id         INT          NOT NULL,
+    pool            INT          NOT NULL,
     ranking_type    VARCHAR(255) NOT NULL,
     creation_method VARCHAR(255) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users (id),

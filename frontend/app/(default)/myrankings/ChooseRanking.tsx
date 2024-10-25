@@ -1,33 +1,13 @@
 "use client";
 import React from "react";
 import {fetchData} from "@/app/api";
-import {Ranking} from "@/app/(default)/mylists/ListCreation";
 import Spotlight from "@/components/spotlight";
 import TemplateButton from "@/components/Template/TemplateButton";
 import {useRouter} from "next/navigation";
 import {useUserContext} from "@/app/UserProvider";
 import {useRankingsContext} from "@/app/RankingsProvider";
-
-export interface RankingItem {
-    id: number,
-    ranking_id: number,
-    item_id: number,
-    rank: number,
-    name: string,
-    score: number,
-}
-
-export interface EditRanking {
-    id: number,
-    new_rank: number,
-}
-
-export interface ChooseRankingProps {
-    currentRanking: Ranking,
-    setCurrentRanking: (currentRanking: Ranking) => void,
-    setCurrentRankingItems: (currentRankingItems: RankingItem[]) => void,
-}
-
+import {ChooseRankingProps, RankingItem} from "@/components/Models/ModelRankings";
+import {Ranking} from "@/components/Models/ModelsItems";
 
 export default function ChooseRanking({
                                           currentRanking,
@@ -63,7 +43,7 @@ export default function ChooseRanking({
         <Spotlight
             className="group mx-auto grid max-w-sm items-start pb-12 gap-6 lg:max-w-none lg:grid-cols-6"
         >
-            {rankings.map((ra, index) => (
+            {rankings.map((ra: Ranking, index: number) => (
                 <TemplateButton key={index}
                                 text={ra.name}
                                 variant={ra.id === currentRanking.id ? "grey" : "blue"}

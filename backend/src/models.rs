@@ -4,3 +4,4 @@ pub(crate) mod items_models;
 pub(crate) mod rankings_models;
 pub(crate) mod ranking_items_models;
 pub(crate) mod duel_models;
+pub(crate) mod tournament_models;

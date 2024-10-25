@@ -9,6 +9,7 @@ pub struct RankingItem {
     pub item_id: i32,
     pub rank: i32,
     pub score: i32,
+    // pub pool: i32,
 }
 
 #[derive(Insertable, Serialize, Deserialize, Debug)]
@@ -28,6 +29,7 @@ pub struct RankingItemWithNameAndImage {
     pub(crate) rank: i32,
     pub(crate) name: String,
     pub(crate) score: i32,
+    //   pub(crate) pool: i32,
     pub(crate) image: Option<Vec<u8>>,
 }
 #[derive(Deserialize, Serialize, Debug)]

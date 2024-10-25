@@ -1,109 +1,14 @@
 "use client";
 import React, {useCallback, useEffect, useState} from "react";
-import Spotlight from "@/components/spotlight";
-import {Stack, Typography} from "@mui/material";
+import {Stack} from "@mui/material";
 import {fetchData, postData} from "@/app/api";
-import {RankingItem} from "@/app/(default)/myrankings/ChooseRanking";
-import TemplateButton from "@/components/Template/TemplateButton";
-import {TemplateDuelCard} from "@/components/Template/TemplateCard";
 import {useNotification} from "@/app/NotificationProvider";
+import {ShowRanking} from "@/components/ShowRanking";
+import {Duel} from "@/components/DuelCards";
+import {BattleResult, default_duel, NextDuelData} from "@/components/Models/ModelsDuels";
+import {ComponentProps, Item} from "@/components/Models/ModelsItems";
+import {RankingItem} from "@/components/Models/ModelRankings";
 
-export interface Item {
-    id: number;
-    name: string,
-    image: string,
-}
-
-const default_duel = [{
-    id: 0,
-    name: "",
-    image: ''
-}, {
-    id: 0,
-    name: "",
-    image: ""
-}];
-
-interface DuelResponse {
-    next_duel: Item[];
-    duels_left: number
-}
-
-interface NextDuelData {
-    NextDuelData: DuelResponse
-}
-
-interface BattleResult {
-    ranking_id: number;
-    loser: number;
-    winner: number;
-}
-
-interface DuelProps {
-    currentDual: Item[];
-    duelsLeft: number;
-    resetDuel: () => void;
-    chooseCard: (winner: BattleResult) => void;
-    ranking_id: number;
-}
-
-interface ComponentProps {
-    currentRankingItems: RankingItem[];
-    setCurrentRankingItems: (currentRankingItems: RankingItem[]) => void;
-    ranking_id: number;
-}
-
-function ShowRanking({currentRankingItems, resetDuel}: { currentRankingItems: RankingItem[], resetDuel: () => void }) {
-    return (
-        <Stack alignItems="center" spacing={3}>
-            {currentRankingItems
-                .sort((a, b) => a.rank > b.rank ? 1 : -1)
-                .map((item) => (
-                    <Typography key={item.id}>{item.rank} : {item.name}</Typography>
-                ))}
-            <TemplateButton text="Reset" onClick={resetDuel}/>
-
-        </Stack>
-    )
-}
-
-function Duel({currentDual, resetDuel, chooseCard, ranking_id, duelsLeft}: DuelProps) {
-    return (
-        <Spotlight
-            className="group mx-auto grid max-w-sm mt-3 items-start justify-center gap-6 lg:max-w-none lg:grid-cols-3 h-auto">
-            <div className="flex justify-center">
-                <TemplateDuelCard title={currentDual[0].name}
-                                  image={currentDual[0].image}
-                                  variant="duel"
-                                  onClick={() => chooseCard({
-                                      ranking_id,
-                                      winner: currentDual[0].id,
-                                      loser: currentDual[1].id
-                                  })}/>
-            </div>
-            <div
-                className="flex justify-center items-center relative z-20 h-full overflow-hidden rounded-[inherit]"
-            >
-                <div>
-                    <div>Duels left: {duelsLeft}</div>
-                    <TemplateButton text="Reset" onClick={resetDuel}/>
-                </div>
-
-            </div>
-
-            <div className="flex justify-center">
-                <TemplateDuelCard title={currentDual[1].name}
-                                  image={currentDual[1].image}
-                                  variant="duel"
-                                  onClick={() => chooseCard({
-                                      ranking_id,
-                                      winner: currentDual[1].id,
-                                      loser: currentDual[0].id
-                                  })}/>
-            </div>
-        </Spotlight>
-    )
-}
 
 export default function NumberedIntelligentDual({
                                                     ranking_id,

@@ -1,6 +1,6 @@
 use crate::models::duel_models::{BattleResultApi, BattleResultDb, DuelResult, ItemDuel, NextDuelData};
 use crate::models::ranking_items_models::RankingItemWithNameAndImage;
-use crate::ranking_item_service::{fetch_ranking_items_with_names, set_item_ranks};
+use crate::ranking_item_service::{fetch_ranking_items_with_names, update_ranking};
 use crate::schema::duels::dsl::duels;
 use crate::schema::ranking_items::dsl::ranking_items;
 use crate::schema::ranking_items::{ranking_id, score};
@@ -67,7 +67,6 @@ pub fn _get_explicit_duels(conn: &mut PgConnection, ranking_id_param: i32) -> Qu
         .get_result(conn)
 }
 
-
 /// Selects two unique random candidates for a duel from a specified range.
 fn pick_unique_random_duel_candidates(conn: &mut PgConnection, ranking_id_param: i32) -> (ItemDuel, ItemDuel) {
     let filtered_items: QueryResult<Vec<RankingItemWithNameAndImage>> = fetch_ranking_items_with_names(conn, ranking_id_param);
@@ -124,7 +123,6 @@ fn get_items_with_value(conn: &mut PgConnection, ranking_id_param: i32, other_sc
         Vec::new()
     }
 }
-
 
 /// Selects two unique sequence candidates for a duel from a specified range.
 fn pick_min_max_duel_candidates(conn: &mut PgConnection, ranking_id_param: i32) -> (ItemDuel, ItemDuel) {
@@ -197,7 +195,6 @@ pub fn initialize_duel(conn: &mut PgConnection, ranking_id_param: i32) -> Result
 fn resolve_duel_state(conn: &mut PgConnection, ranking_id_param: i32) -> Result<DuelResult, Box<dyn std::error::Error>> {
     let duels_left = number_duels_left(conn, ranking_id_param);
 
-    // Check if there are no more duels left
     if duels_left <= 0 {
         let update_result = update_ranking(conn, ranking_id_param);
         match update_result {
@@ -327,7 +324,7 @@ pub fn record_battle_winner(conn: &mut PgConnection, battle_result: BattleResult
             count_winner = count_winner + 1
         }
     }
-    
+
     for l in &losers {
         println!(
             "> Adding implicit duel result: Winner ID: {}, Loser ID: {}",
@@ -385,20 +382,6 @@ pub fn record_battle_winner(conn: &mut PgConnection, battle_result: BattleResult
     })
 }
 
-/// Updates the ranking by reordering items based on their scores and returns the count of updated records.
-pub fn update_ranking(conn: &mut PgConnection, ranking_id_param: i32) -> QueryResult<usize> {
-    use crate::schema::ranking_items::{id, ranking_id, score};
-    // Load the items in the specified ranking ordered by score in descending order
-    let new_rank_order = ranking_items
-        .filter(ranking_id.eq(ranking_id_param))
-        .order(score.desc())
-        .select((id, score))
-        .load(conn)?;
-
-    // Update the ranks based on the new order and return the count of updated records
-    let updated_count = set_item_ranks(conn, new_rank_order)?;
-    Ok(updated_count)
-}
 
 /// Resets the scores in ranking_items and deletes all duels associated with the given ranking ID.
 pub fn reset_duel(conn: &mut PgConnection, ranking_id_param: i32) -> QueryResult<usize> {
@@ -438,3 +421,4 @@ pub fn reset_duel(conn: &mut PgConnection, ranking_id_param: i32) -> QueryResult
         }
     })
 }
+

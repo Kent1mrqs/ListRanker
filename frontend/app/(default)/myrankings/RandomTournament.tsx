@@ -1,65 +1,34 @@
 "use client";
 import React, {useCallback, useEffect, useState} from "react";
-import Spotlight from "@/components/spotlight";
 import {Stack, Typography} from "@mui/material";
 import {fetchData, postData} from "@/app/api";
-import {RankingItem} from "@/app/(default)/myrankings/ChooseRanking";
 import TemplateButton from "@/components/Template/TemplateButton";
-import {TemplateDuelCard} from "@/components/Template/TemplateCard";
 import {useNotification} from "@/app/NotificationProvider";
+import {BattleResult} from "@/components/Models/ModelsDuels";
+import {ComponentProps, Item} from "@/components/Models/ModelsItems";
+import {RankingItem} from "@/components/Models/ModelRankings";
+import {Duel} from "@/components/DuelCards";
 
-export interface Item {
-    id: number;
-    name: string,
-    image: string,
-}
+function ShowTournament({currentRankingItems, resetDuel}: {
+    currentRankingItems: RankingItem[],
+    resetDuel: () => void
+}) {
 
-const default_duel = [{
-    id: 0,
-    name: "",
-    image: ''
-}, {
-    id: 0,
-    name: "",
-    image: ""
-}];
-
-interface DuelResponse {
-    next_duel: Item[];
-    duels_left: number
-}
-
-interface NextDuelData {
-    NextDuelData: DuelResponse
-}
-
-interface BattleResult {
-    ranking_id: number;
-    loser: number;
-    winner: number;
-}
-
-interface DuelProps {
-    currentDual: Item[];
-    duelsLeft: number;
-    resetDuel: () => void;
-    chooseCard: (winner: BattleResult) => void;
-    ranking_id: number;
-}
-
-interface ComponentProps {
-    currentRankingItems: RankingItem[];
-    setCurrentRankingItems: (currentRankingItems: RankingItem[]) => void;
-    ranking_id: number;
-}
-
-function ShowRanking({currentRankingItems, resetDuel}: { currentRankingItems: RankingItem[], resetDuel: () => void }) {
+    const filter = currentRankingItems.reduce<Record<number, RankingItem[]>>((result, currentItem) => {
+        const rank = currentItem.rank
+        if (!result[rank]) {
+            result[rank] = [];
+        }
+        result[rank].push(currentItem);
+        return result
+    }, {})
+    console.log(Object.values(filter))
     return (
         <Stack alignItems="center" spacing={3}>
             {currentRankingItems
                 .sort((a, b) => a.rank > b.rank ? 1 : -1)
                 .map((item) => (
-                    <Typography key={item.id}>{item.rank} : {item.name} ({item.score} points)</Typography>
+                    <Typography key={item.id}>{item.rank} : {item.name}</Typography>
                 ))}
             <TemplateButton text="Reset" onClick={resetDuel}/>
 
@@ -67,105 +36,115 @@ function ShowRanking({currentRankingItems, resetDuel}: { currentRankingItems: Ra
     )
 }
 
-function ShowTournamentPreview() {
+function ShowTournamentPreview({currentRound}: { currentRound: Round }) {
     return (
-        <></>
+        <>
+            {currentRound}
+
+        </>
     )
 }
 
-function Duel({currentDual, resetDuel, chooseCard, ranking_id, duelsLeft}: DuelProps) {
+type DuelItem = Item[]
+type Round = DuelItem[]
 
-
-    return (
-        <Spotlight
-            className="group mx-auto grid max-w-sm mt-3 items-start justify-center gap-6 lg:max-w-none lg:grid-cols-3 h-auto">
-            <div className="flex justify-center">
-                <TemplateDuelCard title={currentDual[0].name}
-                                  image={currentDual[0].image}
-                                  variant="duel"
-                                  onClick={() => chooseCard({
-                                      ranking_id,
-                                      winner: currentDual[0].id,
-                                      loser: currentDual[1].id
-                                  })}/>
-            </div>
-            <div
-                className="flex justify-center items-center relative z-20 h-full overflow-hidden rounded-[inherit]"
-            >
-                <div>
-                    <div>Duels left: {duelsLeft}</div>
-                    <TemplateButton text="Reset" onClick={resetDuel}/>
-                </div>
-
-            </div>
-
-            <div className="flex justify-center">
-                <TemplateDuelCard title={currentDual[1].name}
-                                  image={currentDual[1].image}
-                                  variant="duel"
-                                  onClick={() => chooseCard({
-                                      ranking_id,
-                                      winner: currentDual[1].id,
-                                      loser: currentDual[0].id
-                                  })}/>
-            </div>
-        </Spotlight>
-    )
+interface RoundResponse {
+    next_duel: Round,
+    duels_left: number,
 }
+
+export interface NextRoundData {
+    NextRoundData?: RoundResponse,
+    Finished?: string,
+}
+
+const default_duel = [{name: "", id: 0, image: ""}, {name: "", id: 0, image: ""}]
+const default_round = [default_duel]
+
 
 export default function RandomTournament({
                                              ranking_id,
                                              setCurrentRankingItems,
                                              currentRankingItems
                                          }: ComponentProps) {
-
-    const [currentDual, setCurrentDual] = useState<Item[]>(default_duel)
-    const [duelOver, setDuelOver] = useState<Boolean>(false)
+    const [currentRound, setCurrentRound] = useState<Round>(default_round)
+    const [tournament, setTournament] = useState<Round>(default_round)
+    const [currentDuel, setCurrentDuel] = useState<DuelItem>(default_duel)
+    const [tournamentOver, setTournamentOver] = useState<Boolean>(false)
     const [duelsLeft, setDuelsLeft] = useState<number>(currentRankingItems.length * (currentRankingItems.length - 1) / 2)
     const {showNotification} = useNotification();
-
+    const [losers, setLosers] = useState<number[]>([])
     const fetchRankingItems = useCallback(() => {
         fetchData<RankingItem[]>('ranking-items/' + ranking_id)
             .then(result => setCurrentRankingItems(result))
     }, [])
 
     useEffect(() => {
-        initDuel()
+        if (!currentDuel[0].id) {
+            initTournament()
+        }
     }, []);
 
-    function chooseCard(winner: BattleResult) {
-        nextDuel(winner)
+    function chooseCard(result: BattleResult) {
+        setDuelsLeft(prevState => prevState - 1)
+        setLosers((prevLosers) => {
+            const newLosers = [...prevLosers, result.loser];
+            if (newLosers.length === currentRound.length) {
+                sendRoundResult(newLosers);
+            } else {
+                setCurrentDuel(currentRound[newLosers.length]);
+            }
+            return newLosers;
+        });
     }
 
-    function endBattle() {
+    function endTournament() {
         fetchRankingItems()
-        setDuelOver(true)
+        setTournamentOver(true)
     }
 
-    const fetchDuelInit = useCallback(() => {
-        fetchData<NextDuelData>('duels-init/' + ranking_id)
+    function resetTournament() {
+        postData<{}, String>("tournament-reset/" + ranking_id, {})
+            .then(() => {
+                fetchTournamentInit()
+                showNotification("Tournament reset", "success")
+                setTournamentOver(false)
+            })
+    }
+
+
+    const fetchTournamentInit = useCallback(() => {
+        fetchData<NextRoundData>('tournament-init/' + ranking_id)
             .then(response => {
-                if (!response.NextDuelData) {
-                    endBattle()
+                console.log(response)
+                if (response.Finished) {
+                    endTournament()
+                } else if (response.NextRoundData) {
+                    setTournament(response.NextRoundData.next_duel)
+                    setLosers([])
+                    setCurrentRound(response.NextRoundData.next_duel)
+                    setDuelsLeft(response.NextRoundData.duels_left)
+                    setCurrentDuel(response.NextRoundData.next_duel[0])
                 } else {
-                    setCurrentDual(response.NextDuelData.next_duel)
-                    setDuelsLeft(response.NextDuelData.duels_left)
+                    showNotification('errrrr', 'erreur')
                 }
             });
-    }, [setDuelsLeft, endBattle, setCurrentDual])
+    }, [setCurrentRound])
 
-    async function initDuel() {
-        fetchDuelInit()
+    async function initTournament() {
+        fetchTournamentInit()
     }
 
-    async function nextDuel(data_result: BattleResult) {
+    async function sendRoundResult(data_result: number[]) {
         try {
-            await postData<BattleResult, NextDuelData>('duels-next/' + ranking_id, data_result).then((response: NextDuelData) => {
-                if (!response.NextDuelData) {
-                    endBattle()
+            await postData<number[], NextRoundData>('tournament-next/' + ranking_id, data_result).then((response: NextRoundData) => {
+                if (!response.NextRoundData) {
+                    endTournament()
                 } else {
-                    setCurrentDual(response.NextDuelData.next_duel)
-                    setDuelsLeft(response.NextDuelData.duels_left)
+                    setLosers([])
+                    setCurrentRound(response.NextRoundData.next_duel)
+                    setDuelsLeft(response.NextRoundData.duels_left)
+                    setCurrentDuel(response.NextRoundData.next_duel[0])
                 }
             });
         } catch (e) {
@@ -174,29 +153,23 @@ export default function RandomTournament({
         }
     }
 
-    function resetDuel() {
-        postData<{}, String>("duels-reset/" + ranking_id, {})
-            .then(() => {
-                showNotification("Duel reset", "success")
-                fetchDuelInit()
-                setDuelOver(false)
-            })
-    }
-
+    console.log(currentRound)
     return (
         <Stack spacing={1} justifyContent='center'>
-            <ShowTournamentPreview/>
-            {duelOver ?
-                <ShowRanking
-                    resetDuel={resetDuel}
-                    currentRankingItems={currentRankingItems}
-                /> :
-                <Duel currentDual={currentDual}
-                      resetDuel={resetDuel}
-                      duelsLeft={duelsLeft}
-                      chooseCard={chooseCard}
-                      ranking_id={ranking_id}
-                />}
+            {tournamentOver &&
+				<ShowTournament
+					resetDuel={resetTournament}
+					currentRankingItems={currentRankingItems}
+				/>}
+            {!tournamentOver &&
+                currentDuel &&
+                currentDuel[0] &&
+				<Duel currentDual={currentDuel}
+				      resetDuel={resetTournament}
+				      duelsLeft={duelsLeft}
+				      chooseCard={chooseCard}
+				      ranking_id={ranking_id}
+				/>}
         </Stack>
     );
 }

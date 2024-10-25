@@ -3,10 +3,8 @@ import {Button, Stack, Typography} from "@mui/material";
 import React, {useCallback, useState} from "react";
 import {deleteData, editData, fetchData, postData} from "@/app/api";
 import Spotlight from "@/components/spotlight";
-import ListCreation, {InputItem, Item, NewList} from "@/app/(default)/mylists/ListCreation";
 import TemplateButton from "@/components/Template/TemplateButton";
 import {TemplateEditionCard, TemplateItemCardOrChip} from "@/components/Template/TemplateCard";
-import {List} from "@/app/(default)/workflow_creation/ChooseList";
 import {useUserContext} from "@/app/UserProvider";
 import {useListsContext} from "@/app/ListsProvider";
 import {fetchLists, saveList} from "@/app/(default)/mylists/ListServices";
@@ -14,17 +12,9 @@ import TemplateInput from "@/components/Template/TemplateInput";
 import {useNotification} from "@/app/NotificationProvider";
 import {smoothScrollToElement} from "@/app/utils";
 import {useRouter} from "next/navigation";
-
-export type ListProps = {
-    currentList: List;
-    setCurrentList: (list: List) => void;
-};
-
-type ListItems = {
-    name: string,
-    id: number,
-    items: InputItem[]
-}
+import {Item, NewList} from "@/components/Models/ModelsItems";
+import {List, ListItems, ListProps} from "@/components/Models/ModelsList";
+import ListCreation from "@/app/(default)/mylists/ListCreation";
 
 
 export default function ListSelection({

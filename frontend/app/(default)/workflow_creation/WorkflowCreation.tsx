@@ -9,32 +9,8 @@ import {useUserContext} from "@/app/UserProvider";
 import {fetchLists} from "@/app/(default)/mylists/ListServices";
 import {useListsContext} from "@/app/ListsProvider";
 import {useNotification} from "@/app/NotificationProvider";
+import {NewRanking} from "@/components/Models/ModelRankings";
 
-export interface NewRanking {
-    creation_method: string;
-    user_id: number | null;
-    name: string;
-    ranking_type: string;
-    list_id: number;
-}
-
-
-export type RankingProps = {
-    newRanking: {
-        creation_method: string;
-        user_id: number | null;
-        list_id: number;
-        name: string;
-        ranking_type: string
-    },
-    setNewRanking: (newValue: (prevValue: NewRanking) => {
-        user_id: number | null;
-        creation_method: string;
-        list_id: number;
-        name: string;
-        ranking_type: string
-    }) => void;
-}
 
 export default function WorkflowCreation() {
     const {setLists} = useListsContext();

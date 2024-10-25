@@ -87,3 +87,20 @@ pub fn set_item_ranks(conn: &mut PgConnection, new_ranks: Vec<(i32, i32)>) -> Re
 
     Ok(new_ranks.len())
 }
+
+
+/// Updates the ranking by reordering items based on their scores and returns the count of updated records.
+pub fn update_ranking(conn: &mut PgConnection, ranking_id_param: i32) -> QueryResult<usize> {
+    use crate::schema::ranking_items::dsl::*;
+    use crate::schema::ranking_items::{id, ranking_id, score};
+    // Load the items in the specified ranking ordered by score in descending order
+    let new_rank_order = ranking_items
+        .filter(ranking_id.eq(ranking_id_param))
+        .order(score.desc())
+        .select((id, score))
+        .load(conn)?;
+
+    // Update the ranks based on the new order and return the count of updated records
+    let updated_count = set_item_ranks(conn, new_rank_order)?;
+    Ok(updated_count)
+}

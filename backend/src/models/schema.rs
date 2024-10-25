@@ -36,6 +36,7 @@ diesel::table! {
         item_id -> Int4,
         rank -> Int4,
         score -> Int4,
+      //  pool -> Int4,
     }
 }
 

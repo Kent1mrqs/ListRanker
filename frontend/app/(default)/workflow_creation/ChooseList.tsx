@@ -1,13 +1,10 @@
 "use client";
 import TemplatePage from "@/components/Template/TemplatePage";
-import {NewRanking, RankingProps} from "@/app/(default)/workflow_creation/WorkflowCreation";
 import ListSelection from "@/app/(default)/mylists/ListSelection";
 import {useState} from "react";
+import {List} from "@/components/Models/ModelsList";
+import {NewRanking, RankingProps} from "@/components/Models/ModelRankings";
 
-export interface List {
-    name: string;
-    id: number;
-}
 
 export default function ChooseList({setNewRanking}: RankingProps) {
     const [currentList, setCurrentList] = useState<List>({name: '', id: 0})

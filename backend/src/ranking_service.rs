@@ -60,3 +60,4 @@ fn create_new_ranking_items(ranking_items: &[Item], ranking_id: i32) -> Vec<NewR
         })
         .collect()
 }
+
