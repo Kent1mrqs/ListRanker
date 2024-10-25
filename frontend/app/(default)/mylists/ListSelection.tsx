@@ -13,7 +13,7 @@ import {fetchLists, saveList} from "@/app/(default)/mylists/ListServices";
 import TemplateInput from "@/components/Template/TemplateInput";
 import {useNotification} from "@/app/NotificationProvider";
 import {smoothScrollToElement} from "@/app/utils";
-import {useRouter} from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
 
 export type ListProps = {
     currentList: List;
@@ -39,6 +39,7 @@ export default function ListSelection({
     const {lists, setLists} = useListsContext();
     const {showNotification} = useNotification();
     const router = useRouter();
+    const pathname = usePathname()
 
     const fetchItems = useCallback((list_id: number, redirect?: boolean) => {
         fetchData<Item[]>('items/' + list_id)
@@ -87,7 +88,7 @@ export default function ListSelection({
     }
 
     function newList() {
-        if (window.location.pathname !== '/mylists') {
+        if (pathname !== '/mylists') {
             router.push('/mylists')
         } else {
             setCurrentItems([])
@@ -186,7 +187,7 @@ export default function ListSelection({
                         accept=".json"
                         onChange={importList}/>
                 </Spotlight>
-                {!creationMode && window.location.pathname === '/mylists' && <ShowActionButtons
+                {!creationMode && pathname === '/mylists' && <ShowActionButtons
 					setEditedList={setEditedList}
 					currentList={currentList}
 					saveEditedList={saveEditedList}
@@ -201,7 +202,7 @@ export default function ListSelection({
             </Stack>
             {!!currentList.id && !creationMode &&
 				<ShowItems fetchItems={fetchItems} currentItems={currentItems} editionMode={editionMode}/>}
-            {creationMode && window.location.pathname === '/mylists' && <ListCreation/>}
+            {creationMode && pathname === '/mylists' && <ListCreation/>}
         </Stack>
     );
 }
