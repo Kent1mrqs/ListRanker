@@ -1,13 +1,13 @@
 "use client";
 import TemplatePage from "@/components/Template/TemplatePage";
-import {NewRanking} from "@/app/(default)/workflow_creation/WorkflowCreation";
 import TemplateInput from "@/components/Template/TemplateInput";
 import {Stack} from "@mui/material";
-import {isValidInput} from "@/app/(default)/mylists/ListCreation";
 import TemplateButton from "@/components/Template/TemplateButton";
 import {useRouter} from "next/navigation";
 import {useState} from "react";
 import {useNotification} from "@/app/NotificationProvider";
+import {isValidInput} from "@/app/utils";
+import {NewRanking} from "@/components/Models/ModelRankings";
 
 type SaveRankingProps = {
     newRanking: {

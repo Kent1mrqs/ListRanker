@@ -7,8 +7,8 @@ import PyramidTierList from "@/public/images/PyramidTierList.jpg";
 import PointsRanking from "@/public/images/PointsRanking.jpg";
 import Podium from "@/public/images/podium.webp";
 import TemplatePage from "@/components/Template/TemplatePage";
-import {NewRanking, RankingProps} from "@/app/(default)/workflow_creation/WorkflowCreation";
 import {smoothScrollToElement} from "@/app/utils";
+import {NewRanking, RankingProps} from "@/components/Models/ModelRankings";
 
 
 const rankingCard = [
@@ -16,8 +16,7 @@ const rankingCard = [
         title: 'Tournoi',
         image: TournoiImg,
         description: '',
-        key: 'tournament',
-        disabled: true
+        key: 'tournament'
     },
     {
         title: 'Tier List',

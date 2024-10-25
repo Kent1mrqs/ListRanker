@@ -1,14 +1,16 @@
 "use client";
-import ChooseRanking, {EditRanking, RankingItem} from "@/app/(default)/myrankings/ChooseRanking";
 import NumberedManualExchange from "@/app/(default)/myrankings/NumberedManualExchange";
 import TemplatePage from "@/components/Template/TemplatePage";
 import {useCallback, useEffect, useState} from "react";
-import {Ranking, Rankings} from "@/app/(default)/mylists/ListCreation";
 import {useUserContext} from "@/app/UserProvider";
 import {fetchData, postData} from "@/app/api";
 import NumberedIntelligentDual from "@/app/(default)/myrankings/NumberedIntelligentDual";
 import {useRankingsContext} from "@/app/RankingsProvider";
 import {useNotification} from "@/app/NotificationProvider";
+import {Ranking, Rankings} from "@/components/Models/ModelsItems";
+import {EditRanking, RankingItem} from "@/components/Models/ModelRankings";
+import ChooseRanking from "@/app/(default)/myrankings/ChooseRanking";
+import RandomTournament from "@/app/(default)/myrankings/RandomTournament";
 
 export default function MyRankings() {
     const {userId} = useUserContext();
@@ -76,7 +78,7 @@ export default function MyRankings() {
 					setCurrentRankingItems={setCurrentRankingItems}
 				/>}
             {currentRanking.ranking_type === 'numbered' &&
-                currentRanking.creation_method === "intelligent_dual" &&
+                currentRanking.creation_method === "duels" &&
                 currentRankingItems[0] &&
 				<NumberedIntelligentDual
 					currentRankingItems={currentRankingItems}
@@ -84,9 +86,9 @@ export default function MyRankings() {
 					setCurrentRankingItems={setCurrentRankingItems}
 				/>}
             {currentRanking.ranking_type === 'tournament' &&
-                currentRanking.creation_method === "intelligent_dual" &&
+                currentRanking.creation_method === "duels" &&
                 currentRankingItems[0] &&
-				<NumberedIntelligentDual
+				<RandomTournament
 					currentRankingItems={currentRankingItems}
 					ranking_id={currentRanking.id}
 					setCurrentRankingItems={setCurrentRankingItems}

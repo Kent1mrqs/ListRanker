@@ -1,4 +1,4 @@
-import {Item} from "@/app/(default)/myrankings/NumberedIntelligentDual";
+import {Item} from "@/components/Models/ModelsItems";
 
 export interface DuelResponse {
     next_duel: Item[];

@@ -2,7 +2,8 @@ import Spotlight from "@/components/spotlight";
 import {TemplateDuelCard} from "@/components/Template/TemplateCard";
 import TemplateButton from "@/components/Template/TemplateButton";
 import React from "react";
-import {BattleResult, Item} from "@/app/(default)/myrankings/NumberedIntelligentDual";
+import {BattleResult} from "@/components/Models/ModelsDuels";
+import {Item} from "@/components/Models/ModelsItems";
 
 interface DuelProps {
     currentDual: Item[];
