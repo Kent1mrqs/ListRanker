@@ -41,7 +41,6 @@ export default function ListCreation() {
     const addImagesAsItems = async (event: ChangeEvent<HTMLInputElement>) => {
         if (event.target.files) {
             const fileArray = Array.from(event.target.files);
-            console.log(fileArray);
             const fileDataPromises = fileArray.map(async (file) => {
                 const base64 = await convertToBase64(file);
                 return {

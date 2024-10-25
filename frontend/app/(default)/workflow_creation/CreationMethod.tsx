@@ -26,7 +26,7 @@ const rankingCard = [
         title: 'Dual match',
         image: DuelsImg,
         description: 'Generate dual matches to find your total ranking',
-        key: 'intelligent_dual',
+        key: 'duels',
     }
 ]
 

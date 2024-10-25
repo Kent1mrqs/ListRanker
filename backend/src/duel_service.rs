@@ -466,7 +466,7 @@ pub fn generate_tournament(conn: &mut PgConnection, ranking_id_param: i32) -> Ve
 
 pub fn init_tournament(conn: &mut PgConnection, ranking_id_param: i32) -> Result<Vec<(ItemDuel, ItemDuel)>, Box<dyn std::error::Error>> {
     let tournament = generate_tournament(conn, ranking_id_param);
-    println!("{:?}", tournament);
+
     let _number_duels_max = number_duels_max_tournament(conn, ranking_id_param);
     Ok(tournament)
     //diesel::update(ranking_items)
@@ -499,7 +499,7 @@ pub fn next_round(conn: &mut PgConnection, ranking_id_param: i32, data: Vec<i32>
                     .into_iter()
                     .filter(|item| item.rank == 0)
                     .collect();
-                
+
                 result.sort_by(|a, b| b.score.cmp(&a.score));
 
                 let result: Vec<ItemDuel> = result
@@ -509,7 +509,6 @@ pub fn next_round(conn: &mut PgConnection, ranking_id_param: i32, data: Vec<i32>
 
                 let pairs = create_pairs(result);
 
-                println!("{:?}", pairs);
                 Ok(pairs)
             }
         }
