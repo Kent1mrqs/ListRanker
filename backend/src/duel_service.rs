@@ -436,13 +436,26 @@ pub fn reset_duel(conn: &mut PgConnection, ranking_id_param: i32) -> QueryResult
     })
 }
 
-pub fn generate_tournament(conn: &mut PgConnection, ranking_id_param: i32) -> Vec<(ItemDuel, ItemDuel)> {
-    let mut rng = thread_rng();
-
-    diesel::update(ranking_items)
+pub fn reset_tournament(conn: &mut PgConnection, ranking_id_param: i32) -> QueryResult<usize> {
+    let update_result = diesel::update(ranking_items)
         .filter(ranking_id.eq(ranking_id_param))
-        .set(rank.eq(0))
-        .execute(conn).expect("Initialiaze tournament failed");
+        .set(rank.eq(1))
+        .execute(conn);
+
+    match update_result {
+        Ok(count) => {
+            println!("Update successful, {} rows updated", count);
+            Ok(count)
+        }
+        Err(e) => {
+            eprintln!("Error updating tournament: {:?}", e);
+            Err(e)
+        }
+    }
+}
+
+pub fn generate_tournament(conn: &mut PgConnection, ranking_id_param: i32) -> Result<Vec<(ItemDuel, ItemDuel)>, Box<dyn std::error::Error>> {
+    let mut rng = thread_rng();
 
     let items_result: QueryResult<Vec<RankingItemWithNameAndImage>> = fetch_ranking_items_with_names(conn, ranking_id_param);
 
@@ -455,23 +468,13 @@ pub fn generate_tournament(conn: &mut PgConnection, ranking_id_param: i32) -> Ve
             let mut shuffled_items = filtered_items.clone();
             shuffled_items.shuffle(&mut rng);
 
-            create_pairs(shuffled_items)
+            Ok(create_pairs(shuffled_items))
         }
         Err(e) => {
             eprintln!("Failed to fetch items: {:?}", e);
-            Vec::new()
+            Ok(Vec::new())
         }
     }
-}
-
-pub fn init_tournament(conn: &mut PgConnection, ranking_id_param: i32) -> Result<Vec<(ItemDuel, ItemDuel)>, Box<dyn std::error::Error>> {
-    let tournament = generate_tournament(conn, ranking_id_param);
-
-    let _number_duels_max = number_duels_max_tournament(conn, ranking_id_param);
-    Ok(tournament)
-    //diesel::update(ranking_items)
-    //    .filter(ranking_id.eq(ranking_id_param))
-    //    .set(pool.eq())
 }
 
 pub fn next_round(conn: &mut PgConnection, ranking_id_param: i32, data: Vec<i32>) -> Result<Vec<(ItemDuel, ItemDuel)>, Box<dyn std::error::Error>> {
@@ -497,7 +500,7 @@ pub fn next_round(conn: &mut PgConnection, ranking_id_param: i32, data: Vec<i32>
                 println!("next pair");
                 let mut result: Vec<_> = items
                     .into_iter()
-                    .filter(|item| item.rank == 0)
+                    .filter(|item| item.rank == 1)
                     .collect();
 
                 result.sort_by(|a, b| b.score.cmp(&a.score));
@@ -538,4 +541,14 @@ fn number_duels_max_tournament(conn: &mut PgConnection, ranking_id_param: i32) -
     let number_duels_max = number_items * (number_items + 2) / 8;
 
     number_duels_max
+}
+fn number_duels_left_tournament(conn: &mut PgConnection, ranking_id_param: i32) -> i64 {
+    let number_items: i64 = ranking_items
+        .filter(ranking_id.eq(ranking_id_param))
+        .filter(rank.eq(1))
+        .count()
+        .get_result(conn)
+        .unwrap_or(0);
+
+    number_items
 }

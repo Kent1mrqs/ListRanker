@@ -9,17 +9,26 @@ import {ComponentProps, Item} from "@/components/Models/ModelsItems";
 import {RankingItem} from "@/components/Models/ModelRankings";
 import {Duel} from "@/components/DuelCards";
 
-
 function ShowTournament({currentRankingItems, resetDuel}: {
     currentRankingItems: RankingItem[],
     resetDuel: () => void
 }) {
+
+    const filter = currentRankingItems.reduce<Record<number, RankingItem[]>>((result, currentItem) => {
+        const rank = currentItem.rank
+        if (!result[rank]) {
+            result[rank] = [];
+        }
+        result[rank].push(currentItem);
+        return result
+    }, {})
+    console.log(Object.values(filter))
     return (
         <Stack alignItems="center" spacing={3}>
             {currentRankingItems
                 .sort((a, b) => a.rank > b.rank ? 1 : -1)
                 .map((item) => (
-                    <Typography key={item.id}>{item.rank} : {item.name})</Typography>
+                    <Typography key={item.id}>{item.rank} : {item.name}</Typography>
                 ))}
             <TemplateButton text="Reset" onClick={resetDuel}/>
 
@@ -59,32 +68,45 @@ export default function RandomTournament({
         fetchData<RankingItem[]>('ranking-items/' + ranking_id)
             .then(result => setCurrentRankingItems(result))
     }, [])
-    const roundOver = false
+
     useEffect(() => {
         initTournament()
+        console.log("INIT ONCE")
     }, []);
 
     function chooseCard(result: BattleResult) {
-        console.log(result.loser, ' lost')
         const new_losers = [...losers, result.loser]
         setLosers(new_losers)
-        console.log(new_losers, ' are losers')
-        if (losers.length === currentRound.length) {
-            sendRoundResult(losers)
-            console.log('losers : ', losers)
+        console.log('losers', losers.length)
+        console.log('round', currentRound.length)
+        if (currentRound.length === 2) {
+            endTournament()
         } else {
-            setCurrentDuel(currentRound[losers.length + 1])
-            console.log('new duel between : ', currentRound[losers.length])
+            if (losers.length + 1 === currentRound.length) {
+                sendRoundResult(losers)
+                console.log('losers : ', losers)
+            } else {
+                setCurrentDuel(currentRound[losers.length + 1])
+                console.log('new duel between : ', currentRound[losers.length])
+            }
         }
     }
 
-    function endBattle() {
+    function endTournament() {
         fetchRankingItems()
         setTournamentOver(true)
     }
 
+    function resetTournament() {
+        postData<{}, String>("tournament-reset/" + ranking_id, {})
+            .then(() => {
+                fetchTournamentInit()
+                showNotification("Tournament reset", "success")
+                setTournamentOver(false)
+            })
+    }
+
     const fetchTournamentInit = useCallback(() => {
-        console.log('initt')
         fetchData<Round>('tournament-init/' + ranking_id)
             .then(response => {
                 //    if (!response.NextDuelData) {
@@ -107,15 +129,9 @@ export default function RandomTournament({
     async function sendRoundResult(data_result: number[]) {
         try {
             await postData<number[], Round>('tournament-next/' + ranking_id, data_result).then((response: Round) => {
-                //       if (!response.NextDuelData) {
-                //            endBattle()
-                //        } else {
                 setCurrentRound(response);
-                console.log('new round :', response[0])
                 setCurrentDuel(response[0])
                 setLosers([]);
-                //     setDuelsLeft(response.NextDuelData.duels_left)
-                //       }
             });
         } catch (e) {
             showNotification("error", "error")
@@ -127,13 +143,14 @@ export default function RandomTournament({
         <Stack spacing={1} justifyContent='center'>
             {tournamentOver &&
 				<ShowTournament
-					resetDuel={fetchTournamentInit}
+					resetDuel={resetTournament}
 					currentRankingItems={currentRankingItems}
 				/>}
             {!tournamentOver &&
+                currentDuel &&
                 currentDuel[0] &&
 				<Duel currentDual={currentDuel}
-				      resetDuel={fetchTournamentInit}
+				      resetDuel={resetTournament}
 				      duelsLeft={duelsLeft}
 				      chooseCard={chooseCard}
 				      ranking_id={ranking_id}
