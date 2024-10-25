@@ -8,16 +8,6 @@ export const metadata = {
     description: "Page description",
 };
 
-export interface NewUser {
-    username: string,
-    password_hash: string,
-}
-
-const default_user = {
-    username: '',
-    password_hash: ''
-}
-
 interface Input {
     label: string;
     id: string;

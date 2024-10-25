@@ -21,7 +21,6 @@ pub async fn fetch_user_rankings(path: web::Path<i32>) -> HttpResponse {
 pub async fn create_ranking(new_ranking: web::Json<NewRanking>) -> HttpResponse {
     let mut conn = establish_connection();
 
-    // Constructing the NewRanking object from the incoming request
     let ranking_data = NewRanking {
         name: new_ranking.name.clone(),
         user_id: new_ranking.user_id,

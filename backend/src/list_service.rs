@@ -15,29 +15,25 @@ pub fn register_new_list(conn: &mut PgConnection, new_list: NewListDb, items: Ve
     use crate::schema::lists::dsl::id;
     use crate::schema::lists;
 
-    // Insert the new list into the database
     diesel::insert_into(lists::table)
         .values(&new_list)
         .execute(conn)?;
 
-    // Retrieve the ID of the newly created list
     let new_list_id: i32 = lists::table
         .order(id.desc())
         .select(id)
         .first(conn)?;
 
-    // Prepare the items to be inserted
     let new_items: Vec<NewItem> = items.into_iter()
         .enumerate()
-        .map(|(index, item)| NewItem {
+        .map(|(_index, item)| NewItem {
             list_id: new_list_id,
             name: item.name.clone(),
-            position_list: index as i32,
             image: convert_image(item.image.clone()),
         })
         .collect();
 
-    // Insert the items into the database
+
     bulk_insert_items(conn, new_items)?;
     Ok(new_list_id as usize)
 }
@@ -49,11 +45,9 @@ pub fn delete_list(conn: &mut PgConnection, list_id: i32) -> QueryResult<usize> 
     use crate::schema::lists::dsl::{id, lists};
 
     conn.transaction::<_, diesel::result::Error, _>(|conn| {
-        // Delete all items associated with the specified list ID
         diesel::delete(items.filter(item_list_id.eq(list_id)))
             .execute(conn)?;
 
-        // Delete the list itself
         diesel::delete(lists.filter(id.eq(list_id)))
             .execute(conn)
     })

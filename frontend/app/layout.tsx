@@ -7,6 +7,7 @@ import Header from "@/components/ui/header";
 import {UserProvider} from "@/app/UserProvider";
 import {ListsProvider} from "@/app/ListsProvider";
 import {RankingsProvider} from "@/app/RankingsProvider";
+import NotificationProvider from "@/app/NotificationProvider";
 
 const inter = Inter({
     subsets: ["latin"],
@@ -59,10 +60,13 @@ export default function RootLayout({
         <UserProvider>
             <RankingsProvider>
                 <ListsProvider>
-                    <div className="flex min-h-screen flex-col overflow-hidden supports-[overflow:clip]:overflow-clip">
-                        <Header/>
-                        {children}
-                    </div>
+                    <NotificationProvider>
+                        <div
+                            className="flex min-h-screen flex-col overflow-hidden supports-[overflow:clip]:overflow-clip">
+                            <Header/>
+                            {children}
+                        </div>
+                    </NotificationProvider>
                 </ListsProvider>
             </RankingsProvider>
         </UserProvider>

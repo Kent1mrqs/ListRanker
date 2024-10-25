@@ -7,6 +7,7 @@ import {isValidInput} from "@/app/(default)/mylists/ListCreation";
 import TemplateButton from "@/components/Template/TemplateButton";
 import {useRouter} from "next/navigation";
 import {useState} from "react";
+import {useNotification} from "@/app/NotificationProvider";
 
 type SaveRankingProps = {
     newRanking: {
@@ -33,6 +34,7 @@ function isValid(ranking: NewRanking) {
 export default function RankingName({newRanking, saveRanking, setNewRanking}: SaveRankingProps) {
     const router = useRouter();
     const [error, setError] = useState(false);
+    const {showNotification} = useNotification();
 
     function onClick() {
         if (isValid(newRanking)) {
@@ -40,12 +42,14 @@ export default function RankingName({newRanking, saveRanking, setNewRanking}: Sa
             router.push("myrankings")
         } else {
             setError(true)
+            showNotification("invalid input : " + newRanking, "error")
             console.error("invalid input : ", newRanking)
         }
     }
 
     return (
         <TemplatePage
+            id="step4"
             title="Step 4 : Ranking Name"
             description="Choose a name for your ranking."
         >

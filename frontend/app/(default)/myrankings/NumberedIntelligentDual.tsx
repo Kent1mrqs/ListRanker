@@ -6,6 +6,7 @@ import {fetchData, postData} from "@/app/api";
 import {RankingItem} from "@/app/(default)/myrankings/ChooseRanking";
 import TemplateButton from "@/components/Template/TemplateButton";
 import {TemplateDuelCard} from "@/components/Template/TemplateCard";
+import {useNotification} from "@/app/NotificationProvider";
 
 export interface Item {
     id: number;
@@ -111,6 +112,7 @@ export default function NumberedIntelligentDual({
                                                 }: ComponentProps) {
 
     const [currentDual, setCurrentDual] = useState<Item[]>(default_duel)
+    const {showNotification} = useNotification();
     const [duelOver, setDuelOver] = useState<Boolean>(false)
     const [duelsLeft, setDuelsLeft] = useState<number>(currentRankingItems.length * (currentRankingItems.length - 1) / 2)
     const fetchRankingItems = useCallback(() => {
@@ -153,12 +155,13 @@ export default function NumberedIntelligentDual({
                 if (!response.NextDuelData) {
                     endBattle()
                 } else {
+                    showNotification("Battle result sent", "success")
                     setCurrentDual(response.NextDuelData.next_duel)
                     setDuelsLeft(response.NextDuelData.duels_left)
                 }
             });
         } catch (e) {
-            console.error(e)
+            showNotification("error", "error");
         }
     }
 
@@ -166,6 +169,7 @@ export default function NumberedIntelligentDual({
         postData<{}, String>("duels-reset/" + ranking_id, {})
             .then(() => {
                 fetchDuelInit()
+                showNotification("duel reset", "success")
                 setDuelOver(false)
             })
     }

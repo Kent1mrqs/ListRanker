@@ -27,6 +27,7 @@ export default function ChooseList({setNewRanking}: RankingProps) {
 
     return (
         <TemplatePage
+            id="step1"
             title="Step 1 : Choose a list"
             description="Select a list to base your ranking on. Choose from existing options or create a new list."
         >
