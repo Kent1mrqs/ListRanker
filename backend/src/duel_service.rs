@@ -3,7 +3,7 @@ use crate::models::ranking_items_models::RankingItemWithNameAndImage;
 use crate::ranking_item_service::{fetch_ranking_items_with_names, set_item_ranks};
 use crate::schema::duels::dsl::duels;
 use crate::schema::ranking_items::dsl::ranking_items;
-use crate::schema::ranking_items::{item_id, ranking_id, score};
+use crate::schema::ranking_items::{item_id, rank, ranking_id, score};
 use diesel::prelude::*;
 use diesel::result::Error;
 use rand::seq::SliceRandom;
@@ -438,6 +438,12 @@ pub fn reset_duel(conn: &mut PgConnection, ranking_id_param: i32) -> QueryResult
 
 pub fn generate_tournament(conn: &mut PgConnection, ranking_id_param: i32) -> Vec<(ItemDuel, ItemDuel)> {
     let mut rng = thread_rng();
+
+    diesel::update(ranking_items)
+        .filter(ranking_id.eq(ranking_id_param))
+        .set(rank.eq(0))
+        .execute(conn).expect("Initialiaze tournament failed");
+
     let items_result: QueryResult<Vec<RankingItemWithNameAndImage>> = fetch_ranking_items_with_names(conn, ranking_id_param);
 
     match items_result {
@@ -479,8 +485,8 @@ pub fn next_round(conn: &mut PgConnection, ranking_id_param: i32, data: Vec<i32>
             .set(rank.eq(position))
             .execute(conn)?;
     }
-    let filtered_items: QueryResult<Vec<RankingItemWithNameAndImage>> = fetch_ranking_items_with_names(conn, ranking_id_param);
 
+    let filtered_items: QueryResult<Vec<RankingItemWithNameAndImage>> = fetch_ranking_items_with_names(conn, ranking_id_param);
 
     match filtered_items {
         Ok(items) => {
@@ -489,13 +495,20 @@ pub fn next_round(conn: &mut PgConnection, ranking_id_param: i32, data: Vec<i32>
                 Ok(Vec::new())
             } else {
                 println!("next pair");
-                let pairs = create_pairs(
-                    items
-                        .into_iter()
-                        //  .filter(|item| item.rank == 0)
-                        .map(ItemDuel::from)
-                        .collect()
-                );
+                let mut result: Vec<_> = items
+                    .into_iter()
+                    .filter(|item| item.rank == 0)
+                    .collect();
+                
+                result.sort_by(|a, b| b.score.cmp(&a.score));
+
+                let result: Vec<ItemDuel> = result
+                    .into_iter()
+                    .map(ItemDuel::from)
+                    .collect();
+
+                let pairs = create_pairs(result);
+
                 println!("{:?}", pairs);
                 Ok(pairs)
             }

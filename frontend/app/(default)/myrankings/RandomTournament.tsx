@@ -33,33 +33,17 @@ interface NextDuelData {
     NextDuelData: DuelResponse
 }
 
-interface BattleResult {
-    ranking_id: number;
-    loser: number;
-    winner: number;
-}
 
-interface DuelProps {
-    currentDual: Item[];
-    duelsLeft: number;
-    resetDuel: () => void;
-    chooseCard: (winner: BattleResult) => void;
-    ranking_id: number;
-}
-
-interface ComponentProps {
-    currentRankingItems: RankingItem[];
-    setCurrentRankingItems: (currentRankingItems: RankingItem[]) => void;
-    ranking_id: number;
-}
-
-function ShowRanking({currentRankingItems, resetDuel}: { currentRankingItems: RankingItem[], resetDuel: () => void }) {
+function ShowTournament({currentRankingItems, resetDuel}: {
+    currentRankingItems: RankingItem[],
+    resetDuel: () => void
+}) {
     return (
         <Stack alignItems="center" spacing={3}>
             {currentRankingItems
                 .sort((a, b) => a.rank > b.rank ? 1 : -1)
                 .map((item) => (
-                    <Typography key={item.id}>{item.rank} : {item.name} ({item.score} points)</Typography>
+                    <Typography key={item.id}>{item.rank} : {item.name})</Typography>
                 ))}
             <TemplateButton text="Reset" onClick={resetDuel}/>
 
@@ -142,8 +126,8 @@ export default function RandomTournament({
         setDuelOver(true)
     }
 
-    const fetchDuelInit = useCallback(() => {
-        fetchData<NextDuelData>('duels-init/' + ranking_id)
+    const fetchTournamentInit = useCallback(() => {
+        fetchData<NextDuelData>('tournament-init/' + ranking_id)
             .then(response => {
                 if (!response.NextDuelData) {
                     endBattle()
@@ -155,12 +139,12 @@ export default function RandomTournament({
     }, [setDuelsLeft, endBattle, setCurrentDual])
 
     async function initDuel() {
-        fetchDuelInit()
+        fetchTournamentInit()
     }
 
     async function nextDuel(data_result: BattleResult) {
         try {
-            await postData<BattleResult, NextDuelData>('duels-next/' + ranking_id, data_result).then((response: NextDuelData) => {
+            await postData<BattleResult, NextDuelData>('tournament-next/' + ranking_id, data_result).then((response: NextDuelData) => {
                 if (!response.NextDuelData) {
                     endBattle()
                 } else {
@@ -174,25 +158,16 @@ export default function RandomTournament({
         }
     }
 
-    function resetDuel() {
-        postData<{}, String>("duels-reset/" + ranking_id, {})
-            .then(() => {
-                showNotification("Duel reset", "success")
-                fetchDuelInit()
-                setDuelOver(false)
-            })
-    }
-
     return (
         <Stack spacing={1} justifyContent='center'>
             <ShowTournamentPreview/>
             {duelOver ?
-                <ShowRanking
-                    resetDuel={resetDuel}
+                <ShowTournament
+                    resetDuel={fetchTournamentInit}
                     currentRankingItems={currentRankingItems}
                 /> :
                 <Duel currentDual={currentDual}
-                      resetDuel={resetDuel}
+                      resetDuel={fetchTournamentInit}
                       duelsLeft={duelsLeft}
                       chooseCard={chooseCard}
                       ranking_id={ranking_id}
