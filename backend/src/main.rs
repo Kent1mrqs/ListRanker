@@ -14,6 +14,7 @@ mod handlers;
 mod db;
 mod duel_service;
 mod middleware;
+mod tournament_service;
 
 use crate::middleware::JwtMiddleware;
 use actix_cors::Cors;
@@ -132,17 +133,17 @@ async fn main() -> std::io::Result<()> {
             .service(
                 web::resource("/tournament-reset/{ranking_id}")
                     .wrap(JwtMiddleware::new(secret_key.clone()))
-                    .route(web::post().to(handlers::duel_handlers::handle_tournament_reset)),
+                    .route(web::post().to(handlers::tournament_handlers::handle_reset_tournament)),
             )
             .service(
                 web::resource("/tournament-init/{ranking_id}")
                     .wrap(JwtMiddleware::new(secret_key.clone()))
-                    .route(web::get().to(handlers::duel_handlers::generate_tournament)),
+                    .route(web::get().to(handlers::tournament_handlers::handle_generate_round)),
             )
             .service(
                 web::resource("/tournament-next/{ranking_id}")
                     .wrap(JwtMiddleware::new(secret_key.clone()))
-                    .route(web::post().to(handlers::duel_handlers::next_round)),
+                    .route(web::post().to(handlers::tournament_handlers::handle_process_round)),
             )
             .service(
                 web::scope("/app")
