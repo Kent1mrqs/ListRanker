@@ -3,35 +3,12 @@ import React, {useCallback, useEffect, useState} from "react";
 import Spotlight from "@/components/spotlight";
 import {Stack, Typography} from "@mui/material";
 import {fetchData, postData} from "@/app/api";
-import {RankingItem} from "@/app/(default)/myrankings/ChooseRanking";
 import TemplateButton from "@/components/Template/TemplateButton";
 import {TemplateDuelCard} from "@/components/Template/TemplateCard";
 import {useNotification} from "@/app/NotificationProvider";
-
-export interface Item {
-    id: number;
-    name: string,
-    image: string,
-}
-
-const default_duel = [{
-    id: 0,
-    name: "",
-    image: ''
-}, {
-    id: 0,
-    name: "",
-    image: ""
-}];
-
-interface DuelResponse {
-    next_duel: Item[];
-    duels_left: number
-}
-
-interface NextDuelData {
-    NextDuelData: DuelResponse
-}
+import {BattleResult, default_duel, DuelProps, NextDuelData} from "@/components/Models/ModelsDuels";
+import {ComponentProps, Item} from "@/components/Models/ModelsItems";
+import {RankingItem} from "@/components/Models/ModelRankings";
 
 
 function ShowTournament({currentRankingItems, resetDuel}: {

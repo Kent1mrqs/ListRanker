@@ -1,8 +1,8 @@
 "use client";
 import React, {createContext, ReactNode, useContext, useEffect, useState} from "react";
-import {Lists} from "@/app/(default)/mylists/ListCreation";
 import {fetchLists} from "@/app/(default)/mylists/ListServices";
 import {useUserContext} from "@/app/UserProvider";
+import {Lists} from "@/components/Models/ModelsItems";
 
 interface ListsContextType {
     lists: Lists;

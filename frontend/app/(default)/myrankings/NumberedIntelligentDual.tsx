@@ -2,55 +2,12 @@
 import React, {useCallback, useEffect, useState} from "react";
 import {Stack} from "@mui/material";
 import {fetchData, postData} from "@/app/api";
-import {RankingItem} from "@/app/(default)/myrankings/ChooseRanking";
 import {useNotification} from "@/app/NotificationProvider";
 import {ShowRanking} from "@/components/ShowRanking";
 import {Duel} from "@/components/DuelCards";
-
-export interface Item {
-    id: number;
-    name: string,
-    image: string,
-}
-
-const default_duel = [{
-    id: 0,
-    name: "",
-    image: ''
-}, {
-    id: 0,
-    name: "",
-    image: ""
-}];
-
-interface DuelResponse {
-    next_duel: Item[];
-    duels_left: number
-}
-
-interface NextDuelData {
-    NextDuelData: DuelResponse
-}
-
-export interface BattleResult {
-    ranking_id: number;
-    loser: number;
-    winner: number;
-}
-
-interface DuelProps {
-    currentDual: Item[];
-    duelsLeft: number;
-    resetDuel: () => void;
-    chooseCard: (winner: BattleResult) => void;
-    ranking_id: number;
-}
-
-interface ComponentProps {
-    currentRankingItems: RankingItem[];
-    setCurrentRankingItems: (currentRankingItems: RankingItem[]) => void;
-    ranking_id: number;
-}
+import {BattleResult, default_duel, NextDuelData} from "@/components/Models/ModelsDuels";
+import {ComponentProps, Item} from "@/components/Models/ModelsItems";
+import {RankingItem} from "@/components/Models/ModelRankings";
 
 
 export default function NumberedIntelligentDual({
