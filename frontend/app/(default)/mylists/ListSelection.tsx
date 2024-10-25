@@ -3,7 +3,7 @@ import {Button, Stack, Typography} from "@mui/material";
 import React, {useCallback, useState} from "react";
 import {deleteData, editData, fetchData, postData} from "@/app/api";
 import Spotlight from "@/components/spotlight";
-import {InputItem, Item, NewList} from "@/app/(default)/mylists/ListCreation";
+import ListCreation, {InputItem, Item, NewList} from "@/app/(default)/mylists/ListCreation";
 import TemplateButton from "@/components/Template/TemplateButton";
 import {TemplateEditionCard, TemplateItemCardOrChip} from "@/components/Template/TemplateCard";
 import {List} from "@/app/(default)/workflow_creation/ChooseList";
@@ -13,12 +13,11 @@ import {fetchLists, saveList} from "@/app/(default)/mylists/ListServices";
 import TemplateInput from "@/components/Template/TemplateInput";
 import {useNotification} from "@/app/NotificationProvider";
 import {smoothScrollToElement} from "@/app/utils";
+import {useRouter} from "next/navigation";
 
 export type ListProps = {
     currentList: List;
     setCurrentList: (list: List) => void;
-    creationMode: boolean;
-    setCreationMode: (bool: boolean) => void;
 };
 
 type ListItems = {
@@ -29,17 +28,17 @@ type ListItems = {
 
 
 export default function ListSelection({
-                                          setCreationMode,
-                                          creationMode,
                                           currentList,
                                           setCurrentList
                                       }: ListProps) {
     const {userId} = useUserContext();
+    const [creationMode, setCreationMode] = useState<boolean>(true)
     const [currentItems, setCurrentItems] = useState<Item[]>([])
     const [editionMode, setEditionMode] = useState<boolean>(false)
     const [editedList, setEditedList] = useState<ListItems>({name: "", id: 0, items: []})
     const {lists, setLists} = useListsContext();
     const {showNotification} = useNotification();
+    const router = useRouter();
 
     const fetchItems = useCallback((list_id: number, redirect?: boolean) => {
         fetchData<Item[]>('items/' + list_id)
@@ -85,6 +84,17 @@ export default function ListSelection({
             })
             .catch((e) => showNotification('Error : ' + e.message, "error"))
 
+    }
+
+    function newList() {
+        if (window.location.pathname !== '/mylists') {
+            router.push('/mylists')
+        } else {
+            setCurrentItems([])
+            setCurrentList({name: '', id: 0})
+            setEditionMode(false)
+            setCreationMode(true)
+        }
     }
 
     async function saveEditedList() {
@@ -166,22 +176,8 @@ export default function ListSelection({
                     ))}
                     <TemplateButton text='New list'
                                     variant='outlined'
-                                    onClick={() => {
-                                        setEditionMode(false)
-                                        setCreationMode(true)
-                                    }}
+                                    onClick={newList}
                     />
-                </Spotlight>
-                <Stack direction="row" justifyContent="center" spacing={3}>
-                    <Button disabled={!currentList.id}
-                            onClick={() => {
-                                setEditedList({id: currentList.id, name: currentList.name, items: currentItems})
-                                setEditionMode(!editionMode)
-                            }}>Edit list</Button>
-                    <Button disabled={!currentList.id} onClick={() => deleteList()}>Delete list</Button>
-                    <Button disabled={!editionMode} onClick={() => saveEditedList()}>Save
-                        list</Button>
-                    <Button onClick={() => handleDownload()}>Download list</Button>
                     <Button onClick={() => document.getElementById('file-input')?.click()}>Import list</Button>
                     <input
                         id="file-input"
@@ -189,18 +185,73 @@ export default function ListSelection({
                         type="file"
                         accept=".json"
                         onChange={importList}/>
-                    <Button
-                        disabled={!editionMode}
-                        onClick={addItem}
-                    >
-                        Add item
-                    </Button>
-                </Stack>
+                </Spotlight>
+                {!creationMode && window.location.pathname === '/mylists' && <ShowActionButtons
+					setEditedList={setEditedList}
+					currentList={currentList}
+					saveEditedList={saveEditedList}
+					deleteList={deleteList}
+					importList={importList}
+					addItem={addItem}
+					currentItems={currentItems}
+					editionMode={editionMode}
+					setEditionMode={setEditionMode}
+					handleDownload={handleDownload}
+				/>}
             </Stack>
             {!!currentList.id && !creationMode &&
 				<ShowItems fetchItems={fetchItems} currentItems={currentItems} editionMode={editionMode}/>}
+            {creationMode && window.location.pathname === '/mylists' && <ListCreation/>}
         </Stack>
     );
+}
+
+type ActionProps = {
+    currentList: List,
+    setEditedList: (list: ListItems) => void,
+    setEditionMode: (bool: boolean) => void,
+    editionMode: boolean,
+    deleteList: () => void,
+    saveEditedList: () => void,
+    importList: (event: React.ChangeEvent<HTMLInputElement>) => void,
+    addItem: () => void,
+    currentItems: Item[],
+    handleDownload: () => void
+}
+
+function ShowActionButtons({
+                               currentList,
+                               setEditedList,
+                               setEditionMode,
+                               editionMode,
+                               deleteList,
+                               saveEditedList,
+                               importList,
+                               addItem,
+                               currentItems,
+                               handleDownload
+                           }: ActionProps
+) {
+    return (
+        <Stack direction="row" justifyContent="center" spacing={3}>
+            <Button disabled={!currentList.id}
+                    onClick={() => {
+                        setEditedList({id: currentList.id, name: currentList.name, items: currentItems})
+                        setEditionMode(!editionMode)
+                    }}>Edit list</Button>
+            <Button disabled={!currentList.id} onClick={deleteList}>Delete list</Button>
+            <Button disabled={!editionMode} onClick={saveEditedList}>Save
+                list</Button>
+            <Button disabled={!currentList.id} onClick={handleDownload}>Download list</Button>
+
+            <Button
+                disabled={!editionMode}
+                onClick={addItem}
+            >
+                Add item
+            </Button>
+        </Stack>
+    )
 }
 
 

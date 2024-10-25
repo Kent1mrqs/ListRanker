@@ -43,7 +43,7 @@ export default function ChooseRanking({
         user_id: userId,
         name: "",
         ranking_type: "numbered",
-        creation_method: "manual_exchange",
+        creation_method: "manual",
         list_id: 0
     }
 

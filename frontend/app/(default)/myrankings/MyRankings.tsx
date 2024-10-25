@@ -19,7 +19,7 @@ export default function MyRankings() {
         user_id: userId,
         name: "",
         ranking_type: "numbered",
-        creation_method: "manual_exchange",
+        creation_method: "manual",
         list_id: 0
     }
     const [currentRanking, setCurrentRanking] = useState<Ranking>(default_ranking)
@@ -68,7 +68,7 @@ export default function MyRankings() {
                 setCurrentRanking={setCurrentRanking}
             />
             {currentRanking.ranking_type === 'numbered' &&
-                currentRanking.creation_method === "manual_exchange" &&
+                currentRanking.creation_method === "manual" &&
                 currentRankingItems[0] &&
 				<NumberedManualExchange
 					saveRanking={saveRanking}

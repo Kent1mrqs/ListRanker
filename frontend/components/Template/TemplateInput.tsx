@@ -7,7 +7,7 @@ interface I {
     type?: string;
     error?: boolean;
     placeholder?: string;
-    value?: number;
+    value?: string | number;
     variant?: string;
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onBlur?: (e: React.ChangeEvent<HTMLInputElement>) => void;
