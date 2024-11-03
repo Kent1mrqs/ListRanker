@@ -36,6 +36,8 @@ diesel::table! {
         item_id -> Int4,
         rank -> Int4,
         score -> Int4,
+        defeats -> Int4,
+        wins -> Int4,
     }
 }
 

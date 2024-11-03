@@ -56,6 +56,8 @@ fn create_new_ranking_items(ranking_items: &[Item], ranking_id: i32) -> Vec<NewR
             item_id: item.id,
             ranking_id,
             score: 0,
+            wins: 0,
+            defeats: 0,
             rank: (index + 1) as i32,
         })
         .collect()

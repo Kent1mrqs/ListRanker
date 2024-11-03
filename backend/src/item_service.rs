@@ -46,6 +46,8 @@ pub fn add_item_to_list(conn: &mut PgConnection, list_id_param: i32) -> Result<u
     let mut ranking_items_vec = Vec::new();
     for ranking_id in ranking_ids {
         let ranking_item = NewRankingItem {
+            wins: 0,
+            defeats: 0,
             score: 0,
             rank: 1000,
             ranking_id,

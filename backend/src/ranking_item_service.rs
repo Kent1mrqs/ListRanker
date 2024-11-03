@@ -38,6 +38,8 @@ pub fn fetch_ranking_items_with_names(conn: &mut PgConnection, ranking_id_param:
                 item_id: ranking_item.item_id,
                 rank: ranking_item.rank,
                 score: ranking_item.score,
+                wins: ranking_item.wins,
+                defeats: ranking_item.defeats,
                 name: item_name,
                 image: item_image,
             }

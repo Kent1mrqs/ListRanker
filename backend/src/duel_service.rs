@@ -3,7 +3,7 @@ use crate::models::ranking_items_models::RankingItemWithNameAndImage;
 use crate::ranking_item_service::{fetch_ranking_items_with_names, set_item_ranks};
 use crate::schema::duels::dsl::duels;
 use crate::schema::ranking_items::dsl::ranking_items;
-use crate::schema::ranking_items::{ranking_id, score};
+use crate::schema::ranking_items::{defeats, ranking_id, score, wins};
 use diesel::prelude::*;
 use diesel::result::Error;
 use rand::seq::SliceRandom;
@@ -289,7 +289,7 @@ pub fn pick_duel_candidates(conn: &mut PgConnection, ranking_id_param: i32, algo
 
 /// Records the winner of a battle by inserting the battle result and updating the winner's score.
 pub fn record_battle_winner(conn: &mut PgConnection, battle_result: BattleResultApi) -> QueryResult<usize> {
-    use crate::schema::ranking_items::{item_id, score};
+    use crate::schema::ranking_items::item_id;
     let winners: Vec<i32> = get_items_who_beat_winner(conn, battle_result.ranking_id, battle_result.winner)?;
     println!(
         "Items that have beaten the winner (ID: {}): {:?}",
@@ -327,7 +327,7 @@ pub fn record_battle_winner(conn: &mut PgConnection, battle_result: BattleResult
             count_winner = count_winner + 1
         }
     }
-    
+
     for l in &losers {
         println!(
             "> Adding implicit duel result: Winner ID: {}, Loser ID: {}",
@@ -347,14 +347,14 @@ pub fn record_battle_winner(conn: &mut PgConnection, battle_result: BattleResult
     conn.transaction::<_, diesel::result::Error, _>(|transaction_conn| {
         diesel::update(ranking_items)
             .filter(item_id.eq(battle_result.winner))
-            .set(score.eq(score + 1 + count_loser))
+            .set(wins.eq(wins + 1 + count_loser))
             .execute(transaction_conn)?;
 
         for w in &winners {
             if !has_duel_occurred(transaction_conn, battle_result.loser, *w, battle_result.ranking_id) {
                 diesel::update(ranking_items)
                     .filter(item_id.eq(w))
-                    .set(score.eq(score + 1))
+                    .set(wins.eq(wins + 1))
                     .execute(transaction_conn)?;
             }
         }
@@ -362,7 +362,7 @@ pub fn record_battle_winner(conn: &mut PgConnection, battle_result: BattleResult
             if !has_duel_occurred(transaction_conn, *l, battle_result.winner, battle_result.ranking_id) {
                 diesel::update(ranking_items)
                     .filter(item_id.eq(l))
-                    .set(score.eq(score - 1))
+                    .set(defeats.eq(defeats + 1))
                     .execute(transaction_conn)?;
             }
         }
@@ -373,7 +373,7 @@ pub fn record_battle_winner(conn: &mut PgConnection, battle_result: BattleResult
 
         diesel::update(ranking_items)
             .filter(item_id.eq(battle_result.loser))
-            .set(score.eq(score - 1 - count_winner))
+            .set(defeats.eq(defeats + 1 + count_winner))
             .execute(transaction_conn)?;
 
         println!(
