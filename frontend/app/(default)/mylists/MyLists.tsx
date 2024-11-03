@@ -12,7 +12,7 @@ export default function MyLists() {
     const {setLists} = useListsContext();
 
     useEffect(() => {
-        fetchLists(userId, setLists);
+        fetchLists(setLists);
     }, [fetchLists]);
 
     return (

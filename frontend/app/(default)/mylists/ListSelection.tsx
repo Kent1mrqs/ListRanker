@@ -77,7 +77,7 @@ export default function ListSelection({
     async function deleteList() {
         deleteData("list/" + currentList.id)
             .then(() => {
-                fetchLists(userId, setLists)
+                fetchLists(setLists)
                 setCurrentItems([])
                 setCurrentList({name: '', id: 0})
                 showNotification("List deleted", "success")
@@ -101,7 +101,7 @@ export default function ListSelection({
         editData("list-edit/" + currentList.id, editedList)
             .then(() => {
                 setEditionMode(false)
-                fetchLists(userId, setLists)
+                fetchLists(setLists)
                 showNotification("List edited", "success")
             })
             .catch((e) => showNotification('Error : ' + e.message, "error"))
@@ -122,7 +122,9 @@ export default function ListSelection({
                 try {
                     const jsonData: NewList = JSON.parse(result);
                     showNotification('List imported', "success")
-                    saveList({...jsonData, user_id: userId}, userId, setLists);
+                    saveList({...jsonData, user_id: userId}).then(() => {
+                        fetchLists(setLists);
+                    });
                 } catch (error) {
                     showNotification('Error', "error")
                 }

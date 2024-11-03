@@ -1,20 +1,24 @@
-use crate::db;
 use crate::db::establish_connection;
 use crate::list_service;
 use crate::models::lists_models::{EditList, NewListApi, NewListDb};
-use actix_web::{web, HttpResponse};
+use crate::models::users_models::Claims;
+use actix_web::{web, HttpMessage, HttpRequest, HttpResponse};
 
 /// Retrieves all lists associated with the specified user ID and returns them as a JSON response.
-pub async fn fetch_user_lists(path: web::Path<i32>) -> HttpResponse {
-    let mut conn = db::establish_connection();
-    let user_id = path.into_inner();
+pub async fn fetch_user_lists(req: HttpRequest) -> HttpResponse {
+    let mut conn = establish_connection();
+    if let Some(claims) = req.extensions().get::<Claims>() {
+        let user_id = &claims.sub;
 
-    match list_service::fetch_user_lists(&mut conn, user_id) {
-        Ok(lists) => HttpResponse::Ok().json(lists),
-        Err(e) => {
-            eprintln!("Error fetching lists for user ID {}: {:?}", user_id, e);
-            HttpResponse::InternalServerError().body("Error fetching lists")
+        match list_service::fetch_user_lists(&mut conn, user_id.parse().unwrap_or_default()) {
+            Ok(lists) => HttpResponse::Ok().json(lists),
+            Err(e) => {
+                eprintln!("Error fetching lists for user ID {}: {:?}", user_id, e);
+                HttpResponse::InternalServerError().body("Error fetching lists")
+            }
         }
+    } else {
+        HttpResponse::Unauthorized().body("Unauthorized")
     }
 }
 

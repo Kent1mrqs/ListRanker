@@ -49,7 +49,7 @@ export default function WorkflowCreation() {
     }
     const [newRanking, setNewRanking] = useState<NewRanking>(default_ranking)
     useEffect(() => {
-        fetchLists(userId, setLists);
+        fetchLists(setLists);
     }, [fetchLists]);
 
     async function saveRanking() {

@@ -55,12 +55,12 @@ async fn main() -> std::io::Result<()> {
                     .route(web::get().to(handlers::users_handlers::fetch_all_users))
             )
             .service(
-                web::resource("/lists")
+                web::resource("/new-list")
                     .wrap(JwtMiddleware::new(secret_key.clone()))
                     .route(web::post().to(handlers::lists_handlers::create_list))
             )
             .service(
-                web::resource("/lists/{user_id}")
+                web::resource("/get-lists")
                     .wrap(JwtMiddleware::new(secret_key.clone()))
                     .route(web::get().to(handlers::lists_handlers::fetch_user_lists))
             )

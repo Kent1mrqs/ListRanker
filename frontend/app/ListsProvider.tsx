@@ -2,7 +2,6 @@
 import React, {createContext, ReactNode, useContext, useEffect, useState} from "react";
 import {Lists} from "@/app/(default)/mylists/ListCreation";
 import {fetchLists} from "@/app/(default)/mylists/ListServices";
-import {useUserContext} from "@/app/UserProvider";
 
 interface ListsContextType {
     lists: Lists;
@@ -13,10 +12,9 @@ const ListsContext = createContext<ListsContextType | undefined>(undefined);
 
 export const ListsProvider = ({children}: { children: ReactNode }) => {
     const [lists, setLists] = useState<Lists>([]);
-    const {userId} = useUserContext();
 
     useEffect(() => {
-        fetchLists(userId, setLists);
+        fetchLists(setLists);
     }, [fetchLists]);
 
     return (
