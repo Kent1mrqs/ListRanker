@@ -2,8 +2,7 @@ use crate::models::duel_models::{BattleResultApi, BattleResultDb, DuelResult, It
 use crate::models::ranking_items_models::RankingItemWithNameAndImage;
 use crate::ranking_item_service::{fetch_ranking_items_with_names, set_item_ranks};
 use crate::schema::duels::dsl::duels;
-use crate::schema::ranking_items::dsl::ranking_items;
-use crate::schema::ranking_items::{defeats, ranking_id, score, wins};
+use crate::schema::ranking_items::dsl::{ranking_id, ranking_items};
 use diesel::prelude::*;
 use diesel::result::Error;
 use rand::seq::SliceRandom;
@@ -289,7 +288,7 @@ pub fn pick_duel_candidates(conn: &mut PgConnection, ranking_id_param: i32, algo
 
 /// Records the winner of a battle by inserting the battle result and updating the winner's score.
 pub fn record_battle_winner(conn: &mut PgConnection, battle_result: BattleResultApi) -> QueryResult<usize> {
-    use crate::schema::ranking_items::item_id;
+    use crate::schema::ranking_items::{defeats, item_id, score, wins};
     let winners: Vec<i32> = get_items_who_beat_winner(conn, battle_result.ranking_id, battle_result.winner)?;
     println!(
         "Items that have beaten the winner (ID: {}): {:?}",
@@ -350,11 +349,20 @@ pub fn record_battle_winner(conn: &mut PgConnection, battle_result: BattleResult
             .set(wins.eq(wins + 1 + count_loser))
             .execute(transaction_conn)?;
 
+        diesel::update(ranking_items)
+            .filter(item_id.eq(battle_result.winner))
+            .set(score.eq(score + 1 + count_loser))
+            .execute(transaction_conn)?;
+
         for w in &winners {
             if !has_duel_occurred(transaction_conn, battle_result.loser, *w, battle_result.ranking_id) {
                 diesel::update(ranking_items)
                     .filter(item_id.eq(w))
                     .set(wins.eq(wins + 1))
+                    .execute(transaction_conn)?;
+                diesel::update(ranking_items)
+                    .filter(item_id.eq(w))
+                    .set(score.eq(score + 1))
                     .execute(transaction_conn)?;
             }
         }
@@ -363,6 +371,10 @@ pub fn record_battle_winner(conn: &mut PgConnection, battle_result: BattleResult
                 diesel::update(ranking_items)
                     .filter(item_id.eq(l))
                     .set(defeats.eq(defeats + 1))
+                    .execute(transaction_conn)?;
+                diesel::update(ranking_items)
+                    .filter(item_id.eq(l))
+                    .set(score.eq(score + 1))
                     .execute(transaction_conn)?;
             }
         }
@@ -374,6 +386,11 @@ pub fn record_battle_winner(conn: &mut PgConnection, battle_result: BattleResult
         diesel::update(ranking_items)
             .filter(item_id.eq(battle_result.loser))
             .set(defeats.eq(defeats + 1 + count_winner))
+            .execute(transaction_conn)?;
+
+        diesel::update(ranking_items)
+            .filter(item_id.eq(battle_result.loser))
+            .set(score.eq(score + 1 + count_winner))
             .execute(transaction_conn)?;
 
         println!(
@@ -406,35 +423,23 @@ pub fn reset_duel(conn: &mut PgConnection, ranking_id_param: i32) -> QueryResult
     use crate::schema::duels;
 
     conn.transaction::<_, diesel::result::Error, _>(|conn| {
-        // Reset scores
-        let update_result = diesel::update(ranking_items.filter(ranking_items::ranking_id.eq(ranking_id_param)))
-            .set(score.eq(0))
-            .execute(conn);
-        match update_result {
-            Ok(count) => {
-                println!("Update successful, {} rows affected", count);
-                if count == 0 {
-                    return Err(diesel::result::Error::NotFound);
-                }
-            }
-            Err(e) => {
-                println!("Error resetting scores: {:?}", e);
-                return Err(e);
-            }
-        }
-        // Delete associated duels
-        let delete_result = diesel::delete(duels.filter(duels::ranking_id.eq(ranking_id_param)))
-            .execute(conn);
+        diesel::update(ranking_items.filter(ranking_items::ranking_id.eq(ranking_id_param)))
+            .set(ranking_items::score.eq(0))
+            .execute(conn)?;
 
-        match delete_result {
-            Ok(count) => {
-                println!("Delete successful, {} rows deleted", count);
-                Ok(count)
-            }
-            Err(e) => {
-                println!("Error deleting duels: {:?}", e);
-                Err(e)
-            }
-        }
+        diesel::update(ranking_items.filter(ranking_items::ranking_id.eq(ranking_id_param)))
+            .set(ranking_items::wins.eq(0))
+            .execute(conn)?;
+
+        diesel::update(ranking_items.filter(ranking_items::ranking_id.eq(ranking_id_param)))
+            .set(ranking_items::defeats.eq(0))
+            .execute(conn)?;
+
+        // Delete associated duels
+        diesel::delete(duels.filter(duels::ranking_id.eq(ranking_id_param)))
+            .execute(conn)?;
+
+
+        Ok(1)
     })
 }
