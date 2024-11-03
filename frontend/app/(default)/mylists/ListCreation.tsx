@@ -22,7 +22,7 @@ export interface InputItem {
     image?: string;
 }
 
-export interface NewList {
+export interface NewRankings {
     user_id: number | null;
     name: string;
     items: InputItem[];
@@ -60,13 +60,13 @@ export default function ListCreation() {
     const {setLists} = useListsContext();
     const {showNotification} = useNotification();
 
-    const default_list: NewList = {
+    const default_list: NewRankings = {
         user_id: userId,
         name: '',
         items: []
     };
 
-    const [newList, setNewList] = useState<NewList>(default_list);
+    const [newList, setNewList] = useState<NewRankings>(default_list);
     const [loading, setLoading] = useState<boolean>(false);
 
     async function handleSaveList() {
@@ -108,7 +108,7 @@ export default function ListCreation() {
 
     function editItem(id: number, e: React.ChangeEvent<HTMLInputElement>) {
         const newName = e.target.value
-        setNewList((prevList: NewList) => {
+        setNewList((prevList: NewRankings) => {
             const updatedItems = prevList.items.map((item, index) => {
                 if (index === id) {
                     return {...item, name: newName};
@@ -149,7 +149,7 @@ export default function ListCreation() {
             reader.onloadend = () => {
                 const newImage = reader.result as string;
 
-                setNewList((prevList: NewList) => {
+                setNewList((prevList: NewRankings) => {
                     const updatedItems = prevList.items.map((item, index) => {
                         if (index === id) {
                             return {...item, image: newImage};
@@ -170,7 +170,7 @@ export default function ListCreation() {
 
 
     const handleFileReset = (id: number) => {
-        setNewList((prevList: NewList) => {
+        setNewList((prevList: NewRankings) => {
             const updatedItems = prevList.items.map((item, index): InputItem => {
                 if (index === id) {
                     return {...item, image: ""};

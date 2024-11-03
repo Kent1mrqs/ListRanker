@@ -1,19 +1,24 @@
 use crate::db::establish_connection;
 use crate::models::rankings_models::NewRanking;
+use crate::models::users_models::Claims;
 use crate::ranking_service;
-use actix_web::{web, HttpResponse};
+use actix_web::{web, HttpMessage, HttpRequest, HttpResponse};
 
 /// Retrieves rankings for a specified user and returns them as a JSON response.
-pub async fn fetch_user_rankings(path: web::Path<i32>) -> HttpResponse {
+pub async fn fetch_user_rankings(req: HttpRequest) -> HttpResponse {
     let mut conn = establish_connection();
-    let user_id = path.into_inner();
+    if let Some(claims) = req.extensions().get::<Claims>() {
+        let user_id = &claims.sub;
 
-    match ranking_service::fetch_user_rankings(&mut conn, user_id) {
-        Ok(rankings) => HttpResponse::Ok().json(rankings),
-        Err(e) => {
-            eprintln!("Error retrieving rankings for user ID {}: {:?}", user_id, e);
-            HttpResponse::InternalServerError().body("Error retrieving rankings")
+        match ranking_service::fetch_user_rankings(&mut conn, user_id.parse().unwrap_or_default()) {
+            Ok(rankings) => HttpResponse::Ok().json(rankings),
+            Err(e) => {
+                eprintln!("Error retrieving rankings for user ID {}: {:?}", user_id, e);
+                HttpResponse::InternalServerError().body("Error retrieving rankings")
+            }
         }
+    } else {
+        HttpResponse::Unauthorized().body("Unauthorized")
     }
 }
 
