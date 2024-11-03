@@ -23,20 +23,27 @@ pub async fn fetch_user_lists(req: HttpRequest) -> HttpResponse {
 }
 
 /// Creates a new list based on the provided data and returns the created list as a JSON response.
-pub async fn create_list(new_list: web::Json<NewListApi>) -> HttpResponse {
+pub async fn create_list(req: HttpRequest, new_list: web::Json<NewListApi>) -> HttpResponse {
     let mut conn = establish_connection();
 
-    let list_data = NewListDb {
-        user_id: new_list.user_id,
-        name: new_list.name.clone(),
-    };
 
-    match list_service::register_new_list(&mut conn, list_data, new_list.items.clone()) {
-        Ok(created_list) => HttpResponse::Ok().json(created_list),
-        Err(e) => {
-            println!("Error creating list: {:?}", e);
-            HttpResponse::InternalServerError().body("Error creating list")
+    if let Some(claims) = req.extensions().get::<Claims>() {
+        let user_id = &claims.sub;
+
+        let list_data = NewListDb {
+            user_id: user_id.parse().unwrap_or_default(),
+            name: new_list.name.clone(),
+        };
+
+        match list_service::register_new_list(&mut conn, list_data, new_list.items.clone()) {
+            Ok(created_list) => HttpResponse::Ok().json(created_list),
+            Err(e) => {
+                println!("Error creating list: {:?}", e);
+                HttpResponse::InternalServerError().body("Error creating list")
+            }
         }
+    } else {
+        HttpResponse::Unauthorized().body("Unauthorized")
     }
 }
 
