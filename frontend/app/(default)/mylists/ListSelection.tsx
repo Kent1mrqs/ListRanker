@@ -3,7 +3,7 @@ import {Button, Stack, Typography} from "@mui/material";
 import React, {useCallback, useState} from "react";
 import {deleteData, editData, fetchData, postData} from "@/app/api";
 import Spotlight from "@/components/spotlight";
-import ListCreation, {InputItem, Item, NewList} from "@/app/(default)/mylists/ListCreation";
+import ListCreation, {InputItem, Item, NewRankings} from "@/app/(default)/mylists/ListCreation";
 import TemplateButton from "@/components/Template/TemplateButton";
 import {TemplateEditionCard, TemplateItemCardOrChip} from "@/components/Template/TemplateCard";
 import {List} from "@/app/(default)/workflow_creation/ChooseList";
@@ -77,7 +77,7 @@ export default function ListSelection({
     async function deleteList() {
         deleteData("list/" + currentList.id)
             .then(() => {
-                fetchLists(userId, setLists)
+                fetchLists(setLists)
                 setCurrentItems([])
                 setCurrentList({name: '', id: 0})
                 showNotification("List deleted", "success")
@@ -101,7 +101,7 @@ export default function ListSelection({
         editData("list-edit/" + currentList.id, editedList)
             .then(() => {
                 setEditionMode(false)
-                fetchLists(userId, setLists)
+                fetchLists(setLists)
                 showNotification("List edited", "success")
             })
             .catch((e) => showNotification('Error : ' + e.message, "error"))
@@ -120,9 +120,11 @@ export default function ListSelection({
             const result = e?.target?.result;
             if (typeof result === 'string') {
                 try {
-                    const jsonData: NewList = JSON.parse(result);
-                    showNotification('List imported', "success")
-                    saveList({...jsonData, user_id: userId}, userId, setLists);
+                    const jsonData: NewRankings = JSON.parse(result);
+                    saveList({...jsonData, user_id: userId}).then(() => {
+                        showNotification('List imported', "success")
+                        fetchLists(setLists);
+                    });
                 } catch (error) {
                     showNotification('Error', "error")
                 }

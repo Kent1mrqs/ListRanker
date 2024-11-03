@@ -22,4 +22,12 @@ pub struct NewRanking {
     pub creation_method: String,
 }
 
+#[derive(Deserialize, Serialize)]
+pub struct NewRankingApi {
+    pub name: String,
+    pub list_id: i32,
+    pub ranking_type: String,
+    pub creation_method: String,
+}
+
 

@@ -1,12 +1,11 @@
 "use client";
 import {Button, Stack, Typography} from "@mui/material";
 import React, {ChangeEvent, useState} from "react";
-import {postData} from "@/app/api";
 import TemplateInput from "@/components/Template/TemplateInput";
 import {useUserContext} from "@/app/UserProvider";
 import Spotlight from "@/components/spotlight";
 import {TemplateEditionCard} from "@/components/Template/TemplateCard";
-import {fetchLists} from "@/app/(default)/mylists/ListServices";
+import {fetchLists, saveList} from "@/app/(default)/mylists/ListServices";
 import {useListsContext} from "@/app/ListsProvider";
 import {useNotification} from "@/app/NotificationProvider";
 import TemplateTextArea from "@/components/Template/TemplateTextArea";
@@ -70,14 +69,14 @@ export default function ListCreation() {
     const [newList, setNewList] = useState<NewList>(default_list);
     const [loading, setLoading] = useState<boolean>(false);
 
-    async function saveList() {
+    async function handleSaveList() {
         setLoading(true)
-        postData<NewList, NewList>('lists', newList).then(() => {
+        saveList(newList).then(() => {
             setLoading(false)
             setNewList(default_list)
-            fetchLists(userId, setLists)
+            fetchLists(setLists)
             showNotification("New list created", "success")
-        });
+        })
     }
 
     const addImagesAsItems = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -234,7 +233,7 @@ export default function ListCreation() {
                         image={''}
                     />*/}
                 </Spotlight>
-                <Button disabled={loading} onClick={saveList}>Save</Button>
+                <Button disabled={loading} onClick={handleSaveList}>Save</Button>
             </Stack>
         </Stack>
     );
