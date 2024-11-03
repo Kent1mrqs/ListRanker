@@ -7,7 +7,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      BACKEND_URL: http://backend:8080
+      NEXT_PUBLIC_BACKEND_URL: http://list_ranker-backend:8080
     networks:
       - app-network
 
