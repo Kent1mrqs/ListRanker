@@ -6,17 +6,21 @@ services:
       context: ../../frontend
     ports:
       - "3000:3000"
+    environment:
+      NEXT_PUBLIC_BACKEND_URL: http://list_ranker-backend:8080
     networks:
       - app-network
 
   list_ranker-backend:
     build:
       context: ../../backend
+      target: development
     ports:
       - "8080:8080"
     networks:
       - app-network
     environment:
+      SECRET_KEY: "eeeeeeeeee"
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}

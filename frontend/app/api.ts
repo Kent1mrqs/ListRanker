@@ -1,3 +1,9 @@
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://172.19.0.4:8080/";
+console.log('url : ', backendUrl)
 const handleAuth = (): string | null => {
     const token = localStorage.getItem('jwt');
     if (!token) {
@@ -31,7 +37,7 @@ const createFetchOptions = (method: string, token: string | null, data?: any): R
 };
 
 const apiRequest = async <T, R>(method: string, route: string, data?: T): Promise<R> => {
-    const url = `http://127.0.0.1:8080/${route}`;
+    const url = `${backendUrl}${route}`;
     const token = handleAuth();
 
     try {

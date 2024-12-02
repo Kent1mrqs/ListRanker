@@ -15,7 +15,7 @@ FROM base AS development
 
 EXPOSE 8080
 
-CMD [ "cargo", "run", "--offline" ]
+CMD [ "cargo", "run" ]
 
 FROM base AS builder
 
