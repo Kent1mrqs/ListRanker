@@ -55,12 +55,12 @@ async fn main() -> std::io::Result<()> {
                     .route(web::get().to(handlers::users_handlers::fetch_all_users))
             )
             .service(
-                web::resource("/lists")
+                web::resource("/new-list")
                     .wrap(JwtMiddleware::new(secret_key.clone()))
                     .route(web::post().to(handlers::lists_handlers::create_list))
             )
             .service(
-                web::resource("/lists/{user_id}")
+                web::resource("/get-lists")
                     .wrap(JwtMiddleware::new(secret_key.clone()))
                     .route(web::get().to(handlers::lists_handlers::fetch_user_lists))
             )
@@ -95,7 +95,7 @@ async fn main() -> std::io::Result<()> {
                     .route(web::post().to(handlers::items_handlers::add_item)),
             )
             .service(
-                web::resource("/rankings/{userId}")
+                web::resource("/get-rankings")
                     .wrap(JwtMiddleware::new(secret_key.clone()))
                     .route(web::get().to(handlers::rankings_handlers::fetch_user_rankings))
             )
@@ -110,7 +110,7 @@ async fn main() -> std::io::Result<()> {
                     .route(web::get().to(handlers::ranking_items_handlers::fetch_ranking_items))
             )
             .service(
-                web::resource("/rankings")
+                web::resource("/new-ranking")
                     .wrap(JwtMiddleware::new(secret_key.clone()))
                     .route(web::post().to(handlers::rankings_handlers::create_ranking)),
             )

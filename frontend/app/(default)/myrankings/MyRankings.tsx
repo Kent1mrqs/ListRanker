@@ -2,13 +2,14 @@
 import ChooseRanking, {EditRanking, RankingItem} from "@/app/(default)/myrankings/ChooseRanking";
 import NumberedManualExchange from "@/app/(default)/myrankings/NumberedManualExchange";
 import TemplatePage from "@/components/Template/TemplatePage";
-import {useCallback, useEffect, useState} from "react";
-import {Ranking, Rankings} from "@/app/(default)/mylists/ListCreation";
+import {useEffect, useState} from "react";
+import {Ranking} from "@/app/(default)/mylists/ListCreation";
 import {useUserContext} from "@/app/UserProvider";
-import {fetchData, postData} from "@/app/api";
+import {postData} from "@/app/api";
 import NumberedIntelligentDual from "@/app/(default)/myrankings/NumberedIntelligentDual";
 import {useRankingsContext} from "@/app/RankingsProvider";
 import {useNotification} from "@/app/NotificationProvider";
+import {fetchRankings} from "@/app/(default)/myrankings/RankingsServices";
 
 export default function MyRankings() {
     const {userId} = useUserContext();
@@ -19,21 +20,14 @@ export default function MyRankings() {
         user_id: userId,
         name: "",
         ranking_type: "numbered",
-        creation_method: "manual_exchange",
+        creation_method: "manual",
         list_id: 0
     }
     const [currentRanking, setCurrentRanking] = useState<Ranking>(default_ranking)
     const [currentRankingItems, setCurrentRankingItems] = useState<RankingItem[]>([])
-    const fetchRankings = useCallback(() => {
-        fetchData<Rankings>('rankings/' + userId)
-            .then(result => setRankings(result))
-            .catch(err => {
-                showNotification(err.message, "error")
-                console.error(err.message)
-            });
-    }, []);
+
     useEffect(() => {
-        fetchRankings();
+        fetchRankings(setRankings)
     }, [fetchRankings]);
 
 
@@ -44,7 +38,7 @@ export default function MyRankings() {
                 showNotification("Ranking created", "success")
 
                 setEditRanking([]);
-                fetchRankings();
+                fetchRankings(setRankings);
             });
         } catch (error) {
             if (error instanceof Error) {
@@ -68,7 +62,7 @@ export default function MyRankings() {
                 setCurrentRanking={setCurrentRanking}
             />
             {currentRanking.ranking_type === 'numbered' &&
-                currentRanking.creation_method === "manual_exchange" &&
+                currentRanking.creation_method === "manual" &&
                 currentRankingItems[0] &&
 				<NumberedManualExchange
 					saveRanking={saveRanking}
@@ -76,7 +70,7 @@ export default function MyRankings() {
 					setCurrentRankingItems={setCurrentRankingItems}
 				/>}
             {currentRanking.ranking_type === 'numbered' &&
-                currentRanking.creation_method === "intelligent_dual" &&
+                currentRanking.creation_method === "duels" &&
                 currentRankingItems[0] &&
 				<NumberedIntelligentDual
 					currentRankingItems={currentRankingItems}

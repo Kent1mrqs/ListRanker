@@ -32,7 +32,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"username\": \"rt\",\n    \"password_hash\": \"rt\"\n}",
+					"raw": "{\n\t\"username\": \"coco\",\n    \"password\": \"rt\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -170,7 +170,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"name\": \"kdrama\",\n    \"user_id\": 1,\n    \"items\":[\n        {\"name\":\"Vincenzo\"},\n        {\"name\": \"The Glory\"},\n        {\"name\": \"La trace dans le sang\"},\n        {\"name\": \"King the land\"},\n        {\"name\": \"A business proposal\"},\n        {\"name\": \"Crash landing on you\"},\n        {\"name\": \"Vagabond\"},\n        {\"name\": \"Alchemy of souls\"},\n        {\"name\": \"Queen of Tears\"},\n        {\"name\": \"Flower of Evil\"}\n    ]\n}",
+					"raw": "{\n\t\"name\": \"kdrama\",\n    \"items\":[]\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -178,12 +178,12 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/lists",
+					"raw": "{{base_url}}/new-list",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
-						"lists"
+						"new-list"
 					]
 				},
 				"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
@@ -484,13 +484,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/rankings/2",
+					"raw": "{{base_url}}/rankings/1",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
 						"rankings",
-						"2"
+						"1"
 					]
 				},
 				"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
@@ -623,6 +623,96 @@
 					]
 				},
 				"description": "This is a DELETE request, and it is used to delete data that was previously created via a POST request. You typically identify the entity being updated by including an identifier in the URL (eg. `id=1`).\n\nA successful DELETE request typically returns a `200 OK`, `202 Accepted`, or `204 No Content` response code."
+			},
+			"response": []
+		},
+		{
+			"name": "Next round",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[595,594]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/tournament-next/25",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"tournament-next",
+						"25"
+					]
+				},
+				"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+			},
+			"response": []
+		},
+		{
+			"name": "Init tournament Copy",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/tournament-init/25",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"tournament-init",
+						"25"
+					]
+				},
+				"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+			},
+			"response": []
+		},
+		{
+			"name": "reset tournament",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/tournament-init/25",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"tournament-init",
+						"25"
+					]
+				},
+				"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
 			},
 			"response": []
 		}

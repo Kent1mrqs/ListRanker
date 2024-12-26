@@ -2,30 +2,31 @@
 import TemplatePage from "@/components/Template/TemplatePage";
 import Spotlight from "@/components/spotlight";
 import TemplateCard from "@/components/Template/TemplateCard";
-import TournoiImg from "@/public/images/tournoi.png";
-import TierList from "@/public/images/tier_list.png";
+import TournoiImg from "@/public/images/Tournoi.jpg";
+import DuelsImg from "@/public/images/Duels.webp";
+import ManualExchange from "@/public/images/ManualExchange.png";
 import {NewRanking, RankingProps} from "@/app/(default)/workflow_creation/WorkflowCreation";
 import {smoothScrollToElement} from "@/app/utils";
 
 const rankingCard = [
     {
         title: 'Manual',
-        image: TournoiImg,
+        image: ManualExchange,
         description: 'Make your ranking entirely by yourself',
         key: 'manual'
     },
     {
         title: 'Tournament',
-        image: TierList,
+        image: TournoiImg,
         description: 'Generate a tournament and find your champion !',
         key: 'tournament',
         disabled: true
     },
     {
         title: 'Dual match',
-        image: TierList,
+        image: DuelsImg,
         description: 'Generate dual matches to find your total ranking',
-        key: 'intelligent_dual',
+        key: 'duels',
     }
 ]
 
@@ -53,7 +54,7 @@ export default function CreationMethod({newRanking, setNewRanking}: RankingProps
                 {rankingCard.map((card, i) => (
                     <TemplateCard
                         selected={newRanking.creation_method === card.key}
-                        key={i}
+                        key={i} heightImageMax="h-[300px]"
                         disabled={card.disabled}
                         title={card.title}
                         image={card.image}
