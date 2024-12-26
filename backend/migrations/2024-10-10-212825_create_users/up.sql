@@ -41,6 +41,8 @@ CREATE TABLE ranking_items
     item_id    INT NOT NULL,
     rank       INT NOT NULL,
     score      INT NOT NULL,
+    wins       INT NOT NULL,
+    defeats    INT NOT NULL,
     FOREIGN KEY (ranking_id) REFERENCES rankings (id),
     FOREIGN KEY (item_id) REFERENCES items (id)
 );
